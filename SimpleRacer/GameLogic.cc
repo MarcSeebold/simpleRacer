@@ -58,6 +58,17 @@ void GameLogic::decelerate(GameLogic::PlayerID _id)
 void GameLogic::update(const float &_timestep)
 {
    SR_ASSERT(mRunning && "Update called but not running");
+   // testing: random input for p2
+   if (rand()%3 == 0)
+      steerUp(PlayerID::P2);
+   if (rand()%3 == 0)
+      steerDown(PlayerID::P2);
+   if (rand()%5 == 0)
+      accelerate(PlayerID::P2);
+   if (rand()%6 == 0)
+      decelerate(PlayerID::P2);
+
+
    // 1: update positions
    for (PlayerID player : {PlayerID::P1, PlayerID::P2})
    {
@@ -129,6 +140,8 @@ void GameLogic::update(const float &_timestep)
       {
          for (int p : {0, 1})
          {
+
+            //TODO: this sucks
             mGameState->velocityX[p] *= -1.5f;
             mGameState->velocityY[p] *= -5;
             mGameState->positionX[p] += _timestep * mGameState->velocityX[p];
