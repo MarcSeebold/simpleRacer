@@ -33,5 +33,9 @@
 // assertion define
 void _sr_assert_fail(const char* _expr, const char* _file, int _line, const char* _function);
 #define _SR_STRING(x) #x
+#ifdef WIN32
+#define __PRETTY_FUNCTION__ __FUNCTION__
+#endif
+
 #define SR_ASSERT(expr) \
    ((expr) ? static_cast<void>(0) : (_sr_assert_fail(_SR_STRING(expr), __FILE__, __LINE__, __PRETTY_FUNCTION__)))

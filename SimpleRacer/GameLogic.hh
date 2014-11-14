@@ -24,7 +24,7 @@ namespace simpleRacer
  *        We use a heartbeat system. I.e., we have a fixed timestep for the game logic simulation.
  *        Every input event is processed at the end of a simulation step.
  */
-struct GameState;
+SHARED(struct, GameState);
 class GameLogic : public QObject
 {
    Q_OBJECT
@@ -58,6 +58,9 @@ public:
    /// c'tor
    ~GameLogic();
 
+   /// Resets the game state
+   void reset();
+
    /// accelerates the player by one px/sec
    void accelerate(PlayerID _id);
    /// decelerate the player by one px/sec
@@ -75,14 +78,15 @@ public slots:
 private:
    struct UserInput
    {
-      float velocityDeltaX[2] = {0, 0}; ///< Horizontal Delta
-      float velocityDeltaY[2] = {0, 0}; ///< Vertical Delta
+      float velocityDeltaX[2]; ///< Horizontal Delta
+      float velocityDeltaY[2]; ///< Vertical Delta
    };
+   SHARED(struct, UserInput);
 
 private:
-   std::unique_ptr<GameState> mGameState; ///< current game state
-   std::unique_ptr<UserInput> mUserInput; ///< actions applied to next game state
-   bool mRunning = false;                 ///< Is the game currently running?
+   UniqueGameState mGameState; ///< current game state
+   UniqueUserInput mUserInput; ///< actions applied to next game state
+   bool mRunning = false;      ///< Is the game currently running?
 
 public: // Getter, Setter
    const GameState *getGameState() const { return mGameState.get(); }
@@ -91,11 +95,11 @@ public: // Getter, Setter
 
 struct GameState
 {
-   int playerCoins[2] = {0, 0};   ///< 0 coins at beginning
-   float positionX[2] = {0, 0};   ///< Horizotal car positions (center of car)
-   float positionY[2] = {0, 100}; ///< Vertical car positions (center of car)
-   float velocityX[2] = {10, 10}; ///< Velocity of the cars (px / sec)
-   float velocityY[2] = {0, 0};   ///< Steering velocity of the cars (px / sec)
+   int playerCoins[2]; ///< 0 coins at beginning
+   float positionX[2]; ///< Horizotal car positions (center of car)
+   float positionY[2]; ///< Vertical car positions (center of car)
+   float velocityX[2]; ///< Velocity of the cars (px / sec)
+   float velocityY[2]; ///< Steering velocity of the cars (px / sec)
 };
 
 } // namespace simpleRacer

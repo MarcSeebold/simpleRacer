@@ -6,10 +6,29 @@ using namespace simpleRacer;
 
 GameLogic::GameLogic()
 {
+   reset();
 }
 
 GameLogic::~GameLogic()
 {
+}
+
+void GameLogic::reset()
+{
+   mGameState = UniqueGameState(new GameState);
+   mUserInput = UniqueUserInput(new UserInput);
+
+   for (int i : {0, 1})
+   {
+      mUserInput->velocityDeltaX[i] = 0;
+      mUserInput->velocityDeltaY[i] = 0;
+      mGameState->playerCoins[i] = 0;
+      mGameState->positionX[i] = 0;
+      mGameState->positionY[i] = 0;
+      mGameState->velocityX[i] = 10;
+      mGameState->velocityY[i] = 0;
+   }
+   mGameState->positionY[1] = 100;
 }
 
 void GameLogic::steerUp(GameLogic::PlayerID _id)
