@@ -1,6 +1,7 @@
 #include "GameLogic.hh"
 #include <algorithm>
-#include <QTimer>
+#include <QRectF>
+#include <iostream>
 
 using namespace simpleRacer;
 
@@ -117,11 +118,27 @@ void GameLogic::update(const float &_timestep)
    }
    // 2: resolve conflicts
    {
-      // TODO: implement
+      QPoint topLeft[2];
+      for (int p : {0, 1})
+         topLeft[p] = QPoint(mGameState->positionX[p] - sCarLength / 2, mGameState->positionY[p] - sCarWidth / 2);
+
+      QRectF car1(topLeft[0], QSize(sCarLength, sCarWidth));
+      QRectF car2(topLeft[1], QSize(sCarLength, sCarWidth));
+
+      if (car1.intersects(car2))
+      {
+         for (int p : {0, 1})
+         {
+            mGameState->velocityX[p] *= -1.5f;
+            mGameState->velocityY[p] *= -5;
+            mGameState->positionX[p] += _timestep * mGameState->velocityX[p];
+            mGameState->positionY[p] += _timestep * mGameState->velocityY[p];
+         }
+      }
    }
    // 3: collect coins/rocks
    {
-      // TODO: implement}
+      // TODO: implement
    }
    // reset input
    mUserInput->reset();
