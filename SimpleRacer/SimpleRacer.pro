@@ -15,13 +15,16 @@ CONFIG += c++11
 
 SOURCES += main.cc\
         MainWindow.cc \
-    Rendering.cc \
     GameLogic.cc \
-    Common.cc
+    Common.cc \
+    RenderingWidget.cc
 
 HEADERS  += MainWindow.hh \
-    Rendering.hh \
     GameLogic.hh \
-    Common.hh
+    Common.hh \
+    RenderingWidget.hh
 
 FORMS    += MainWindow.ui
+
+RESOURCES += \
+    car.qrc

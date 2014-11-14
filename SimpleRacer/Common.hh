@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 // some usefull stuff
 
 #define DO_STRING_JOIN2(arg1, arg2) arg1##arg2

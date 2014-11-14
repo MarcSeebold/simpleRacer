@@ -1,21 +1,83 @@
 #include "MainWindow.hh"
 #include "ui_MainWindow.h"
 #include "GameLogic.hh"
-#include "Rendering.hh"
+#include "RenderingWidget.hh"
 #include <iostream>
+#include <QKeyEvent>
 
 MainWindow::MainWindow(QWidget *parent)
-  : QMainWindow(parent), ui(new Ui::MainWindow), mGameLogic(new simpleRacer::GameLogic), mRendering(new simpleRacer::Rendering)
+  : QMainWindow(parent),
+    mUI(new Ui::MainWindow),
+    mGameLogic(new simpleRacer::GameLogic),
+    mRendering(new simpleRacer::RenderingWidget),
+    mKeyStatus(new KeyStatus)
 {
-   ui->setupUi(this);
+   mUI->setupUi(this);
+   mUI->widget->setGameLogicComponent(mGameLogic);
    connect(&mGlobalTimer, &QTimer::timeout, this, &MainWindow::performGameUpdateStep);
-   connect(ui->actionStart_Singleplayer, &QAction::triggered, this, &MainWindow::startGame);
-   connect(ui->actionExit, &QAction::triggered, this, &MainWindow::exitGame);
+   connect(mUI->actionStart_Singleplayer, &QAction::triggered, this, &MainWindow::startGame);
+   connect(mUI->actionExit, &QAction::triggered, this, &MainWindow::exitGame);
 }
 
 MainWindow::~MainWindow()
 {
-   delete ui;
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *e)
+{
+   if (!mGameLogic->getRunning())
+      return;
+
+   switch (e->key())
+   {
+   case Qt::Key_Up:
+      mKeyStatus->up = true;
+      break;
+   case Qt::Key_Down:
+      mKeyStatus->down = true;
+      break;
+   case Qt::Key_Left:
+      mKeyStatus->left = true;
+      break;
+   case Qt::Key_Right:
+      mKeyStatus->right = true;
+      break;
+   }
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent *e)
+{
+   if (!mGameLogic->getRunning())
+      return;
+
+   switch (e->key())
+   {
+   case Qt::Key_Up:
+      mKeyStatus->up = false;
+      break;
+   case Qt::Key_Down:
+      mKeyStatus->down = false;
+      break;
+   case Qt::Key_Left:
+      mKeyStatus->left = false;
+      break;
+   case Qt::Key_Right:
+      mKeyStatus->right = false;
+      break;
+   }
+}
+
+void MainWindow::processInput()
+{
+   _ p = simpleRacer::GameLogic::PlayerID::P1;
+   if (mKeyStatus->up)
+      mGameLogic->steerUp(p);
+   if (mKeyStatus->down)
+      mGameLogic->steerDown(p);
+   if (mKeyStatus->left)
+      mGameLogic->decelerate(p);
+   if (mKeyStatus->right)
+      mGameLogic->accelerate(p);
 }
 
 bool MainWindow::startGame()
@@ -52,6 +114,10 @@ void MainWindow::exitGame()
 
 void MainWindow::performGameUpdateStep()
 {
-   mGameLogic->update(SR_RESOLUTION);
-   mRendering->render(mGameLogic->getGameState());
+   // process input
+   processInput();
+       // game logic
+       mGameLogic->update(SR_RESOLUTION);
+   // rendering
+   update();
 }

@@ -30,19 +30,19 @@ class GameLogic : public QObject
    Q_OBJECT
 
 public:
-   /// max. horizontal velocity in px/sec
-   static const int sMaxVeloX = 100;
-   /// min. horizontal velocity in px/sec
-   static const int sMinVeloX = 10;
-   /// max. vertical velocity in px/sec
-   static const int sMaxVeloY = 20;
-   /// min. vertical velocity in px/sec
-   static const int sMinVeloY = 0;
+   /// max. horizontal velocity in myUnit/sec
+   static const int sMaxVeloX = 10;
+   /// min. horizontal velocity in myUnit/sec
+   static const int sMinVeloX = -10;
+   /// max. vertical velocity in myUnit/sec
+   static const int sMaxVeloY = 5;
+   /// min. vertical velocity in myUnit/sec
+   static const int sMinVeloY = -5;
 
    ///@{
-   /// Size of the car in px (it is a rectangle)
-   static const int sCarWidth = 50;
-   static const int sCarLength = 200;
+   /// Size of the car in myUnit (it is a rectangle)
+   static const int sCarWidth = 12;
+   static const int sCarLength = 10;
    ///@}
 
    /// Unique player id
@@ -78,18 +78,19 @@ public slots:
 private:
    struct UserInput
    {
+      void reset();
       float velocityDeltaX[2]; ///< Horizontal Delta
       float velocityDeltaY[2]; ///< Vertical Delta
    };
    SHARED(struct, UserInput);
 
 private:
-   UniqueGameState mGameState; ///< current game state
+   SharedGameState mGameState; ///< current game state
    UniqueUserInput mUserInput; ///< actions applied to next game state
    bool mRunning = false;      ///< Is the game currently running?
 
 public: // Getter, Setter
-   const GameState *getGameState() const { return mGameState.get(); }
+   SharedGameState getGameState() const { return mGameState; }
    PROPERTY(Running);
 };
 

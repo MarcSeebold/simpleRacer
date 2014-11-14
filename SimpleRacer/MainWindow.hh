@@ -11,12 +11,12 @@
 namespace simpleRacer
 {
 SHARED(class, GameLogic);
-SHARED(class, Rendering);
+SHARED(class, RenderingWidget);
 }
 
 namespace Ui
 {
-class MainWindow;
+SHARED(class, MainWindow);
 }
 
 class MainWindow : public QMainWindow
@@ -26,6 +26,13 @@ class MainWindow : public QMainWindow
 public:
    explicit MainWindow(QWidget *parent = 0);
    ~MainWindow();
+
+protected:
+   void keyPressEvent(QKeyEvent *e);
+   void keyReleaseEvent(QKeyEvent *e);
+
+private:
+   void processInput();
 
 public slots:
    /// Start the game
@@ -42,10 +49,20 @@ private slots:
    void performGameUpdateStep();
 
 private:
-   Ui::MainWindow *ui;
+   struct KeyStatus
+   {
+      bool up = false;
+      bool down = false;
+      bool left = false;
+      bool right = false;
+   };
+   SHARED(struct,KeyStatus);
+
+   Ui::UniqueMainWindow mUI;
    simpleRacer::SharedGameLogic mGameLogic;
-   simpleRacer::SharedRendering mRendering;
+   simpleRacer::SharedRenderingWidget mRendering;
    QTimer mGlobalTimer;
+   UniqueKeyStatus mKeyStatus;
 
 public: // Getter, Setter
    GETTER(GameLogic);

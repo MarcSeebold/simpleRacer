@@ -6,22 +6,40 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1091</width>
-    <height>578</height>
+    <width>943</width>
+    <height>492</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>500</width>
+    <height>100</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>SimpleRacer</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QGraphicsView" name="graphicsView">
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>0</height>
+    </size>
+   </property>
+   <widget class="simpleRacer::RenderingWidget" name="widget" native="true">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>1091</width>
-      <height>531</height>
+      <x>70</x>
+      <y>70</y>
+      <width>800</width>
+      <height>300</height>
      </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
     </property>
    </widget>
   </widget>
@@ -30,8 +48,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1091</width>
-     <height>25</height>
+     <width>943</width>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMenu">
@@ -61,6 +79,14 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>simpleRacer::RenderingWidget</class>
+   <extends>QWidget</extends>
+   <header>RenderingWidget.hh</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

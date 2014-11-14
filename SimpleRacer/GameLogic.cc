@@ -15,44 +15,43 @@ GameLogic::~GameLogic()
 
 void GameLogic::reset()
 {
-   mGameState = UniqueGameState(new GameState);
+   mGameState = std::make_shared<GameState>();
    mUserInput = UniqueUserInput(new UserInput);
 
    for (int i : {0, 1})
    {
-      mUserInput->velocityDeltaX[i] = 0;
-      mUserInput->velocityDeltaY[i] = 0;
       mGameState->playerCoins[i] = 0;
       mGameState->positionX[i] = 0;
       mGameState->positionY[i] = 0;
-      mGameState->velocityX[i] = 10;
+      mGameState->velocityX[i] = 0;
       mGameState->velocityY[i] = 0;
    }
-   mGameState->positionY[1] = 100;
+   mGameState->positionY[1] = 100.f;
+   mUserInput->reset();
 }
 
 void GameLogic::steerUp(GameLogic::PlayerID _id)
 {
    _ id = (int)_id;
-   mUserInput->velocityDeltaY[id] -= 1;
+   mUserInput->velocityDeltaY[id] -= 0.2f;
 }
 
 void GameLogic::steerDown(GameLogic::PlayerID _id)
 {
    _ id = (int)_id;
-   mUserInput->velocityDeltaY[id] += 1;
+   mUserInput->velocityDeltaY[id] += 0.2f;
 }
 
 void GameLogic::accelerate(GameLogic::PlayerID _id)
 {
    _ id = (int)_id;
-   mUserInput->velocityDeltaX[id] += 1;
+   mUserInput->velocityDeltaX[id] += 0.035f;
 }
 
 void GameLogic::decelerate(GameLogic::PlayerID _id)
 {
    _ id = (int)_id;
-   mUserInput->velocityDeltaX[id] -= 1;
+   mUserInput->velocityDeltaX[id] -= 0.035f;
 }
 
 void GameLogic::update(const float &_timestep)
@@ -85,28 +84,33 @@ void GameLogic::update(const float &_timestep)
          mGameState->positionX[id] += _timestep * mGameState->velocityX[id];
          mGameState->positionY[id] += _timestep * mGameState->velocityY[id];
       }
+      // steering/acceleration damping
+      {
+         mGameState->velocityX[id] *= 0.99f;
+         mGameState->velocityY[id] *= 0.99f;
+      }
       // clamp positions
       {
          // horizontal
-         if (mGameState->positionX[id] - (sCarLength / 2) < 0)
+         if (mGameState->positionX[id] - (sCarLength / 2.f) < 0.f)
          {
-            mGameState->positionX[id] = 0 + sCarLength / 2;
-            mGameState->velocityX[id] = 0; // damping of 100%
+            mGameState->positionX[id] = 0.f + sCarLength / 2.f;
+            mGameState->velocityX[id] = 0.f; // damping of 100%
          }
-         else if (mGameState->positionX[id] + (sCarLength / 2) > 100)
+         else if (mGameState->positionX[id] + (sCarLength / 2.f) > 100.f)
          {
-            mGameState->positionX[id] = 0 - sCarLength / 2;
-            mGameState->velocityX[id] = 0; // damping of 100%
+            mGameState->positionX[id] = 100.f - sCarLength / 2.f;
+            mGameState->velocityX[id] = 0.f; // damping of 100%
          }
          // vertical
-         if (mGameState->positionY[id] - (sCarWidth / 2) < 0)
+         if (mGameState->positionY[id] - (sCarWidth / 2.f) < 0.f)
          {
-            mGameState->positionY[id] = 0 + sCarWidth / 2;
+            mGameState->positionY[id] = 0.f + sCarWidth / 2.f;
             mGameState->velocityY[id] *= -0.5f; // damping of 50% and recoil
          }
-         else if (mGameState->positionY[id] + (sCarWidth / 2) > 100)
+         else if (mGameState->positionY[id] + (sCarWidth / 2.f) > 100.f)
          {
-            mGameState->positionY[id] = 100 - (sCarWidth / 2);
+            mGameState->positionY[id] = 100.f - (sCarWidth / 2.f);
             mGameState->velocityY[id] *= -0.5f; // damping of 50% and recoil
          }
       }
@@ -119,4 +123,15 @@ void GameLogic::update(const float &_timestep)
    {
       // TODO: implement}
    }
+   // reset input
+   mUserInput->reset();
+}
+
+
+void GameLogic::UserInput::reset()
+{
+   velocityDeltaX[0] = 0;
+   velocityDeltaX[1] = 0;
+   velocityDeltaY[0] = 0;
+   velocityDeltaY[1] = 0;
 }
