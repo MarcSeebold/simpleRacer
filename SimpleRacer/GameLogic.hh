@@ -2,6 +2,7 @@
 #include <memory>
 #include <QObject>
 #include "Common.hh"
+#include <Box2D/Box2D.h>
 
 namespace simpleRacer
 {

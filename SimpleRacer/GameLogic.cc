@@ -140,10 +140,9 @@ void GameLogic::update(const float &_timestep)
       {
          for (int p : {0, 1})
          {
-
             //TODO: this sucks
-            mGameState->velocityX[p] *= -1.5f;
-            mGameState->velocityY[p] *= -5;
+            mGameState->velocityX[p] *= -1;
+            mGameState->velocityY[p] *= -1;
             mGameState->positionX[p] += _timestep * mGameState->velocityX[p];
             mGameState->positionY[p] += _timestep * mGameState->velocityY[p];
          }
