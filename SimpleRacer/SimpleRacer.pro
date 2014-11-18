@@ -17,12 +17,14 @@ SOURCES += main.cc\
         MainWindow.cc \
     GameLogic.cc \
     Common.cc \
-    RenderingWidget.cc
+    RenderingWidget.cc \
+    PhysicsObject.cc
 
 HEADERS  += MainWindow.hh \
     GameLogic.hh \
     Common.hh \
-    RenderingWidget.hh
+    RenderingWidget.hh \
+    PhysicsObject.hh
 
 FORMS    += MainWindow.ui
 
@@ -34,3 +36,10 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/Box2D/lib/ -lBox2d
 
 INCLUDEPATH += $$PWD/Box2D/include
 DEPENDPATH += $$PWD/Box2D/include
+
+unix:!macx: LIBS += -L$$PWD/Box2D/lib/ -lBox2D
+
+INCLUDEPATH += $$PWD/Box2D/include
+DEPENDPATH += $$PWD/Box2D/include
+
+unix:!macx: PRE_TARGETDEPS += $$PWD/Box2D/lib/libBox2D.a

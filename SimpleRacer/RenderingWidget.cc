@@ -20,12 +20,8 @@ void RenderingWidget::paintEvent(QPaintEvent *event)
 {
    static float animate = 0;
 
-   if (!mGameLogic)
+   if (!mGameLogic || !mGameLogic->getRunning())
       return;
-   _ state = mGameLogic->getGameState();
-   if (!state)
-      return;
-
 
    _ scaleX = size().width() / 100;
    _ scaleY = size().height() / 100;
@@ -64,8 +60,9 @@ void RenderingWidget::paintEvent(QPaintEvent *event)
 
    for (int p : {0, 1})
    {
-      _ x = state->positionX[p] * scaleX;
-      _ y = state->positionY[p] * scaleY;
+      _ carPos = mGameLogic->getCarCenterPosition((GameLogic::PlayerID)p);
+      _ x = carPos.x() * scaleX;
+      _ y = (100-carPos.y()) * scaleY;
 
       // convert center pos to top left
       x -= carLength / 2;

@@ -2,11 +2,25 @@
 #include <algorithm>
 #include <QRectF>
 #include <iostream>
+#include <Box2D/Box2D.h>
+#include "PhysicsObject.hh"
 
 using namespace simpleRacer;
 
-GameLogic::GameLogic()
+GameLogic::GameLogic() : mPhysicsWorld(new b2World(b2Vec2(0, 0))) // no gravity
+// mStreetboundary(new PhysicsObject(mPhysicsWorld, 100, 100, 0, 0, true))
+
 {
+   // create street boundaries
+   // bottom
+   mStreetBoundaries[0] = UniquePhysicsObject(new PhysicsObject(mPhysicsWorld, 100, 20, 50, -10, 0, true));
+   // top
+   mStreetBoundaries[1] = UniquePhysicsObject(new PhysicsObject(mPhysicsWorld, 100, 20, 50, 110, 0, true));
+   // left
+   mStreetBoundaries[2] = UniquePhysicsObject(new PhysicsObject(mPhysicsWorld, 20, 100, -10, 50, 0, true));
+   // right
+   mStreetBoundaries[3] = UniquePhysicsObject(new PhysicsObject(mPhysicsWorld, 20, 100, 110, 50, 0, true));
+   // reset state
    reset();
 }
 
@@ -16,137 +30,81 @@ GameLogic::~GameLogic()
 
 void GameLogic::reset()
 {
-   mGameState = std::make_shared<GameState>();
+   _ linearDamping = 0.75f;
+   // spawn car1 on top left
+   mCar1 = UniquePhysicsObject(new PhysicsObject(mPhysicsWorld, sCarLength, sCarWidth, sCarWidth / 2, sCarLength / 2, linearDamping));
+   // spawn car2 on bottom left
+   mCar2 = UniquePhysicsObject(
+       new PhysicsObject(mPhysicsWorld, sCarLength, sCarWidth, sCarWidth / 2, 100.f - sCarLength / 2, linearDamping));
+
    mUserInput = UniqueUserInput(new UserInput);
 
    for (int i : {0, 1})
    {
-      mGameState->playerCoins[i] = 0;
-      mGameState->positionX[i] = 0;
-      mGameState->positionY[i] = 0;
-      mGameState->velocityX[i] = 0;
-      mGameState->velocityY[i] = 0;
+      mPlayerCoins[i] = 0;
    }
-   mGameState->positionY[1] = 100.f;
    mUserInput->reset();
 }
 
-void GameLogic::steerUp(GameLogic::PlayerID _id)
+void GameLogic::steerUp(PlayerID _id)
 {
    _ id = (int)_id;
-   mUserInput->velocityDeltaY[id] -= 0.2f;
+   mUserInput->deltaY[id]++;
 }
 
-void GameLogic::steerDown(GameLogic::PlayerID _id)
+void GameLogic::steerDown(PlayerID _id)
 {
    _ id = (int)_id;
-   mUserInput->velocityDeltaY[id] += 0.2f;
+   mUserInput->deltaY[id]--;
 }
 
-void GameLogic::accelerate(GameLogic::PlayerID _id)
+QVector2D GameLogic::getCarCenterPosition(PlayerID _id)
 {
-   _ id = (int)_id;
-   mUserInput->velocityDeltaX[id] += 0.035f;
+   if (_id == PlayerID::P1)
+   {
+      return mCar1->getCenterPos();
+   }
+   else
+      return mCar2->getCenterPos();
 }
 
-void GameLogic::decelerate(GameLogic::PlayerID _id)
+void GameLogic::accelerate(PlayerID _id)
 {
    _ id = (int)_id;
-   mUserInput->velocityDeltaX[id] -= 0.035f;
+   mUserInput->deltaX[id]++;
+}
+
+void GameLogic::decelerate(PlayerID _id)
+{
+   _ id = (int)_id;
+   mUserInput->deltaX[id]--;
 }
 
 void GameLogic::update(const float &_timestep)
 {
    SR_ASSERT(mRunning && "Update called but not running");
    // testing: random input for p2
-   if (rand()%3 == 0)
-      steerUp(PlayerID::P2);
-   if (rand()%3 == 0)
-      steerDown(PlayerID::P2);
-   if (rand()%5 == 0)
-      accelerate(PlayerID::P2);
-   if (rand()%6 == 0)
-      decelerate(PlayerID::P2);
+   //   if (rand() % 3 == 0)
+   //      steerUp(PlayerID::P2);
+   //   if (rand() % 3 == 0)
+   //      steerDown(PlayerID::P2);
+   //   if (rand() % 5 == 0)
+   //      accelerate(PlayerID::P2);
+   //   if (rand() % 6 == 0)
+   //      decelerate(PlayerID::P2);
 
 
-   // 1: update positions
-   for (PlayerID player : {PlayerID::P1, PlayerID::P2})
+   // 1: apply input
+   mCar1->applyForce(QVector2D(mUserInput->deltaX[0] * 1000, 0));
+   mCar1->applyForce(QVector2D(0, mUserInput->deltaY[0] * 1000));
+   mCar2->applyForce(QVector2D(mUserInput->deltaX[1] * 1000, 0));
+   mCar2->applyForce(QVector2D(0, mUserInput->deltaY[1] * 1000));
+
+   // 2: step simulation
    {
-      _ id = (int)player;
-      // apply deltas
-      {
-         mGameState->velocityX[id] += mUserInput->velocityDeltaX[id];
-         mGameState->velocityY[id] += mUserInput->velocityDeltaY[id];
-      }
-      // clamp velocities
-      {
-         // horizontal
-         if (mGameState->velocityX[id] > sMaxVeloX)
-            mGameState->velocityX[id] = sMaxVeloX;
-         else if (mGameState->velocityX[id] < sMinVeloX)
-            mGameState->velocityX[id] = sMinVeloX;
-         // vertical
-         if (mGameState->velocityY[id] > sMaxVeloY)
-            mGameState->velocityY[id] = sMaxVeloY;
-         else if (mGameState->velocityY[id] < sMinVeloY)
-            mGameState->velocityY[id] = sMinVeloY;
-      }
-      // update positions
-      {
-         mGameState->positionX[id] += _timestep * mGameState->velocityX[id];
-         mGameState->positionY[id] += _timestep * mGameState->velocityY[id];
-      }
-      // steering/acceleration damping
-      {
-         mGameState->velocityX[id] *= 0.99f;
-         mGameState->velocityY[id] *= 0.99f;
-      }
-      // clamp positions
-      {
-         // horizontal
-         if (mGameState->positionX[id] - (sCarLength / 2.f) < 0.f)
-         {
-            mGameState->positionX[id] = 0.f + sCarLength / 2.f;
-            mGameState->velocityX[id] = 0.f; // damping of 100%
-         }
-         else if (mGameState->positionX[id] + (sCarLength / 2.f) > 100.f)
-         {
-            mGameState->positionX[id] = 100.f - sCarLength / 2.f;
-            mGameState->velocityX[id] = 0.f; // damping of 100%
-         }
-         // vertical
-         if (mGameState->positionY[id] - (sCarWidth / 2.f) < 0.f)
-         {
-            mGameState->positionY[id] = 0.f + sCarWidth / 2.f;
-            mGameState->velocityY[id] *= -0.5f; // damping of 50% and recoil
-         }
-         else if (mGameState->positionY[id] + (sCarWidth / 2.f) > 100.f)
-         {
-            mGameState->positionY[id] = 100.f - (sCarWidth / 2.f);
-            mGameState->velocityY[id] *= -0.5f; // damping of 50% and recoil
-         }
-      }
-   }
-   // 2: resolve conflicts
-   {
-      QPoint topLeft[2];
-      for (int p : {0, 1})
-         topLeft[p] = QPoint(mGameState->positionX[p] - sCarLength / 2, mGameState->positionY[p] - sCarWidth / 2);
-
-      QRectF car1(topLeft[0], QSize(sCarLength, sCarWidth));
-      QRectF car2(topLeft[1], QSize(sCarLength, sCarWidth));
-
-      if (car1.intersects(car2))
-      {
-         for (int p : {0, 1})
-         {
-            //TODO: this sucks
-            mGameState->velocityX[p] *= -1;
-            mGameState->velocityY[p] *= -1;
-            mGameState->positionX[p] += _timestep * mGameState->velocityX[p];
-            mGameState->positionY[p] += _timestep * mGameState->velocityY[p];
-         }
-      }
+      int32 velocityIterations = 6;
+      int32 positionIterations = 2;
+      mPhysicsWorld->Step(_timestep, velocityIterations, positionIterations);
    }
    // 3: collect coins/rocks
    {
@@ -159,8 +117,8 @@ void GameLogic::update(const float &_timestep)
 
 void GameLogic::UserInput::reset()
 {
-   velocityDeltaX[0] = 0;
-   velocityDeltaX[1] = 0;
-   velocityDeltaY[0] = 0;
-   velocityDeltaY[1] = 0;
+   deltaX[0] = 0;
+   deltaX[1] = 0;
+   deltaY[0] = 0;
+   deltaY[1] = 0;
 }
