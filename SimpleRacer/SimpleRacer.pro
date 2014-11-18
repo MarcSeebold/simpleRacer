@@ -43,3 +43,5 @@ INCLUDEPATH += $$PWD/Box2D/include
 DEPENDPATH += $$PWD/Box2D/include
 
 unix:!macx: PRE_TARGETDEPS += $$PWD/Box2D/lib/libBox2D.a
+
+OTHER_FILES +=

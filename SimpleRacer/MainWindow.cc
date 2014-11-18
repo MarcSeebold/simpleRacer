@@ -116,8 +116,8 @@ void MainWindow::performGameUpdateStep()
 {
    // process input
    processInput();
-       // game logic
-       mGameLogic->update(SR_RESOLUTION);
+   // game logic
+   mGameLogic->update(SR_RESOLUTION);
    // rendering
    update();
 }

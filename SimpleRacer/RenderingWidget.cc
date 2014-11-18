@@ -23,8 +23,7 @@ void RenderingWidget::paintEvent(QPaintEvent *event)
    if (!mGameLogic || !mGameLogic->getRunning())
       return;
 
-   _ scaleX = size().width() / 100;
-   _ scaleY = size().height() / 100;
+   _ convFac = GameLogic::sConversionFactor;
 
    QPainter painter;
    painter.begin(this);
@@ -46,9 +45,9 @@ void RenderingWidget::paintEvent(QPaintEvent *event)
       animate = 0;
 
    // draw cars
-   _ carLength = GameLogic::sCarLength * scaleX;
-   _ carWidth = GameLogic::sCarWidth * scaleY;
-   QSize carTarget(carLength, carWidth);
+   _ carWidth = GameLogic::sCarWidth / convFac;
+   _ carHeight = GameLogic::sCarHeight / convFac;
+   QSize carTarget(carWidth, carHeight);
 
    static QImage car(":/assets/car.png");
    static QImage carScaled;
@@ -61,15 +60,30 @@ void RenderingWidget::paintEvent(QPaintEvent *event)
    for (int p : {0, 1})
    {
       _ carPos = mGameLogic->getCarCenterPosition((GameLogic::PlayerID)p);
-      _ x = carPos.x() * scaleX;
-      _ y = (100-carPos.y()) * scaleY;
+      _ x = carPos.x() / convFac;
+      _ y = (GameLogic::sGameHeight - carPos.y()) / convFac;
 
       // convert center pos to top left
-      x -= carLength / 2;
-      y -= carWidth / 2;
+      x -= carWidth / 2;
+      y -= carHeight / 2;
 
       painter.drawImage(x, y, carScaled);
-      // painter.drawRect(car);
+   }
+
+   // draw coins
+   static QImage coinImg(":/assets/coin.png");
+   static QImage coinScaled;
+   coinScaled = coinImg.scaled(QSize(GameLogic::sCoinSize / convFac, GameLogic::sCoinSize / convFac), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+   _ coins = mGameLogic->getCoins();
+   for (_ const &coin : coins)
+   {
+      _ x = coin.x() / convFac;
+      _ y = (GameLogic::sGameHeight - coin.y()) / convFac;
+      // convert center pos to top left
+      x -= GameLogic::sCoinSize / 2;
+      y -= GameLogic::sCoinSize / 2;
+      painter.drawImage(x, y, coinScaled);
    }
 
    painter.end();

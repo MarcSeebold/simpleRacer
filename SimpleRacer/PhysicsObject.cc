@@ -7,7 +7,9 @@ PhysicsObject::PhysicsObject(Sharedb2World _world, int _width, int _height, int 
    mWorld = _world;
    SR_ASSERT(mWorld && "World is null.");
    // create body
-   if (!_static)
+   if (_static)
+      mDef.type = b2_staticBody;
+   else
       mDef.type = b2_dynamicBody;
    mDef.position.Set(_x, _y);
    mDef.linearDamping = _linearDamping;
@@ -25,9 +27,10 @@ PhysicsObject::PhysicsObject(Sharedb2World _world, int _width, int _height, int 
       mFixDef.shape = &mShape;
       mFixDef.density = 1.0f;
       mFixDef.friction = 0.3f;
-      mFixDef.restitution = 0.5f;
+      mFixDef.restitution = 0.3f;
       mBody->CreateFixture(&mFixDef);
    }
+   mBody->SetUserData(this);
 }
 
 PhysicsObject::~PhysicsObject()
@@ -45,5 +48,5 @@ QVector2D PhysicsObject::getCenterPos()
 
 void PhysicsObject::applyForce(const QVector2D &_vec)
 {
-   mBody->ApplyForceToCenter(b2Vec2(_vec.x(), _vec.y()), true);
+   mBody->ApplyLinearImpulse(b2Vec2(_vec.x(), _vec.y()), mBody->GetWorldCenter(), true);
 }
