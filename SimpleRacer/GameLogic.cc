@@ -145,8 +145,8 @@ void GameLogic::update(const float &_timestep)
 void GameLogic::spawnCoin()
 {
    // todo: spawn coins far away from cars
-   float posX = 0.f + (rand() % (int)(sGameWidth - sCoinSize));
-   float posY = 0.f + (rand() % (int)(sGameHeight - sCoinSize));
+   float posX = 0.f + (rand() % (int)(sGameWidth - sCoinSize/2));
+   float posY = 0.f + (rand() % (int)(sGameHeight - sCoinSize/2));
    _ coin = UniquePhysicsObject(new PhysicsObject(mPhysicsWorld, sCoinSize, sCoinSize, posX, posY, 0, true));
    mCoins.push_back(std::move(coin));
 }

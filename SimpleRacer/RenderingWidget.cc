@@ -76,7 +76,8 @@ void RenderingWidget::paintEvent(QPaintEvent *event)
    // draw coins
    static QImage coinImg(":/assets/coin.png");
    static QImage coinScaled;
-   coinScaled = coinImg.scaled(QSize(GameLogic::sCoinSize / convFac, GameLogic::sCoinSize / convFac), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+   coinScaled = coinImg.scaled(QSize(GameLogic::sCoinSize / convFac, GameLogic::sCoinSize / convFac),
+                               Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
    _ coins = mGameLogic->getCoins();
    for (_ const &coin : coins)
@@ -84,8 +85,8 @@ void RenderingWidget::paintEvent(QPaintEvent *event)
       _ x = coin.x() / convFac;
       _ y = (GameLogic::sGameHeight - coin.y()) / convFac;
       // convert center pos to top left
-      x -= GameLogic::sCoinSize / 2;
-      y -= GameLogic::sCoinSize / 2;
+      x -= GameLogic::sCoinSize/ convFac / 2;
+      y -= GameLogic::sCoinSize/ convFac / 2;
       painter.drawImage(x, y, coinScaled);
    }
 
