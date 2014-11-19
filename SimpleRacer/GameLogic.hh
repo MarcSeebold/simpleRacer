@@ -2,10 +2,13 @@
 #include <memory>
 #include <QObject>
 #include "Common.hh"
-#include <Box2D/Box2D.h>
+
+SHARED(class, b2World);
 
 namespace simpleRacer
 {
+SHARED(class, PhysicsObject);
+
 /**
  * @brief Game concept: 1 on 1 racing game.
  *        3 Lanes. Goal: Collect coins, avoid rocks.
@@ -25,26 +28,17 @@ namespace simpleRacer
  *        We use a heartbeat system. I.e., we have a fixed timestep for the game logic simulation.
  *        Every input event is processed at the end of a simulation step.
  */
-SHARED(struct, GameState);
 class GameLogic : public QObject
 {
    Q_OBJECT
 
 public:
-   /// max. horizontal velocity in myUnit/sec
-   static const int sMaxVeloX = 10;
-   /// min. horizontal velocity in myUnit/sec
-   static const int sMinVeloX = -10;
-   /// max. vertical velocity in myUnit/sec
-   static const int sMaxVeloY = 5;
-   /// min. vertical velocity in myUnit/sec
-   static const int sMinVeloY = -5;
-
-   ///@{
-   /// Size of the car in myUnit (it is a rectangle)
-   static const int sCarWidth = 12;
-   static const int sCarLength = 10;
-   ///@}
+   static const float sConversionFactor;
+   static const float sCarHeight;
+   static const float sCarWidth;
+   static const float sCoinSize;
+   static const float sGameWidth;
+   static const float sGameHeight;
 
    /// Unique player id
    enum class PlayerID : int
@@ -72,36 +66,42 @@ public:
    /// move player's car down by one px/sec
    void steerDown(PlayerID _id);
 
+   /// Returns the current position of the car
+   QVector2D getCarCenterPosition(PlayerID _id);
+
+   /// Get positions of all coins
+   std::vector<QVector2D> getCoins();
+
 public slots:
    /// Simulate one time step
    void update(const float &_timestep = 1 / 60.f);
 
 private:
+   /// Spawns a coin at a random position
+   void spawnCoin();
+
+private:  
    struct UserInput
    {
       void reset();
-      float velocityDeltaX[2]; ///< Horizontal Delta
-      float velocityDeltaY[2]; ///< Vertical Delta
+      int deltaX[2]; ///< Horizontal Delta
+      int deltaY[2]; ///< Vertical Delta
    };
    SHARED(struct, UserInput);
 
 private:
-   SharedGameState mGameState; ///< current game state
-   UniqueUserInput mUserInput; ///< actions applied to next game state
-   bool mRunning = false;      ///< Is the game currently running?
+   UniqueUserInput mUserInput;               ///< actions applied to next game state
+   Sharedb2World mPhysicsWorld;              ///< Box2D World
+   UniquePhysicsObject mCar1;                ///< Physics object for car 1
+   UniquePhysicsObject mCar2;                ///< Physics object for car 2
+   UniquePhysicsObject mStreetBoundaries[4]; ///< Physics objects for end of the street
+   std::vector<UniquePhysicsObject> mCoins;  ///< Coins in the world
+   int mPlayerCoins[2];                      ///< 0 coins at beginning
+
+   bool mRunning = false; ///< Is the game currently running?
 
 public: // Getter, Setter
-   SharedGameState getGameState() const { return mGameState; }
    PROPERTY(Running);
-};
-
-struct GameState
-{
-   int playerCoins[2]; ///< 0 coins at beginning
-   float positionX[2]; ///< Horizotal car positions (center of car)
-   float positionY[2]; ///< Vertical car positions (center of car)
-   float velocityX[2]; ///< Velocity of the cars (px / sec)
-   float velocityY[2]; ///< Steering velocity of the cars (px / sec)
 };
 
 } // namespace simpleRacer
