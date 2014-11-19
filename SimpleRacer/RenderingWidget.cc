@@ -4,6 +4,8 @@
 #include <QPaintEvent>
 #include "GameLogic.hh"
 
+#include <qdebug.h>
+
 using namespace simpleRacer;
 
 RenderingWidget::RenderingWidget(QWidget *parent) : QWidget(parent)
@@ -66,6 +68,7 @@ void RenderingWidget::paintEvent(QPaintEvent *event)
       // convert center pos to top left
       x -= carWidth / 2;
       y -= carHeight / 2;
+
 
       painter.drawImage(x, y, carScaled);
    }

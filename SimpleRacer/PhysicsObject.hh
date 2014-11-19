@@ -9,7 +9,7 @@ namespace simpleRacer
 class PhysicsObject
 {
 public:
-   PhysicsObject(Sharedb2World _world, int _width, int _height, int _x, int _y, float _linearDamping = 0.f, bool _static = false);
+   PhysicsObject(const Sharedb2World &_world, float _width, float _height, float _x, float _y, float _linearDamping = 0.f, bool _static = false);
    ~PhysicsObject();
 
    QVector2D getCenterPos();

@@ -5,18 +5,21 @@
 #include <Box2D/Box2D.h>
 #include "PhysicsObject.hh"
 
+#include <qdebug.h>
+
+
 using namespace simpleRacer;
 
 const float GameLogic::sConversionFactor = 1 / 15.f;
-const float GameLogic::sCarHeight = 16 * 3 * GameLogic::sConversionFactor;
-const float GameLogic::sCarWidth = 35 * 3 * GameLogic::sConversionFactor;
-const float GameLogic::sCoinSize = 30 * GameLogic::sConversionFactor;
-const float GameLogic::sGameWidth = 800 * GameLogic::sConversionFactor;
-const float GameLogic::sGameHeight = 300 * GameLogic::sConversionFactor;
+const float GameLogic::sCarHeight = 16.f * 3 * GameLogic::sConversionFactor;
+const float GameLogic::sCarWidth = 35.f * 3 * GameLogic::sConversionFactor;
+const float GameLogic::sCoinSize = 30.f * GameLogic::sConversionFactor;
+const float GameLogic::sGameWidth = 800.f * GameLogic::sConversionFactor;
+const float GameLogic::sGameHeight = 300.f * GameLogic::sConversionFactor;
 
 GameLogic::GameLogic() : mPhysicsWorld(new b2World(b2Vec2(0, 0))) // no gravity
 
-{
+{   
    // create street boundaries
    // bottom
    mStreetBoundaries[0] = UniquePhysicsObject(new PhysicsObject(mPhysicsWorld, sGameWidth, 1, sGameWidth / 2, -.5f, 0, true));
@@ -128,7 +131,7 @@ void GameLogic::update(const float &_timestep)
    // 2: step simulation
    {
       int32 velocityIterations = 4;
-      int32 positionIterations = 2;
+      int32 positionIterations = 8;
       mPhysicsWorld->Step(_timestep, velocityIterations, positionIterations);
    }
    // 3: collect coins/rocks

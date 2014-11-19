@@ -1,8 +1,10 @@
 #include "PhysicsObject.hh"
 
+#include <qdebug.h>
+
 using namespace simpleRacer;
 
-PhysicsObject::PhysicsObject(Sharedb2World _world, int _width, int _height, int _x, int _y, float _linearDamping, bool _static)
+PhysicsObject::PhysicsObject(const Sharedb2World &_world, float _width, float _height, float _x, float _y, float _linearDamping, bool _static)
 {
    mWorld = _world;
    SR_ASSERT(mWorld && "World is null.");
@@ -12,10 +14,15 @@ PhysicsObject::PhysicsObject(Sharedb2World _world, int _width, int _height, int 
    else
       mDef.type = b2_dynamicBody;
    mDef.position.Set(_x, _y);
-   mDef.linearDamping = _linearDamping;
+   mDef.fixedRotation = true;
+
+   if (!_static)
+   {
+      mDef.linearDamping = _linearDamping;
+   }
    mBody = mWorld->CreateBody(&mDef);
    // create shape
-   mShape.SetAsBox(_width/2.f, _height/2.f);
+   mShape.SetAsBox(_width / 2.f, _height / 2.f);
    if (_static)
    {
       // static body fixture

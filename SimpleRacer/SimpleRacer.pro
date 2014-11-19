@@ -31,8 +31,8 @@ FORMS    += MainWindow.ui
 RESOURCES += \
     car.qrc
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/Box2D/lib/ -lBox2
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/Box2D/lib/ -lBox2d
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/Box2D/lib/ -lBox2d
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/Box2D/libd/ -lBox2d
 
 INCLUDEPATH += $$PWD/Box2D/include
 DEPENDPATH += $$PWD/Box2D/include
