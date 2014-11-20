@@ -8,6 +8,9 @@ SHARED(class, b2World);
 namespace simpleRacer
 {
 SHARED(class, PhysicsObject);
+SHARED(class, Car);
+SHARED(class, Coin);
+SHARED(class, PhysicsContactListener);
 
 /**
  * @brief Game concept: 1 on 1 racing game.
@@ -80,7 +83,9 @@ private:
    /// Spawns a coin at a random position
    void spawnCoin();
 
-private:  
+   void coinCallback(Car *_car, Coin *_coin);
+
+private:
    struct UserInput
    {
       void reset();
@@ -90,13 +95,14 @@ private:
    SHARED(struct, UserInput);
 
 private:
-   UniqueUserInput mUserInput;               ///< actions applied to next game state
-   Sharedb2World mPhysicsWorld;              ///< Box2D World
-   UniquePhysicsObject mCar1;                ///< Physics object for car 1
-   UniquePhysicsObject mCar2;                ///< Physics object for car 2
-   UniquePhysicsObject mStreetBoundaries[4]; ///< Physics objects for end of the street
-   std::vector<UniquePhysicsObject> mCoins;  ///< Coins in the world
-   int mPlayerCoins[2];                      ///< 0 coins at beginning
+   UniqueUserInput mUserInput;                    ///< actions applied to next game state
+   Sharedb2World mPhysicsWorld;                   ///< Box2D World
+   UniqueCar mCar1;                               ///< Physics object for car 1
+   UniqueCar mCar2;                               ///< Physics object for car 2
+   UniquePhysicsObject mStreetBoundaries[4];      ///< Physics objects for end of the street
+   UniquePhysicsContactListener mContactListener; ///< Box2D contact listener
+   std::vector<UniqueCoin> mCoins;                ///< Coins in the world
+   int mPlayerCoins[2];                           ///< 0 coins at beginning
 
    bool mRunning = false; ///< Is the game currently running?
 

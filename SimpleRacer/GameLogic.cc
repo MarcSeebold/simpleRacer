@@ -4,9 +4,11 @@
 #include <iostream>
 #include <Box2D/Box2D.h>
 #include "PhysicsObject.hh"
+#include "Car.hh"
+#include "Coin.hh"
+#include "PhysicsContactListener.hh"
 
 #include <qdebug.h>
-
 
 using namespace simpleRacer;
 
@@ -17,20 +19,23 @@ const float GameLogic::sCoinSize = 30.f * GameLogic::sConversionFactor;
 const float GameLogic::sGameWidth = 800.f * GameLogic::sConversionFactor;
 const float GameLogic::sGameHeight = 300.f * GameLogic::sConversionFactor;
 
-GameLogic::GameLogic() : mPhysicsWorld(new b2World(b2Vec2(0, 0))) // no gravity
+GameLogic::GameLogic() : mPhysicsWorld(new b2World(b2Vec2(0, 0))), // no gravity
+    mContactListener(new PhysicsContactListener())
 
-{   
+{
    // create street boundaries
    // bottom
-   mStreetBoundaries[0] = UniquePhysicsObject(new PhysicsObject(mPhysicsWorld, sGameWidth, 1, sGameWidth / 2, -.5f, 0, true));
+   mStreetBoundaries[0] = UniquePhysicsObject(
+       new PhysicsObject(mPhysicsWorld, sGameWidth, 1, sGameWidth / 2, -.5f, PhysicsObject::Type::BOUNDARY, 0, true));
    // top
-   mStreetBoundaries[1]
-       = UniquePhysicsObject(new PhysicsObject(mPhysicsWorld, sGameWidth, 1, sGameWidth / 2, sGameHeight + .5f, 0, true));
+   mStreetBoundaries[1] = UniquePhysicsObject(new PhysicsObject(
+       mPhysicsWorld, sGameWidth, 1, sGameWidth / 2, sGameHeight + .5f, PhysicsObject::Type::BOUNDARY, 0, true));
    // left
-   mStreetBoundaries[2] = UniquePhysicsObject(new PhysicsObject(mPhysicsWorld, 1, sGameHeight, -.5f, sGameHeight / 2, 0, true));
+   mStreetBoundaries[2] = UniquePhysicsObject(
+       new PhysicsObject(mPhysicsWorld, 1, sGameHeight, -.5f, sGameHeight / 2, PhysicsObject::Type::BOUNDARY, 0, true));
    // right
-   mStreetBoundaries[3]
-       = UniquePhysicsObject(new PhysicsObject(mPhysicsWorld, 1, sGameHeight, sGameWidth + .5f, sGameHeight / 2, 0, true));
+   mStreetBoundaries[3] = UniquePhysicsObject(new PhysicsObject(
+       mPhysicsWorld, 1, sGameHeight, sGameWidth + .5f, sGameHeight / 2, PhysicsObject::Type::BOUNDARY, 0, true));
    // reset state
    reset();
 }
@@ -45,9 +50,10 @@ void GameLogic::reset()
    // create cars
    _ linearDamping = 0.85f;
    // spawn car1 on top left
-   mCar1 = UniquePhysicsObject(new PhysicsObject(mPhysicsWorld, sCarWidth, sCarHeight, sCarWidth / 2, sCarHeight / 2, linearDamping));
+   mCar1 = UniqueCar(new Car(mPhysicsWorld, sCarWidth, sCarHeight, sCarWidth / 2, sCarHeight / 2,
+                                                 linearDamping));
    // spawn car2 on bottom left
-   mCar2 = UniquePhysicsObject(new PhysicsObject(mPhysicsWorld, sCarWidth, sCarHeight, sCarWidth / 2,
+   mCar2 = UniqueCar(new Car(mPhysicsWorld, sCarWidth, sCarHeight, sCarWidth / 2,
                                                  sGameHeight - sCarHeight / 2, linearDamping));
 
    // reset other member vars
@@ -107,14 +113,14 @@ void GameLogic::update(const float &_timestep)
 {
    SR_ASSERT(mRunning && "Update called but not running");
    // testing: random input for p2
-//   if (rand() % 3 == 0)
-//      steerUp(PlayerID::P2);
-//   if (rand() % 3 == 0)
-//      steerDown(PlayerID::P2);
-//   if (rand() % 5 == 0)
-//      accelerate(PlayerID::P2);
-//   if (rand() % 6 == 0)
-//      decelerate(PlayerID::P2);
+   //   if (rand() % 3 == 0)
+   //      steerUp(PlayerID::P2);
+   //   if (rand() % 3 == 0)
+   //      steerDown(PlayerID::P2);
+   //   if (rand() % 5 == 0)
+   //      accelerate(PlayerID::P2);
+   //   if (rand() % 6 == 0)
+   //      decelerate(PlayerID::P2);
 
    if (mCoins.size() < 1)
       spawnCoin();
@@ -145,10 +151,16 @@ void GameLogic::update(const float &_timestep)
 void GameLogic::spawnCoin()
 {
    // todo: spawn coins far away from cars
-   float posX = 0.f + (rand() % (int)(sGameWidth - sCoinSize/2));
-   float posY = 0.f + (rand() % (int)(sGameHeight - sCoinSize/2));
-   _ coin = UniquePhysicsObject(new PhysicsObject(mPhysicsWorld, sCoinSize, sCoinSize, posX, posY, 0, true));
+   float posX = 0.f + (rand() % (int)(sGameWidth - sCoinSize / 2));
+   float posY = 0.f + (rand() % (int)(sGameHeight - sCoinSize / 2));
+   _ coin = UniqueCoin(
+       new Coin(mPhysicsWorld, sCoinSize, sCoinSize, posX, posY));
    mCoins.push_back(std::move(coin));
+}
+
+void GameLogic::coinCallback(Car *_car, Coin *_coin)
+{
+    qDebug() << "coin!" ;
 }
 
 

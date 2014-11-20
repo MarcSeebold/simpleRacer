@@ -4,7 +4,7 @@
 
 using namespace simpleRacer;
 
-PhysicsObject::PhysicsObject(const Sharedb2World &_world, float _width, float _height, float _x, float _y, float _linearDamping, bool _static)
+PhysicsObject::PhysicsObject(const Sharedb2World &_world, float _width, float _height, float _x, float _y, Type _type, float _linearDamping, bool _static)
 {
    mWorld = _world;
    SR_ASSERT(mWorld && "World is null.");
@@ -23,20 +23,14 @@ PhysicsObject::PhysicsObject(const Sharedb2World &_world, float _width, float _h
    mBody = mWorld->CreateBody(&mDef);
    // create shape
    mShape.SetAsBox(_width / 2.f, _height / 2.f);
-   if (_static)
-   {
-      // static body fixture
-      mBody->CreateFixture(&mShape, 0);
-   }
-   else
-   {
-      // Dynamic body fixture
-      mFixDef.shape = &mShape;
-      mFixDef.density = 1.0f;
-      mFixDef.friction = 0.3f;
-      mFixDef.restitution = 0.3f;
-      mBody->CreateFixture(&mFixDef);
-   }
+
+   mFixDef.filter.categoryBits = (uint16)_type;
+   mFixDef.shape = &mShape;
+   mFixDef.density = 1.0f;
+   mFixDef.friction = 0.3f;
+   mFixDef.restitution = 0.3f;
+   mBody->CreateFixture(&mFixDef);
+
    mBody->SetUserData(this);
 }
 

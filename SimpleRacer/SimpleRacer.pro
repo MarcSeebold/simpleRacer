@@ -18,13 +18,19 @@ SOURCES += main.cc\
     GameLogic.cc \
     Common.cc \
     RenderingWidget.cc \
-    PhysicsObject.cc
+    PhysicsObject.cc \
+    Car.cc \
+    Coin.cc \
+    PhysicsContactListener.cc
 
 HEADERS  += MainWindow.hh \
     GameLogic.hh \
     Common.hh \
     RenderingWidget.hh \
-    PhysicsObject.hh
+    PhysicsObject.hh \
+    Car.hh \
+    Coin.hh \
+    PhysicsContactListener.hh
 
 FORMS    += MainWindow.ui
 
