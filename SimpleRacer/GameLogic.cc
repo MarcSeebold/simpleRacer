@@ -2,10 +2,9 @@
 #include <algorithm>
 #include <QRectF>
 #include <iostream>
+#include <algorithm>
 #include <Box2D/Box2D.h>
 #include "PhysicsObject.hh"
-#include "Car.hh"
-#include "Coin.hh"
 #include "PhysicsContactListener.hh"
 
 #include <qdebug.h>
@@ -19,10 +18,18 @@ const float GameLogic::sCoinSize = 30.f * GameLogic::sConversionFactor;
 const float GameLogic::sGameWidth = 800.f * GameLogic::sConversionFactor;
 const float GameLogic::sGameHeight = 300.f * GameLogic::sConversionFactor;
 
-GameLogic::GameLogic() : mPhysicsWorld(new b2World(b2Vec2(0, 0))), // no gravity
+GameLogic::GameLogic()
+  : mPhysicsWorld(new b2World(b2Vec2(0, 0))), // no gravity
     mContactListener(new PhysicsContactListener())
 
 {
+   // set custom contact listener
+   mContactListener->registerCallback([this](Car *car, Coin *coin)
+                                      {
+                                         coinCallback(car, coin);
+                                      });
+   mPhysicsWorld->SetContactListener(mContactListener.get());
+
    // create street boundaries
    // bottom
    mStreetBoundaries[0] = UniquePhysicsObject(
@@ -42,6 +49,14 @@ GameLogic::GameLogic() : mPhysicsWorld(new b2World(b2Vec2(0, 0))), // no gravity
 
 GameLogic::~GameLogic()
 {
+   mUserInput = nullptr;
+   mCar1 = nullptr;
+   mCar2 = nullptr;
+   for (int i = 0; i < 4; ++i)
+      mStreetBoundaries[i] = nullptr;
+   mContactListener = nullptr;
+   mCoins.clear();
+   mPhysicsWorld = nullptr;
 }
 
 void GameLogic::reset()
@@ -50,11 +65,9 @@ void GameLogic::reset()
    // create cars
    _ linearDamping = 0.85f;
    // spawn car1 on top left
-   mCar1 = UniqueCar(new Car(mPhysicsWorld, sCarWidth, sCarHeight, sCarWidth / 2, sCarHeight / 2,
-                                                 linearDamping));
+   mCar1 = UniqueCar(new Car(mPhysicsWorld, sCarWidth, sCarHeight, sCarWidth / 2, sCarHeight / 2, linearDamping));
    // spawn car2 on bottom left
-   mCar2 = UniqueCar(new Car(mPhysicsWorld, sCarWidth, sCarHeight, sCarWidth / 2,
-                                                 sGameHeight - sCarHeight / 2, linearDamping));
+   mCar2 = UniqueCar(new Car(mPhysicsWorld, sCarWidth, sCarHeight, sCarWidth / 2, sGameHeight - sCarHeight / 2, linearDamping));
 
    // reset other member vars
    mUserInput = UniqueUserInput(new UserInput);
@@ -112,6 +125,20 @@ void GameLogic::decelerate(PlayerID _id)
 void GameLogic::update(const float &_timestep)
 {
    SR_ASSERT(mRunning && "Update called but not running");
+   // Remove coins
+   for (Coin *coin : mCoinsToRemove)
+   {
+      mCoins.erase(std::remove_if(mCoins.begin(), mCoins.end(), [coin](const UniqueCoin &_curr)
+                                  {
+                      if (_curr.get() == coin)
+                         return true;
+                      return false;
+                   }),
+                   mCoins.end());
+   }
+   mCoinsToRemove.clear();
+
+
    // testing: random input for p2
    //   if (rand() % 3 == 0)
    //      steerUp(PlayerID::P2);
@@ -124,7 +151,6 @@ void GameLogic::update(const float &_timestep)
 
    if (mCoins.size() < 1)
       spawnCoin();
-
 
    // 1: apply input
    float factorX = 2;
@@ -153,14 +179,27 @@ void GameLogic::spawnCoin()
    // todo: spawn coins far away from cars
    float posX = 0.f + (rand() % (int)(sGameWidth - sCoinSize / 2));
    float posY = 0.f + (rand() % (int)(sGameHeight - sCoinSize / 2));
-   _ coin = UniqueCoin(
-       new Coin(mPhysicsWorld, sCoinSize, sCoinSize, posX, posY));
+   _ coin = UniqueCoin(new Coin(mPhysicsWorld, sCoinSize, sCoinSize, posX, posY));
    mCoins.push_back(std::move(coin));
 }
 
 void GameLogic::coinCallback(Car *_car, Coin *_coin)
 {
-    qDebug() << "coin!" ;
+   PlayerID player;
+   if (mCar1.get() == _car)
+      player = PlayerID::P1;
+   else if (mCar2.get() == _car)
+      player = PlayerID::P1;
+   else
+   {
+      SR_ASSERT(0 && "Unknown car");
+      return;
+   }
+
+   mCoinsToRemove.push_back(_coin);
+
+   ++mPlayerCoins[(int)player];
+   qDebug() << "coin! player: " << (int)player;
 }
 
 

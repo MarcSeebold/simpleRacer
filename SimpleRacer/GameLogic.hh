@@ -102,6 +102,7 @@ private:
    UniquePhysicsObject mStreetBoundaries[4];      ///< Physics objects for end of the street
    UniquePhysicsContactListener mContactListener; ///< Box2D contact listener
    std::vector<UniqueCoin> mCoins;                ///< Coins in the world
+   std::vector<Coin *> mCoinsToRemove;            ///< Coins that should be deleted
    int mPlayerCoins[2];                           ///< 0 coins at beginning
 
    bool mRunning = false; ///< Is the game currently running?
