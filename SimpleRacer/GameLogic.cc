@@ -6,6 +6,7 @@
 #include <Box2D/Box2D.h>
 #include "PhysicsObject.hh"
 #include "PhysicsContactListener.hh"
+#include "ArtificialRacer.hh"
 
 #include <qdebug.h>
 
@@ -20,7 +21,8 @@ const float GameLogic::sGameHeight = 300.f * GameLogic::sConversionFactor;
 
 GameLogic::GameLogic()
   : mPhysicsWorld(new b2World(b2Vec2(0, 0))), // no gravity
-    mContactListener(new PhysicsContactListener())
+    mContactListener(new PhysicsContactListener()),
+    mAI(new ArtificialRacer(PlayerID::P2))
 
 {
    // set custom contact listener
@@ -49,6 +51,7 @@ GameLogic::GameLogic()
 
 GameLogic::~GameLogic()
 {
+   mAI = nullptr;
    mUserInput = nullptr;
    mCar1 = nullptr;
    mCar2 = nullptr;
@@ -110,6 +113,12 @@ std::vector<QVector2D> GameLogic::getCoins()
    return res;
 }
 
+int GameLogic::getScore(GameLogic::PlayerID _id)
+{
+   _ id = (int)_id;
+   return mPlayerCoins[id];
+}
+
 void GameLogic::accelerate(PlayerID _id)
 {
    _ id = (int)_id;
@@ -125,6 +134,13 @@ void GameLogic::decelerate(PlayerID _id)
 void GameLogic::update(const float &_timestep)
 {
    SR_ASSERT(mRunning && "Update called but not running");
+   static bool firstRun = true;
+   if (firstRun)
+   {
+      firstRun = false;
+      mAI->setGameLogic(shared_from_this());
+   }
+
    // Remove coins
    for (Coin *coin : mCoinsToRemove)
    {
@@ -138,19 +154,13 @@ void GameLogic::update(const float &_timestep)
    }
    mCoinsToRemove.clear();
 
-
-   // testing: random input for p2
-   //   if (rand() % 3 == 0)
-   //      steerUp(PlayerID::P2);
-   //   if (rand() % 3 == 0)
-   //      steerDown(PlayerID::P2);
-   //   if (rand() % 5 == 0)
-   //      accelerate(PlayerID::P2);
-   //   if (rand() % 6 == 0)
-   //      decelerate(PlayerID::P2);
-
    if (mCoins.size() < 1)
       spawnCoin();
+
+   // run AI
+   mAI->tellOwnPosition(mCar2->getCenterPos());
+   mAI->update();
+
 
    // 1: apply input
    float factorX = 2;
@@ -177,10 +187,12 @@ void GameLogic::update(const float &_timestep)
 void GameLogic::spawnCoin()
 {
    // todo: spawn coins far away from cars
-   float posX = 0.f + (rand() % (int)(sGameWidth - sCoinSize / 2));
-   float posY = 0.f + (rand() % (int)(sGameHeight - sCoinSize / 2));
+   float posX = sCoinSize / 2.f + (rand() % (int)(sGameWidth - sCoinSize));
+   float posY = sCoinSize / 2.f + (rand() % (int)(sGameHeight - sCoinSize));
    _ coin = UniqueCoin(new Coin(mPhysicsWorld, sCoinSize, sCoinSize, posX, posY));
    mCoins.push_back(std::move(coin));
+   // tell AI
+   mAI->tellCoinHasBeenSpawned(QVector2D(posX, posY));
 }
 
 void GameLogic::coinCallback(Car *_car, Coin *_coin)
@@ -189,7 +201,7 @@ void GameLogic::coinCallback(Car *_car, Coin *_coin)
    if (mCar1.get() == _car)
       player = PlayerID::P1;
    else if (mCar2.get() == _car)
-      player = PlayerID::P1;
+      player = PlayerID::P2;
    else
    {
       SR_ASSERT(0 && "Unknown car");
@@ -197,9 +209,9 @@ void GameLogic::coinCallback(Car *_car, Coin *_coin)
    }
 
    mCoinsToRemove.push_back(_coin);
+   mAI->tellCoinHasBeenCollected(_coin->getCenterPos());
 
    ++mPlayerCoins[(int)player];
-   qDebug() << "coin! player: " << (int)player;
 }
 
 

@@ -19,14 +19,16 @@ SOURCES += main.cc\
     Common.cc \
     RenderingWidget.cc \
     PhysicsObject.cc \
-    PhysicsContactListener.cc
+    PhysicsContactListener.cc \
+    ArtificialRacer.cc
 
 HEADERS  += MainWindow.hh \
     GameLogic.hh \
     Common.hh \
     RenderingWidget.hh \
     PhysicsObject.hh \
-    PhysicsContactListener.hh
+    PhysicsContactListener.hh \
+    ArtificialRacer.hh
 
 FORMS    += MainWindow.ui
 

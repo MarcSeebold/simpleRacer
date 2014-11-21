@@ -120,4 +120,9 @@ void MainWindow::performGameUpdateStep()
    mGameLogic->update(SR_RESOLUTION);
    // rendering
    update();
+   // update score
+   _ p1Score = mGameLogic->getScore(simpleRacer::GameLogic::PlayerID::P1);
+   _ p2Score = mGameLogic->getScore(simpleRacer::GameLogic::PlayerID::P2);
+   mUI->labelP1Points->setText(QString::number(p1Score));
+   mUI->labelP2Points->setText(QString::number(p2Score));
 }

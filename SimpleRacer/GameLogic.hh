@@ -11,6 +11,7 @@ SHARED(class, PhysicsObject);
 SHARED(class, Car);
 SHARED(class, Coin);
 SHARED(class, PhysicsContactListener);
+SHARED(class, ArtificialRacer);
 
 /**
  * @brief Game concept: 1 on 1 racing game.
@@ -31,7 +32,7 @@ SHARED(class, PhysicsContactListener);
  *        We use a heartbeat system. I.e., we have a fixed timestep for the game logic simulation.
  *        Every input event is processed at the end of a simulation step.
  */
-class GameLogic : public QObject
+class GameLogic : public QObject, public std::enable_shared_from_this<GameLogic>
 {
    Q_OBJECT
 
@@ -75,6 +76,8 @@ public:
    /// Get positions of all coins
    std::vector<QVector2D> getCoins();
 
+   int getScore(PlayerID _id);
+
 public slots:
    /// Simulate one time step
    void update(const float &_timestep = 1 / 60.f);
@@ -101,6 +104,7 @@ private:
    UniqueCar mCar2;                               ///< Physics object for car 2
    UniquePhysicsObject mStreetBoundaries[4];      ///< Physics objects for end of the street
    UniquePhysicsContactListener mContactListener; ///< Box2D contact listener
+   UniqueArtificialRacer mAI;                     ///< A simple AI as opponent
    std::vector<UniqueCoin> mCoins;                ///< Coins in the world
    std::vector<Coin *> mCoinsToRemove;            ///< Coins that should be deleted
    int mPlayerCoins[2];                           ///< 0 coins at beginning
