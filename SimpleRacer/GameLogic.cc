@@ -7,6 +7,7 @@
 #include "Car.hh"
 #include "Coin.hh"
 #include "PhysicsContactListener.hh"
+#include "NetworkEngine.hh"
 
 #include <qdebug.h>
 

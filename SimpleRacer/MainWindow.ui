@@ -57,6 +57,8 @@
      <string>Menu</string>
     </property>
     <addaction name="actionStart_Singleplayer"/>
+    <addaction name="actionConnect_to"/>
+    <addaction name="actionStart_Server_Dedicated"/>
     <addaction name="actionExit"/>
    </widget>
    <addaction name="menuMenu"/>
@@ -75,6 +77,16 @@
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionStart_Server_Dedicated">
+   <property name="text">
+    <string>Start Server (Dedicated)</string>
+   </property>
+  </action>
+  <action name="actionConnect_to">
+   <property name="text">
+    <string>Connect to</string>
    </property>
   </action>
  </widget>

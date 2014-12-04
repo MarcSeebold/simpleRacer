@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -21,7 +21,8 @@ SOURCES += main.cc\
     PhysicsObject.cc \
     Car.cc \
     Coin.cc \
-    PhysicsContactListener.cc
+    PhysicsContactListener.cc \
+    NetworkEngine.cc
 
 HEADERS  += MainWindow.hh \
     GameLogic.hh \
@@ -30,7 +31,8 @@ HEADERS  += MainWindow.hh \
     PhysicsObject.hh \
     Car.hh \
     Coin.hh \
-    PhysicsContactListener.hh
+    PhysicsContactListener.hh \
+    NetworkEngine.hh
 
 FORMS    += MainWindow.ui
 

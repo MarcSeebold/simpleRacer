@@ -12,6 +12,7 @@ namespace simpleRacer
 {
 SHARED(class, GameLogic);
 SHARED(class, RenderingWidget);
+SHARED(class, NetworkEngine);
 }
 
 namespace Ui
@@ -35,14 +36,24 @@ private:
    void processInput();
 
 public slots:
-   /// Start the game
-   bool startGame();
+   /// Start a SP game
+   bool startSinglePlayerGame();
+   /// Start (dedicated) server game
+   bool startServerGame();
+   /// Connect to a server and start a game
+   bool startMPGame();
 
    /// Stops the game
    bool stopGame();
 
    /// Exit the game
    void exitGame();
+
+   /// Change status bar text
+   void changeStatusbarText(const QString &_newText);
+
+   /// Clears status bar text
+   void clearStatusbarText();
 
 private slots:
    /// Simulates game logic and renders the result
@@ -63,6 +74,7 @@ private:
    simpleRacer::SharedRenderingWidget mRendering;
    QTimer mGlobalTimer;
    UniqueKeyStatus mKeyStatus;
+   simpleRacer::UniqueNetworkEngine mNetwork;
 
 public: // Getter, Setter
    GETTER(GameLogic);

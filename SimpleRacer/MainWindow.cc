@@ -2,6 +2,8 @@
 #include "ui_MainWindow.h"
 #include "GameLogic.hh"
 #include "RenderingWidget.hh"
+#include "NetworkEngine.hh"
+
 #include <iostream>
 #include <QKeyEvent>
 
@@ -10,12 +12,15 @@ MainWindow::MainWindow(QWidget *parent)
     mUI(new Ui::MainWindow),
     mGameLogic(new simpleRacer::GameLogic),
     mRendering(new simpleRacer::RenderingWidget),
-    mKeyStatus(new KeyStatus)
+    mKeyStatus(new KeyStatus),
+    mNetwork(new simpleRacer::NetworkEngine)
 {
    mUI->setupUi(this);
    mUI->widget->setGameLogicComponent(mGameLogic);
    connect(&mGlobalTimer, &QTimer::timeout, this, &MainWindow::performGameUpdateStep);
-   connect(mUI->actionStart_Singleplayer, &QAction::triggered, this, &MainWindow::startGame);
+   connect(mUI->actionStart_Singleplayer, &QAction::triggered, this, &MainWindow::startSinglePlayerGame);
+   connect(mUI->actionConnect_to, &QAction::triggered, this, &MainWindow::startMPGame);
+   connect(mUI->actionStart_Server_Dedicated, &QAction::triggered, this, &MainWindow::startServerGame);
    connect(mUI->actionExit, &QAction::triggered, this, &MainWindow::exitGame);
 }
 
@@ -80,7 +85,7 @@ void MainWindow::processInput()
       mGameLogic->accelerate(p);
 }
 
-bool MainWindow::startGame()
+bool MainWindow::startSinglePlayerGame()
 {
    if (mGameLogic->getRunning())
    {
@@ -93,6 +98,30 @@ bool MainWindow::startGame()
    return true;
 }
 
+bool MainWindow::startServerGame()
+{
+   if (mGameLogic->getRunning())
+   {
+      SR_ASSERT(mGlobalTimer.isActive() && "GameLogic active but timer is not.");
+      return false; // game is already running
+   }
+   mNetwork->startServer();
+   // TODO: IMPLEMENT
+   return true;
+}
+
+bool MainWindow::startMPGame()
+{
+   if (mGameLogic->getRunning())
+   {
+      SR_ASSERT(mGlobalTimer.isActive() && "GameLogic active but timer is not.");
+      return false; // game is already running
+   }
+   //mNetwork->connectTo(host, port);
+   // TODO: IMPLEMENT
+   return true;
+}
+
 bool MainWindow::stopGame()
 {
    if (!mGameLogic->getRunning())
@@ -100,7 +129,7 @@ bool MainWindow::stopGame()
       SR_ASSERT(!mGlobalTimer.isActive() && "GameLogic is not active but timer is.");
       return true;
    }
-
+   mNetwork->stop();
    mGlobalTimer.stop();
    mGameLogic->setRunning(false);
    return true;
@@ -110,6 +139,16 @@ void MainWindow::exitGame()
 {
    stopGame();
    exit(EXIT_SUCCESS);
+}
+
+void MainWindow::changeStatusbarText(const QString &_newText)
+{
+    mUI->statusBar->showMessage(_newText);
+}
+
+void MainWindow::clearStatusbarText()
+{
+    mUI->statusBar->clearMessage();
 }
 
 void MainWindow::performGameUpdateStep()
