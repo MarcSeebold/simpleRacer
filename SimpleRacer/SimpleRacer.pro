@@ -19,20 +19,21 @@ SOURCES += main.cc\
     Common.cc \
     RenderingWidget.cc \
     PhysicsObject.cc \
-    Car.cc \
-    Coin.cc \
     PhysicsContactListener.cc \
-    NetworkEngine.cc
+    NetworkEngine.cc\
+    PhysicsContactListener.cc \
+    ArtificialRacer.cc
+
 
 HEADERS  += MainWindow.hh \
     GameLogic.hh \
     Common.hh \
     RenderingWidget.hh \
     PhysicsObject.hh \
-    Car.hh \
-    Coin.hh \
     PhysicsContactListener.hh \
-    NetworkEngine.hh
+    NetworkEngine.hh\
+    PhysicsContactListener.hh \
+    ArtificialRacer.hh
 
 FORMS    += MainWindow.ui
 

@@ -5,8 +5,8 @@
 using namespace simpleRacer;
 
 PhysicsObject::PhysicsObject(const Sharedb2World &_world, float _width, float _height, float _x, float _y, Type _type, float _linearDamping, bool _static)
+  : mWorld(_world), mType(_type)
 {
-   mWorld = _world;
    SR_ASSERT(mWorld && "World is null.");
    // create body
    if (_static)
@@ -24,7 +24,6 @@ PhysicsObject::PhysicsObject(const Sharedb2World &_world, float _width, float _h
    // create shape
    mShape.SetAsBox(_width / 2.f, _height / 2.f);
 
-   mFixDef.filter.categoryBits = (uint16)_type;
    mFixDef.shape = &mShape;
    mFixDef.density = 1.0f;
    mFixDef.friction = 0.3f;
@@ -50,4 +49,20 @@ QVector2D PhysicsObject::getCenterPos()
 void PhysicsObject::applyForce(const QVector2D &_vec)
 {
    mBody->ApplyLinearImpulse(b2Vec2(_vec.x(), _vec.y()), mBody->GetWorldCenter(), true);
+}
+
+void PhysicsObject::disableCollisions()
+{
+   mBody->GetFixtureList()->SetSensor(true);
+}
+
+Coin::Coin(const Sharedb2World &_world, float _width, float _height, float _x, float _y, float _linearDamping)
+  : PhysicsObject(_world, _width, _height, _x, _y, Type::COIN, _linearDamping, true)
+{
+   disableCollisions();
+}
+
+Car::Car(const Sharedb2World &_world, float _width, float _height, float _x, float _y, float _linearDamping)
+  : PhysicsObject(_world, _width, _height, _x, _y, Type::CAR, _linearDamping, false)
+{
 }
