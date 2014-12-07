@@ -74,7 +74,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *e)
 
 void MainWindow::processInput()
 {
-   _ p = simpleRacer::GameLogic::PlayerID::P1;
+   _ p = simpleRacer::PlayerID::P1;
    if (mKeyStatus->up)
       mGameLogic->steerUp(p);
    if (mKeyStatus->down)
@@ -160,8 +160,8 @@ void MainWindow::performGameUpdateStep()
    // rendering
    update();
    // update score
-   _ p1Score = mGameLogic->getScore(simpleRacer::GameLogic::PlayerID::P1);
-   _ p2Score = mGameLogic->getScore(simpleRacer::GameLogic::PlayerID::P2);
+   _ p1Score = mGameLogic->getScore(simpleRacer::PlayerID::P1);
+   _ p2Score = mGameLogic->getScore(simpleRacer::PlayerID::P2);
    mUI->labelP1Points->setText(QString::number(p1Score));
    mUI->labelP2Points->setText(QString::number(p2Score));
 }

@@ -114,7 +114,7 @@ std::vector<QVector2D> GameLogic::getCoins()
    return res;
 }
 
-int GameLogic::getScore(GameLogic::PlayerID _id)
+int GameLogic::getScore(PlayerID _id)
 {
    _ id = (int)_id;
    return mPlayerCoins[id];

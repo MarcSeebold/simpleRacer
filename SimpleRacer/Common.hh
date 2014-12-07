@@ -2,6 +2,16 @@
 #include <memory>
 // some usefull stuff
 
+namespace simpleRacer
+{
+/// Unique player id
+enum class PlayerID : int
+{
+   P1 = 0,
+   P2 = 1
+};
+}
+
 #define DO_STRING_JOIN2(arg1, arg2) arg1##arg2
 #define STRING_JOIN2(arg1, arg2) DO_STRING_JOIN2(arg1, arg2)
 
@@ -19,7 +29,7 @@
 #define _ auto
 
 // e.g., SHARED(class, myClass);
-#define SHARED(type, class_or_struct_name)                                                 \
+#define SHARED(type, class_or_struct_name)                                                \
    type class_or_struct_name;                                                             \
                                                                                           \
    using Shared##class_or_struct_name = std::shared_ptr<class_or_struct_name>;            \

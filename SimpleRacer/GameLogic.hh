@@ -44,13 +44,6 @@ public:
    static const float sGameWidth;
    static const float sGameHeight;
 
-   /// Unique player id
-   enum class PlayerID : int
-   {
-      P1 = 0,
-      P2 = 1
-   };
-
 public:
    /// c'tor
    GameLogic();

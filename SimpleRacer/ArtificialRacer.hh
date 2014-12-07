@@ -14,7 +14,7 @@ SHARED(class, GameLogic);
 class ArtificialRacer
 {
 public:
-   ArtificialRacer(GameLogic::PlayerID _id);
+   ArtificialRacer(PlayerID _id);
 
    void setGameLogic(SharedGameLogic _gameLogic);
 
@@ -33,6 +33,6 @@ private:
    QVector2D mPosition;
    std::vector< QVector2D > mCoinPositions;
    WeakGameLogic mGameLogic;
-   GameLogic::PlayerID mID;
+   PlayerID mID;
 };
 } // namespace simpleRacer

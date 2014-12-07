@@ -61,7 +61,7 @@ void RenderingWidget::paintEvent(QPaintEvent *event)
 
    for (int p : {0, 1})
    {
-      _ carPos = mGameLogic->getCarCenterPosition((GameLogic::PlayerID)p);
+      _ carPos = mGameLogic->getCarCenterPosition((PlayerID)p);
       _ x = carPos.x() / convFac;
       _ y = (GameLogic::sGameHeight - carPos.y()) / convFac;
 
