@@ -6,7 +6,7 @@
 #include "Common.hh"
 
 // Resolution of game simulation.
-#define SR_RESOLUTION 1/60.f
+#define SR_RESOLUTION 1 / 60.f
 
 namespace simpleRacer
 {
@@ -55,6 +55,9 @@ public slots:
    /// Clears status bar text
    void clearStatusbarText();
 
+   /// Run unit tests
+   void runTests();
+
 private slots:
    /// Simulates game logic and renders the result
    void performGameUpdateStep();
@@ -67,7 +70,7 @@ private:
       bool left = false;
       bool right = false;
    };
-   SHARED(struct,KeyStatus);
+   SHARED(struct, KeyStatus);
 
    Ui::UniqueMainWindow mUI;
    simpleRacer::SharedGameLogic mGameLogic;

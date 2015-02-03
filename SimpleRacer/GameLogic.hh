@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
 #include <QObject>
+#include <QtGlobal>
+#include <QVector2D>
 #include "Common.hh"
 
 SHARED(class, b2World);
@@ -34,6 +36,7 @@ SHARED(class, ArtificialRacer);
  */
 class GameLogic : public QObject, public std::enable_shared_from_this<GameLogic>
 {
+   struct OldCarData;
    Q_OBJECT
 
 public:
@@ -64,7 +67,12 @@ public:
    void steerDown(PlayerID _id);
 
    /// Returns the current position of the car
-   QVector2D getCarCenterPosition(PlayerID _id);
+   /// @param _timestamp Use this variable for getting positions in the past. -1 = latest
+   QVector2D getCarCenterPosition(PlayerID _id, const qint64 &_timestamp = -1);
+
+   /// Returns the current linearvelocity of the car
+   /// @param _timestamp Use this variable for getting positions in the past. -1 = latest
+   QVector2D getCarLinearVelocity(PlayerID _id, const qint64 &_timestamp = -1);
 
    /// Get positions of all coins
    std::vector<QVector2D> getCoins();
@@ -80,6 +88,9 @@ private:
    void spawnCoin();
 
    void coinCallback(Car *_car, Coin *_coin);
+
+   /// Returns the car data that is closest to the given timestamp
+   OldCarData getOldCarDataClosest(const qint64 &_timestamp);
 
 private:
    struct UserInput
@@ -100,12 +111,24 @@ private:
    UniqueArtificialRacer mAI;                     ///< A simple AI as opponent
    std::vector<UniqueCoin> mCoins;                ///< Coins in the world
    std::vector<Coin *> mCoinsToRemove;            ///< Coins that should be deleted
-   int mPlayerCoins[2];                           ///< 0 coins at beginning
+   int mPlayerCoins[2];                           ///< the score. 0 coins at beginning
+   bool mRunning = false;                         ///< Is the game currently running?
 
-   bool mRunning = false; ///< Is the game currently running?
+   // store old car positions incl. velocity vector
+   struct OldCarData
+   {
+      qint64 timestamp;
+      QVector2D position;
+      QVector2D linVelo;
+      PlayerID player;
+   };
+   int mOldCarDataSoftLimit = 1000;     //< max size of mOldCarData (softlimit)
+   std::vector<OldCarData> mOldCarData; //< old car positions & velocity
 
 public: // Getter, Setter
    PROPERTY(Running);
+
+   friend class Testing;
 };
 
 } // namespace simpleRacer

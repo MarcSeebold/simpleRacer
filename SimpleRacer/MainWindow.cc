@@ -3,6 +3,7 @@
 #include "GameLogic.hh"
 #include "RenderingWidget.hh"
 #include "NetworkEngine.hh"
+#include "Testing.hh"
 
 #include <iostream>
 #include <QKeyEvent>
@@ -19,9 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
    mUI->widget->setGameLogicComponent(mGameLogic);
    connect(&mGlobalTimer, &QTimer::timeout, this, &MainWindow::performGameUpdateStep);
    connect(mUI->actionStart_Singleplayer, &QAction::triggered, this, &MainWindow::startSinglePlayerGame);
-   connect(mUI->actionConnect_to, &QAction::triggered, this, &MainWindow::startMPGame);
-   connect(mUI->actionStart_Server_Dedicated, &QAction::triggered, this, &MainWindow::startServerGame);
    connect(mUI->actionExit, &QAction::triggered, this, &MainWindow::exitGame);
+   connect(mUI->actionRun_Tests, &QAction::triggered, this, &MainWindow::runTests);
 }
 
 MainWindow::~MainWindow()
@@ -117,7 +117,7 @@ bool MainWindow::startMPGame()
       SR_ASSERT(mGlobalTimer.isActive() && "GameLogic active but timer is not.");
       return false; // game is already running
    }
-   //mNetwork->connectTo(host, port);
+   // mNetwork->connectTo(host, port);
    // TODO: IMPLEMENT
    return true;
 }
@@ -143,12 +143,18 @@ void MainWindow::exitGame()
 
 void MainWindow::changeStatusbarText(const QString &_newText)
 {
-    mUI->statusBar->showMessage(_newText);
+   mUI->statusBar->showMessage(_newText);
 }
 
 void MainWindow::clearStatusbarText()
 {
-    mUI->statusBar->clearMessage();
+   mUI->statusBar->clearMessage();
+}
+
+void MainWindow::runTests()
+{
+   Testing test;
+   test.runTests();
 }
 
 void MainWindow::performGameUpdateStep()

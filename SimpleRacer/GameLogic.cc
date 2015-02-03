@@ -1,6 +1,7 @@
 #include "GameLogic.hh"
 #include <algorithm>
 #include <QRectF>
+#include <QDateTime>
 #include <iostream>
 #include <algorithm>
 #include <Box2D/Box2D.h>
@@ -94,7 +95,7 @@ void GameLogic::steerDown(PlayerID _id)
    mUserInput->deltaY[id]--;
 }
 
-QVector2D GameLogic::getCarCenterPosition(PlayerID _id)
+QVector2D GameLogic::getCarCenterPosition(PlayerID _id, const qint64 &_timestamp)
 {
    if (_id == PlayerID::P1)
    {
@@ -102,6 +103,16 @@ QVector2D GameLogic::getCarCenterPosition(PlayerID _id)
    }
    else
       return mCar2->getCenterPos();
+}
+
+QVector2D GameLogic::getCarLinearVelocity(PlayerID _id, const qint64 &_timestamp)
+{
+   if (_id == PlayerID::P1)
+   {
+      return mCar1->getLinearVelocity();
+   }
+   else
+      return mCar2->getLinearVelocity();
 }
 
 std::vector<QVector2D> GameLogic::getCoins()
@@ -142,6 +153,12 @@ void GameLogic::update(const float &_timestep)
       mAI->setGameLogic(shared_from_this());
    }
 
+   // limit of mOldCarData
+   {
+      if (mOldCarData.size() >= 2 * mOldCarDataSoftLimit)
+         mOldCarData.erase(mOldCarData.begin(), mOldCarData.begin() + mOldCarData.size() / 2);
+   }
+
    // Remove coins
    for (Coin *coin : mCoinsToRemove)
    {
@@ -179,7 +196,17 @@ void GameLogic::update(const float &_timestep)
    }
    // 3: collect coins/rocks
    {
-      // TODO: implement
+      // Done via collision-callback: coinCallback(...)
+   }
+   // 4: store old car positions
+   {
+      const _ timestamp = QDateTime::currentMSecsSinceEpoch();
+      _ func = [&](PlayerID p)
+      {
+         mOldCarData.push_back(OldCarData{timestamp, getCarCenterPosition(p), getCarLinearVelocity(p), p});
+      };
+      func(PlayerID::P1);
+      func(PlayerID::P2);
    }
    // reset input
    mUserInput->reset();
@@ -213,6 +240,33 @@ void GameLogic::coinCallback(Car *_car, Coin *_coin)
    mAI->tellCoinHasBeenCollected(_coin->getCenterPos());
 
    ++mPlayerCoins[(int)player];
+}
+
+GameLogic::OldCarData GameLogic::getOldCarDataClosest(const qint64 &_timestamp)
+{
+   // do a binary search over mOldCarData
+   std::vector<OldCarData>::const_iterator itBot = mOldCarData.begin();
+   std::vector<OldCarData>::const_iterator itUp = std::prev(mOldCarData.end());
+   std::vector<OldCarData>::const_iterator itMid;
+   _ size = mOldCarData.size();
+   for (int iteration = 1;; ++iteration)
+   {
+      // set mid of bot & up
+      itMid = itBot + size/(std::pow(2,iteration));
+      // compare mid element: test for exact match
+      _ currVal = (*itMid).timestamp;
+      if (currVal == _timestamp)
+            return (*itMid);
+      // either search left or right side
+      if (currVal < _timestamp)
+         itBot = itMid;
+      else
+         itUp = itMid;
+      // We searched it all: return closest element
+      if (itBot == itUp)
+         break;
+   }
+   return *itMid;
 }
 
 

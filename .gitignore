@@ -33,3 +33,4 @@
 build-*/
 
 *.pro.user*
+/SimpleRacer/*.user

@@ -22,7 +22,8 @@ SOURCES += main.cc\
     PhysicsContactListener.cc \
     NetworkEngine.cc\
     PhysicsContactListener.cc \
-    ArtificialRacer.cc
+    ArtificialRacer.cc \
+    Testing.cc
 
 
 HEADERS  += MainWindow.hh \
@@ -33,7 +34,8 @@ HEADERS  += MainWindow.hh \
     PhysicsContactListener.hh \
     NetworkEngine.hh\
     PhysicsContactListener.hh \
-    ArtificialRacer.hh
+    ArtificialRacer.hh \
+    Testing.hh
 
 FORMS    += MainWindow.ui
 

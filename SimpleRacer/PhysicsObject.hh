@@ -29,6 +29,7 @@ public:
    virtual ~PhysicsObject();
 
    QVector2D getCenterPos();
+   QVector2D getLinearVelocity();
    void applyForce(const QVector2D &_vec);
    void disableCollisions();
 

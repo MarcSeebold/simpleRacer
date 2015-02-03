@@ -46,6 +46,12 @@ QVector2D PhysicsObject::getCenterPos()
    return QVector2D(center.x, center.y);
 }
 
+QVector2D PhysicsObject::getLinearVelocity()
+{
+   _ velo = mBody->GetLinearVelocity();
+   return QVector2D(velo.x, velo.y);
+}
+
 void PhysicsObject::applyForce(const QVector2D &_vec)
 {
    mBody->ApplyLinearImpulse(b2Vec2(_vec.x(), _vec.y()), mBody->GetWorldCenter(), true);
