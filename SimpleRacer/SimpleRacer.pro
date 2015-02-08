@@ -21,9 +21,9 @@ SOURCES += main.cc\
     PhysicsObject.cc \
     PhysicsContactListener.cc \
     NetworkEngine.cc\
-    PhysicsContactListener.cc \
     ArtificialRacer.cc \
-    Testing.cc
+    Testing.cc \
+    InputController.cc
 
 
 HEADERS  += MainWindow.hh \
@@ -33,9 +33,9 @@ HEADERS  += MainWindow.hh \
     PhysicsObject.hh \
     PhysicsContactListener.hh \
     NetworkEngine.hh\
-    PhysicsContactListener.hh \
     ArtificialRacer.hh \
-    Testing.hh
+    Testing.hh \
+    InputController.hh
 
 FORMS    += MainWindow.ui
 

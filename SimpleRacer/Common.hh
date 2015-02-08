@@ -4,6 +4,11 @@
 
 namespace simpleRacer
 {
+namespace common
+{
+int64_t getCurrentTimestamp();
+}
+
 /// Unique player id
 enum class PlayerID : int
 {

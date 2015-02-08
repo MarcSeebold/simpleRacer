@@ -3,6 +3,7 @@
 #include <iostream>
 #include <QPaintEvent>
 #include "GameLogic.hh"
+#include <cassert>
 
 #include <qdebug.h>
 
@@ -15,7 +16,12 @@ RenderingWidget::RenderingWidget(QWidget *parent) : QWidget(parent)
 
 void RenderingWidget::setGameLogicComponent(SharedGameLogic _logic)
 {
-   mGameLogic = _logic;
+    mGameLogic = _logic;
+}
+
+void RenderingWidget::setPaintDelay(const int64_t &_value)
+{
+    mPaintDelay = _value;
 }
 
 void RenderingWidget::paintEvent(QPaintEvent *event)
@@ -61,7 +67,8 @@ void RenderingWidget::paintEvent(QPaintEvent *event)
 
    for (int p : {0, 1})
    {
-      _ carPos = mGameLogic->getCarCenterPosition((PlayerID)p);
+       assert(common::getCurrentTimestamp() - mPaintDelay > 0);
+      _ carPos = mGameLogic->getCarCenterPosition((PlayerID)p, common::getCurrentTimestamp() - mPaintDelay);
       _ x = carPos.x() / convFac;
       _ y = (GameLogic::sGameHeight - carPos.y()) / convFac;
 

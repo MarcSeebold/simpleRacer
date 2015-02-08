@@ -2,7 +2,6 @@
 #include "ui_MainWindow.h"
 #include "GameLogic.hh"
 #include "RenderingWidget.hh"
-#include "NetworkEngine.hh"
 #include "Testing.hh"
 
 #include <iostream>
@@ -13,8 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
     mUI(new Ui::MainWindow),
     mGameLogic(new simpleRacer::GameLogic),
     mRendering(new simpleRacer::RenderingWidget),
-    mKeyStatus(new KeyStatus),
-    mNetwork(new simpleRacer::NetworkEngine)
+    mKeyStatus(new KeyStatus)
 {
    mUI->setupUi(this);
    mUI->widget->setGameLogicComponent(mGameLogic);
@@ -98,30 +96,6 @@ bool MainWindow::startSinglePlayerGame()
    return true;
 }
 
-bool MainWindow::startServerGame()
-{
-   if (mGameLogic->getRunning())
-   {
-      SR_ASSERT(mGlobalTimer.isActive() && "GameLogic active but timer is not.");
-      return false; // game is already running
-   }
-   mNetwork->startServer();
-   // TODO: IMPLEMENT
-   return true;
-}
-
-bool MainWindow::startMPGame()
-{
-   if (mGameLogic->getRunning())
-   {
-      SR_ASSERT(mGlobalTimer.isActive() && "GameLogic active but timer is not.");
-      return false; // game is already running
-   }
-   // mNetwork->connectTo(host, port);
-   // TODO: IMPLEMENT
-   return true;
-}
-
 bool MainWindow::stopGame()
 {
    if (!mGameLogic->getRunning())
@@ -129,7 +103,6 @@ bool MainWindow::stopGame()
       SR_ASSERT(!mGlobalTimer.isActive() && "GameLogic is not active but timer is.");
       return true;
    }
-   mNetwork->stop();
    mGlobalTimer.stop();
    mGameLogic->setRunning(false);
    return true;

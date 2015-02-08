@@ -1,5 +1,5 @@
 #include "NetworkEngine.hh"
-
+#if 0
 #include <QUdpSocket>
 #include <cassert>
 #include <QVector2D>
@@ -132,3 +132,4 @@ bool NetworkEngine::sendData(const DataType &_type, const QByteArray &_data, con
    auto res = mUDPSocket->writeDatagram(data, _receiver.address, _receiver.port);
    return (res != -1);
 }
+#endif

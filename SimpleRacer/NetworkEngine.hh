@@ -1,4 +1,5 @@
 #pragma once
+#if 0
 #include "Common.hh"
 #include <QObject>
 #include <QHostAddress>
@@ -94,3 +95,4 @@ private:
    Connection mConn2; ///< Only as server: Player 2
 };
 } // namespace
+#endif
