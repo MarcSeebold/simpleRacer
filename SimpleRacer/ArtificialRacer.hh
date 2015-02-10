@@ -34,5 +34,6 @@ private:
    std::vector< QVector2D > mCoinPositions;
    WeakGameLogic mGameLogic;
    PlayerID mID;
+   float mDifficulty = 0.1f; ///< Value from 0(easy) to 1(hard)
 };
 } // namespace simpleRacer

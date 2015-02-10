@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <cassert>
 
 using namespace simpleRacer;
 
@@ -44,6 +45,29 @@ void ArtificialRacer::update()
 {
    SharedGameLogic logic = mGameLogic.lock();
    SR_ASSERT(logic && "No GameLogic");
+
+   assert(mDifficulty >= 0 && mDifficulty <= 1);
+   int difficultyFactor = 3+int(10*mDifficulty);
+   if (rand()%difficultyFactor == 0)
+   {
+      logic->accelerate(mID);
+      return;
+   }
+   if (rand()%difficultyFactor == 0)
+   {
+      logic->decelerate(mID);
+      return;
+   }
+   if (rand()%difficultyFactor == 0)
+   {
+      logic->steerDown(mID);
+      return;
+   }
+   if (rand()%difficultyFactor == 0)
+   {
+      logic->steerUp(mID);
+      return;
+   }
 
    // is current goal still valid?
    if (mNextGoal == QVector2D(-1, -1))
