@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
 #include <QObject>
-#include <QtGlobal>
 #include <QVector2D>
 #include "Common.hh"
 
@@ -119,7 +118,7 @@ public: // friend classing Testing does not work (TODO: find out why and fix it)
     // store old car positions incl. velocity vector
     struct OldCarData
     {
-        qint64 timestamp;
+        int64_t timestamp;
         QVector2D position[2];
         QVector2D linVelo[2];
     };
