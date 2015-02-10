@@ -172,8 +172,8 @@ void GameLogic::update(const float &_timestep)
 
    // limit of mOldCarData
    {
-      //if ((int)mOldCarData.size() >= 2 * mOldCarDataSoftLimit)
-      //   mOldCarData.erase(mOldCarData.begin(), mOldCarData.begin() + mOldCarData.size() / 2);
+      if ((int)mOldCarData.size() >= 2 * mOldCarDataSoftLimit)
+         mOldCarData.erase(mOldCarData.begin(), mOldCarData.begin() + mOldCarData.size() / 2);
    }
 
    // Remove coins
