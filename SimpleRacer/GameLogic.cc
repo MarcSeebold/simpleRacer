@@ -258,6 +258,8 @@ void GameLogic::coinCallback(Car *_car, Coin *_coin)
 
 GameLogic::OldCarData GameLogic::getOldCarDataClosest(const qint64 &_timestamp)
 {
+   if (mOldCarData.empty())
+      return OldCarData{-1,QVector2D{-1,-1}, QVector2D{-1,-1}};
    // do a binary search over mOldCarData
    std::vector<OldCarData>::const_iterator itBot = mOldCarData.begin();
    std::vector<OldCarData>::const_iterator itUp = std::prev(mOldCarData.end());

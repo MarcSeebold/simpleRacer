@@ -3,15 +3,19 @@
 #include "GameLogic.hh"
 #include "RenderingWidget.hh"
 #include "Testing.hh"
+#include "InputController.hh"
 
 #include <iostream>
 #include <QKeyEvent>
+
+using namespace simpleRacer;
 
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent),
     mUI(new Ui::MainWindow),
     mGameLogic(new simpleRacer::GameLogic),
     mRendering(new simpleRacer::RenderingWidget),
+    mInput(new simpleRacer::InputController(mGameLogic)),
     mKeyStatus(new KeyStatus)
 {
    mUI->setupUi(this);
@@ -72,15 +76,14 @@ void MainWindow::keyReleaseEvent(QKeyEvent *e)
 
 void MainWindow::processInput()
 {
-   _ p = simpleRacer::PlayerID::P1;
    if (mKeyStatus->up)
-      mGameLogic->steerUp(p);
+      mInput->sendKeyPress(InputController::KeyType::UP);
    if (mKeyStatus->down)
-      mGameLogic->steerDown(p);
+      mInput->sendKeyPress(InputController::KeyType::DOWN);
    if (mKeyStatus->left)
-      mGameLogic->decelerate(p);
+      mInput->sendKeyPress(InputController::KeyType::LEFT);
    if (mKeyStatus->right)
-      mGameLogic->accelerate(p);
+      mInput->sendKeyPress(InputController::KeyType::RIGHT);
 }
 
 bool MainWindow::startSinglePlayerGame()
@@ -134,6 +137,7 @@ void MainWindow::performGameUpdateStep()
 {
    // process input
    processInput();
+   mInput->update();
    // game logic
    mGameLogic->update(SR_RESOLUTION);
    // rendering

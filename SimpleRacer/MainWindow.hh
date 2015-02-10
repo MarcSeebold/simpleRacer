@@ -12,6 +12,7 @@ namespace simpleRacer
 {
 SHARED(class, GameLogic);
 SHARED(class, RenderingWidget);
+SHARED(class, InputController);
 }
 
 namespace Ui
@@ -70,6 +71,7 @@ private:
    Ui::UniqueMainWindow mUI;
    simpleRacer::SharedGameLogic mGameLogic;
    simpleRacer::SharedRenderingWidget mRendering;
+   simpleRacer::UniqueInputController mInput;
    QTimer mGlobalTimer;
    UniqueKeyStatus mKeyStatus;
 
