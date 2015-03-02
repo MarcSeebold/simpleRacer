@@ -8,6 +8,7 @@
 #include "PhysicsContactListener.hh"
 #include "NetworkEngine.hh"
 #include "ArtificialRacer.hh"
+#include "SimpleRacer.hh"
 
 #include <qdebug.h>
 
@@ -20,12 +21,9 @@ const float GameLogic::sGameHeight = 300.f * GameLogic::sConversionFactor;
 
 GameLogic::GameLogic()
   : mPhysicsWorld(new b2World(b2Vec2(0, 0))), // no gravity
-    mContactListener(new PhysicsContactListener()),
-    mAI(new ArtificialRacer(PlayerID::P2))
+    mContactListener(new PhysicsContactListener())
 
 {
-   // connect game timer
-   connect(&mTimer, &QTimer::timeout, this, &GameLogic::update);
    // set custom contact listener
    mContactListener->registerCallback([this](Car *car, Coin *coin)
                                       {
@@ -51,7 +49,6 @@ GameLogic::GameLogic()
 
 GameLogic::~GameLogic()
 {
-   mAI = nullptr;
    mUserInput = nullptr;
    mCar1 = nullptr;
    mCar2 = nullptr;
@@ -62,15 +59,8 @@ GameLogic::~GameLogic()
    mPhysicsWorld = nullptr;
 }
 
-void GameLogic::start()
-{
-   mTimer.start(SR_GAMESTEPTIME);
-}
-
 void GameLogic::reset()
 {
-   mTimer.stop();
-
    mCoins.clear();
    // create cars
    _ linearDamping = 0.85f;
@@ -144,15 +134,8 @@ void GameLogic::decelerate(PlayerID _id)
    mUserInput->deltaX[id]--;
 }
 
-void GameLogic::update()
+void GameLogic::update(const float &_timestep)
 {
-   SR_ASSERT(mRunning && "Update called but not running");
-   static bool firstRun = true;
-   if (firstRun)
-   {
-      firstRun = false;
-      mAI->setGameLogic(shared_from_this());
-   }
    // Remove coins
    for (Coin *coin : mCoinsToRemove)
    {
@@ -169,8 +152,8 @@ void GameLogic::update()
    if (mCoins.size() < 1)
       spawnCoin();
    // run AI
-   mAI->tellOwnPosition(mCar2->getCenterPos());
-   mAI->update();
+   SimpleRacer::ai()->tellOwnPosition(mCar2->getCenterPos());
+   SimpleRacer::ai()->update();
    // 1: apply input
    float factorX = 2;
    float factorY = 2;
@@ -182,7 +165,7 @@ void GameLogic::update()
    {
       int32 velocityIterations = 4;
       int32 positionIterations = 8;
-      mPhysicsWorld->Step(1/SR_GAMESTEPTIME, velocityIterations, positionIterations);
+      mPhysicsWorld->Step(_timestep, velocityIterations, positionIterations);
    }
    // 3: collect coins/rocks
    {
@@ -200,7 +183,7 @@ void GameLogic::spawnCoin()
    _ coin = UniqueCoin(new Coin(mPhysicsWorld, sCoinSize, sCoinSize, posX, posY));
    mCoins.push_back(std::move(coin));
    // tell AI
-   mAI->tellCoinHasBeenSpawned(QVector2D(posX, posY));
+   SimpleRacer::ai()->tellCoinHasBeenSpawned(QVector2D(posX, posY));
 }
 
 void GameLogic::coinCallback(Car *_car, Coin *_coin)
@@ -217,7 +200,7 @@ void GameLogic::coinCallback(Car *_car, Coin *_coin)
    }
 
    mCoinsToRemove.push_back(_coin);
-   mAI->tellCoinHasBeenCollected(_coin->getCenterPos());
+   SimpleRacer::ai()->tellCoinHasBeenCollected(_coin->getCenterPos());
 
    ++mPlayerCoins[(int)player];
 }

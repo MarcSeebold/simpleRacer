@@ -4,13 +4,9 @@
 #include <limits>
 #include <cassert>
 
-ArtificialRacer::ArtificialRacer(PlayerID _id) : mNextGoal(-1, -1), mPosition(-1, -1), mID(_id)
+ArtificialRacer::ArtificialRacer(PlayerID _id, WeakGameLogic _gameLogic)
+  : mNextGoal(-1, -1), mPosition(-1, -1), mID(_id), mGameLogic(std::forward<WeakGameLogic>(_gameLogic))
 {
-}
-
-void ArtificialRacer::setGameLogic(SharedGameLogic _gameLogic)
-{
-   mGameLogic = _gameLogic;
 }
 
 void ArtificialRacer::tellCoinHasBeenSpawned(const QVector2D &_pos)
@@ -45,23 +41,23 @@ void ArtificialRacer::update()
    SR_ASSERT(logic && "No GameLogic");
 
    SR_ASSERT(mDifficulty >= 0 && mDifficulty <= 1);
-   int difficultyFactor = 3+int(10*mDifficulty);
-   if (rand()%difficultyFactor == 0)
+   int difficultyFactor = 3 + int(10 * mDifficulty);
+   if (rand() % difficultyFactor == 0)
    {
       logic->accelerate(mID);
       return;
    }
-   if (rand()%difficultyFactor == 0)
+   if (rand() % difficultyFactor == 0)
    {
       logic->decelerate(mID);
       return;
    }
-   if (rand()%difficultyFactor == 0)
+   if (rand() % difficultyFactor == 0)
    {
       logic->steerDown(mID);
       return;
    }
-   if (rand()%difficultyFactor == 0)
+   if (rand() % difficultyFactor == 0)
    {
       logic->steerUp(mID);
       return;
@@ -77,7 +73,7 @@ void ArtificialRacer::update()
    }
 
    // move us closer to next goal
-   if (std::abs(mPosition.x() - mNextGoal.x()) >= GameLogic::sCarWidth/2)
+   if (std::abs(mPosition.x() - mNextGoal.x()) >= GameLogic::sCarWidth / 2)
    {
       if (mPosition.x() < mNextGoal.x())
       {
@@ -87,7 +83,7 @@ void ArtificialRacer::update()
          logic->decelerate(mID);
    }
 
-   if (std::abs(mPosition.y() - mNextGoal.y()) >= GameLogic::sCarHeight/2)
+   if (std::abs(mPosition.y() - mNextGoal.y()) >= GameLogic::sCarHeight / 2)
    {
       if (mPosition.y() < mNextGoal.y())
       {

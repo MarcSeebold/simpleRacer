@@ -18,9 +18,6 @@ protected:
    void keyPressEvent(QKeyEvent *e);
    void keyReleaseEvent(QKeyEvent *e);
 
-private:
-   void processInput();
-
 public slots:
    /// Change status bar text
    void changeStatusbarText(const QString &_newText);
@@ -29,15 +26,5 @@ public slots:
    void clearStatusbarText();
 
 private:
-   struct KeyStatus
-   {
-      bool up = false;
-      bool down = false;
-      bool left = false;
-      bool right = false;
-   };
-   SHARED(struct, KeyStatus);
-
    Ui::MainWindow *mUI = nullptr;
-   UniqueKeyStatus mKeyStatus;
 };

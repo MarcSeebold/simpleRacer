@@ -3,6 +3,7 @@
 #include <iostream>
 #include <QPaintEvent>
 #include "GameLogic.hh"
+#include "SimpleRacer.hh"
 #include <cassert>
 
 #include <qdebug.h>
@@ -12,16 +13,11 @@ RenderingWidget::RenderingWidget(QWidget *parent) : QWidget(parent)
    setFixedSize(800, 300);
 }
 
-void RenderingWidget::setGameLogicComponent(SharedGameLogic _logic)
-{
-    mGameLogic = _logic;
-}
-
 void RenderingWidget::paintEvent(QPaintEvent *event)
 {
    static float animate = 0;
 
-   if (!mGameLogic || !mGameLogic->getRunning())
+   if (!SimpleRacer::the()->isRunning())
       return;
 
    _ convFac = GameLogic::sConversionFactor;
@@ -60,7 +56,7 @@ void RenderingWidget::paintEvent(QPaintEvent *event)
 
    for (int p : {0, 1})
    {
-      _ carPos = mGameLogic->getCarCenterPosition((PlayerID)p);
+      _ carPos = SimpleRacer::logicClient()->getCarCenterPosition((PlayerID)p);
       _ x = carPos.x() / convFac;
       _ y = (GameLogic::sGameHeight - carPos.y()) / convFac;
 
@@ -78,14 +74,14 @@ void RenderingWidget::paintEvent(QPaintEvent *event)
    coinScaled = coinImg.scaled(QSize(GameLogic::sCoinSize / convFac, GameLogic::sCoinSize / convFac),
                                Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
-   _ coins = mGameLogic->getCoins();
+   _ coins = SimpleRacer::logicClient()->getCoins();
    for (_ const &coin : coins)
    {
       _ x = coin.x() / convFac;
       _ y = (GameLogic::sGameHeight - coin.y()) / convFac;
       // convert center pos to top left
-      x -= GameLogic::sCoinSize/ convFac / 2;
-      y -= GameLogic::sCoinSize/ convFac / 2;
+      x -= GameLogic::sCoinSize / convFac / 2;
+      y -= GameLogic::sCoinSize / convFac / 2;
       painter.drawImage(x, y, coinScaled);
    }
 

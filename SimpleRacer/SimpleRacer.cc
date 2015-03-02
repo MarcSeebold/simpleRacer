@@ -1,12 +1,15 @@
 #include "SimpleRacer.hh"
 #include "Common.hh"
+#include "RenderingWidget.hh"
+#include "MainWindow.hh"
 
 SimpleRacer *SimpleRacer::sInstance = nullptr;
 
-void SimpleRacer::create()
+void SimpleRacer::create(MainWindow *_mainWindow, RenderingWidget *_rendering)
 {
+   SR_ASSERT(_rendering && "rendering is null");
    SR_ASSERT(!sInstance && "create() already called.");
-   sInstance = new SimpleRacer();
+   sInstance = new SimpleRacer(_mainWindow, _rendering);
 }
 
 void SimpleRacer::destroy()
@@ -23,27 +26,38 @@ SimpleRacer *SimpleRacer::the()
 
 void SimpleRacer::startGame()
 {
-   logicServer()->start();
-   logicClient()->start();
+   mGameTimer.start(SR_GAMESTEPTIME);
    mRunning = true;
 }
 
 void SimpleRacer::exitGame()
 {
+   mGameTimer.stop();
    logicClient()->reset();
    logicServer()->reset();
    mRunning = false;
    exit(EXIT_SUCCESS);
 }
 
-SimpleRacer::SimpleRacer():
-   mLogicServer(new GameLogic()),
-   mLogicClient(new GameLogic()),
-   mRendering(new RenderingWidget()),
-   mInput(new InputController(mLogicClient))
+void SimpleRacer::update()
 {
+   mLogicClient->update(float(SR_GAMESTEPTIME)/1000.f); // ms -> s
+   mLogicServer->update(float(SR_GAMESTEPTIME)/1000.f); // ms -> s
+   mAI->update();
+   mInput->update();
+   mMainWindow->repaint();
 }
 
+SimpleRacer::SimpleRacer(MainWindow *_mainWindow, RenderingWidget *_rendering):
+   mLogicServer(new GameLogic()),
+   mLogicClient(new GameLogic()),
+   mInput(new InputController(mLogicClient, mLogicServer)),
+   mAI(new ArtificialRacer(PlayerID::P2, mLogicServer)),
+   mRendering(_rendering),
+   mMainWindow(_mainWindow)
+{
+   connect(&mGameTimer, &QTimer::timeout, this, &SimpleRacer::update);
+}
 
 #if 0
 

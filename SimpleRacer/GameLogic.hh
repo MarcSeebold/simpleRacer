@@ -3,16 +3,12 @@
 #include <QObject>
 #include <QVector2D>
 #include "Common.hh"
-#include <QTimer>
-
-#define SR_GAMESTEPTIME 10 // every 10 ms = 1/100s * 1000s/ms = 100Hz
 
 SHARED(class, b2World);
 SHARED(class, PhysicsObject);
 SHARED(class, Car);
 SHARED(class, Coin);
 SHARED(class, PhysicsContactListener);
-SHARED(class, ArtificialRacer);
 
 /**
  * @brief Game concept: 1 on 1 racing game.
@@ -52,8 +48,6 @@ public:
    /// c'tor
    ~GameLogic();
 
-   void start();
-
    /// Resets the game state
    void reset();
 
@@ -78,9 +72,9 @@ public:
 
    int getScore(PlayerID _id);
 
-private slots:
+public slots:
    /// Simulate one time step
-   void update();
+   void update(const float &_timestep);
 
 private:
    /// Spawns a coin at a random position
@@ -98,19 +92,13 @@ private:
    SHARED(struct, UserInput);
 
 private:
-   QTimer mTimer;
    UniqueUserInput mUserInput;                    ///< actions applied to next game state
    Sharedb2World mPhysicsWorld;                   ///< Box2D World
    UniqueCar mCar1;                               ///< Physics object for car 1
    UniqueCar mCar2;                               ///< Physics object for car 2
    UniquePhysicsObject mStreetBoundaries[4];      ///< Physics objects for end of the street
    UniquePhysicsContactListener mContactListener; ///< Box2D contact listener
-   UniqueArtificialRacer mAI;                     ///< A simple AI as opponent
    std::vector<UniqueCoin> mCoins;                ///< Coins in the world
    std::vector<Coin *> mCoinsToRemove;            ///< Coins that should be deleted
    int mPlayerCoins[2];                           ///< the score. 0 coins at beginning
-   bool mRunning = false;                         ///< Is the game currently running?
-
-public: // Getter, Setter
-   PROPERTY(Running);
 };

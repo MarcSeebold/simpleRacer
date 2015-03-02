@@ -11,9 +11,7 @@ SHARED(class, GameLogic);
 class ArtificialRacer
 {
 public:
-   ArtificialRacer(PlayerID _id);
-
-   void setGameLogic(SharedGameLogic _gameLogic);
+   ArtificialRacer(PlayerID _id, WeakGameLogic _gameLogic);
 
    void tellCoinHasBeenSpawned(const QVector2D &_pos);
    void tellCoinHasBeenCollected(const QVector2D &_pos);
