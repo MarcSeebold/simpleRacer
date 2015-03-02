@@ -5,6 +5,10 @@
 #include "RenderingWidget.hh"
 #include "InputController.hh"
 
+SHARED(class, GameLogic);
+SHARED(class, RenderingWidget);
+SHARED(class, InputController);
+
 class SimpleRacer : public QObject
 {
    Q_OBJECT
@@ -15,10 +19,10 @@ public:
    static SimpleRacer *the();
 
 public: // static getter
-   static GameLogic *logicServer() { return the()->mLogicServer; }
-   static GameLogic *logicClient() { return the()->mLogicClient; }
-   static RenderingWidget *rendering() { return the()->mRendering; }
-   static InputController *inputController() { return the()->mInput; }
+   static SharedGameLogic logicServer() { return the()->mLogicServer; }
+   static SharedGameLogic logicClient() { return the()->mLogicClient; }
+   static SharedRenderingWidget rendering() { return the()->mRendering; }
+   static SharedInputController inputController() { return the()->mInput; }
 
 public slots:
    void startGame();
@@ -33,10 +37,10 @@ private:
 private:
    static SimpleRacer *sInstance;
 
-   GameLogic *mLogicServer = nullptr;
-   GameLogic *mLogicClient = nullptr;
-   RenderingWidget *mRendering = nullptr;
-   InputController *mInput = nullptr;
+   SharedGameLogic mLogicServer;
+   SharedGameLogic mLogicClient;
+   SharedRenderingWidget mRendering;
+   SharedInputController mInput;
 
 private:
    bool mRunning = false;

@@ -5,13 +5,13 @@ SimpleRacer *SimpleRacer::sInstance = nullptr;
 
 void SimpleRacer::create()
 {
-   ASSERT(sInstance != nullptr, "create() already called.");
+   ASSERT(sInstance == nullptr, "create() already called.");
    sInstance = new SimpleRacer();
 }
 
 void SimpleRacer::destroy()
 {
-   ASSERT(sInstance == nullptr, "destroy called without create or twice");
+   ASSERT(sInstance != nullptr, "destroy called without create or twice");
    delete sInstance; sInstance=nullptr;
 }
 
@@ -35,7 +35,7 @@ SimpleRacer::SimpleRacer():
    mLogicServer(new GameLogic()),
    mLogicClient(new GameLogic()),
    mRendering(new RenderingWidget()),
-   mInput(new InputController(mLogicClient->shared_from_this()))
+   mInput(new InputController(mLogicClient))
 {
 }
 

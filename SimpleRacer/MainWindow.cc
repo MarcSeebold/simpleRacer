@@ -6,17 +6,16 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mUI(new Ui::MainWindow), mKeyStatus(new KeyStatus)
 {
+   SimpleRacer::create();
    mUI->setupUi(this);
 
    connect(mUI->actionStart_Singleplayer, &QAction::triggered, SimpleRacer::the(), &SimpleRacer::startGame);
    connect(mUI->actionExit, &QAction::triggered, SimpleRacer::the(), &SimpleRacer::exitGame);
-
-   create();
 }
 
 MainWindow::~MainWindow()
 {
-   destroy();
+   SimpleRacer::destroy();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *e)
