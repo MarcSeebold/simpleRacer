@@ -4,9 +4,6 @@
 
 #include "GameLogic.hh"
 
-
-namespace simpleRacer
-{
 SHARED(class, GameLogic);
 /**
  * @brief A simple AI for our racing game
@@ -36,4 +33,3 @@ private:
    PlayerID mID;
    float mDifficulty = 0.1f; ///< Value from 0(easy) to 1(hard)
 };
-} // namespace simpleRacer

@@ -5,9 +5,6 @@
 #include "Common.hh"
 
 SHARED(class, b2World);
-
-namespace simpleRacer
-{
 SHARED(class, PhysicsObject);
 SHARED(class, Car);
 SHARED(class, Coin);
@@ -66,16 +63,13 @@ public:
    void steerDown(PlayerID _id);
 
    /// Returns the current position of the car
-   /// @param _timestamp Use this variable for getting positions in the past. -1 = latest
-   QVector2D getCarCenterPosition(PlayerID _id, const qint64 &_timestamp = -1);
+   QVector2D getCarCenterPosition(PlayerID _id);
 
    /// Returns the current linearvelocity of the car
-   /// @param _timestamp Use this variable for getting positions in the past. -1 = latest
-   QVector2D getCarLinearVelocity(PlayerID _id, const qint64 &_timestamp = -1);
+   QVector2D getCarLinearVelocity(PlayerID _id);
 
    /// Get positions of all coins
-   /// @param _timestamp Use this variable for getting positions in the past. -1 = latest
-   std::vector<QVector2D> getCoins(const qint64 &_timestamp = -1);
+   std::vector<QVector2D> getCoins();
 
    int getScore(PlayerID _id);
 
@@ -88,10 +82,6 @@ private:
    void spawnCoin();
 
    void coinCallback(Car *_car, Coin *_coin);
-
-public: // TODO: made this public for Testing class. TODO: find out why it does not work with friending it
-   /// Returns the car data that is closest to the given timestamp
-   OldData getOldDataClosest(const std::vector<OldData>& _data, const qint64 &_timestamp);
 
 private:
    struct UserInput
@@ -115,20 +105,6 @@ private:
    int mPlayerCoins[2];                           ///< the score. 0 coins at beginning
    bool mRunning = false;                         ///< Is the game currently running?
 
-public: // friend classing Testing does not work (TODO: find out why and fix it)
-   // store old car positions incl. velocity vector
-   struct OldData
-   {
-      int64_t timestamp;
-      QVector2D position[2];
-      QVector2D linVelo[2];
-   };
-   int mOldDataSoftLimit = 1000;   //< max size of mOldCarData (softlimit)
-   std::vector<OldData> mOldCarData;  //< old car positions & velocity
-   std::vector<OldData> mOldCoinData; //< old coin positions
-
 public: // Getter, Setter
    PROPERTY(Running);
 };
-
-} // namespace simpleRacer

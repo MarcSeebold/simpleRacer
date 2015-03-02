@@ -2,8 +2,6 @@
 #include <Box2D/Dynamics/b2WorldCallbacks.h>
 #include <functional>
 
-namespace simpleRacer
-{
 class Coin;
 class Car;
 
@@ -20,4 +18,3 @@ public:
 private:
    CallbackFunc mCallback;
 };
-}

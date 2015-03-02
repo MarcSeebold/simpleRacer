@@ -1,3 +1,4 @@
+#if 0
 #pragma once
 
 class Testing
@@ -10,3 +11,4 @@ public:
 private:
    bool gameLogicGetOldCarDataClosest();
 };
+#endif

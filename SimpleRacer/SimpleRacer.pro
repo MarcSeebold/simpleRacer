@@ -23,7 +23,8 @@ SOURCES += main.cc\
     NetworkEngine.cc\
     ArtificialRacer.cc \
     Testing.cc \
-    InputController.cc
+    InputController.cc \
+    SimpleRacer.cc
 
 
 HEADERS  += MainWindow.hh \
@@ -35,7 +36,8 @@ HEADERS  += MainWindow.hh \
     NetworkEngine.hh\
     ArtificialRacer.hh \
     Testing.hh \
-    InputController.hh
+    InputController.hh \
+    SimpleRacer.hh
 
 FORMS    += MainWindow.ui
 

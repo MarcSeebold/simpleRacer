@@ -12,7 +12,16 @@ void _sr_assert_fail(const char *_expr, const char *_file, int _line, const char
 }
 
 
-int64_t simpleRacer::common::getCurrentTimestamp()
+int64_t common::getCurrentTimestamp()
 {
     return QDateTime::currentMSecsSinceEpoch();
+}
+
+
+void common::srassert(bool _statement, const char *_text, const char *_function, const char *_file, int _line)
+{
+   if (_statement)
+      return;
+   std::cerr << "[" << _file << ":" << _line << ":" << _function << "] Assertion failed: " << _text << std::endl;
+   assert(0);
 }

@@ -2,8 +2,6 @@
 
 #include <qdebug.h>
 
-using namespace simpleRacer;
-
 PhysicsObject::PhysicsObject(const Sharedb2World &_world, float _width, float _height, float _x, float _y, Type _type, float _linearDamping, bool _static)
   : mWorld(_world), mType(_type)
 {

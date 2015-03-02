@@ -3,8 +3,6 @@
 #include "PhysicsObject.hh"
 #include "Common.hh"
 
-using namespace simpleRacer;
-
 PhysicsContactListener::PhysicsContactListener()
 {
 }

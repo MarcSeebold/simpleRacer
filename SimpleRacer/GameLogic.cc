@@ -11,8 +11,6 @@
 
 #include <qdebug.h>
 
-using namespace simpleRacer;
-
 const float GameLogic::sConversionFactor = 1 / 15.f;
 const float GameLogic::sCarHeight = 16.f * 3 * GameLogic::sConversionFactor;
 const float GameLogic::sCarWidth = 35.f * 3 * GameLogic::sConversionFactor;
@@ -94,58 +92,28 @@ void GameLogic::steerDown(PlayerID _id)
    mUserInput->deltaY[id]--;
 }
 
-QVector2D GameLogic::getCarCenterPosition(PlayerID _id, const qint64 &_timestamp)
+QVector2D GameLogic::getCarCenterPosition(PlayerID _id)
 {
-   if (_timestamp < 0)
-   { // get latest information
-      if (_id == PlayerID::P1)
-      {
-         return mCar1->getCenterPos();
-      }
-      else
-         return mCar2->getCenterPos();
-   }
+   if (_id == PlayerID::P1)
+      return mCar1->getCenterPos();
    else
-   { // get past info
-      _ data = getOldDataClosest(mOldCarData, _timestamp);
-      assert((int)_id == 0 || (int)_id == 1);
-      return data.position[(int)_id];
-   }
+      return mCar2->getCenterPos();
 }
 
-QVector2D GameLogic::getCarLinearVelocity(PlayerID _id, const qint64 &_timestamp)
+QVector2D GameLogic::getCarLinearVelocity(PlayerID _id)
 {
-   if (_timestamp < 0)
-   { // get latest information
-      if (_id == PlayerID::P1)
-      {
-         return mCar1->getLinearVelocity();
-      }
-      else
-         return mCar2->getLinearVelocity();
-   }
+   if (_id == PlayerID::P1)
+      return mCar1->getLinearVelocity();
    else
-   { // get past info
-      _ data = getOldDataClosest(mOldCarData, _timestamp);
-      assert((int)_id == 0 || (int)_id == 1);
-      return data.linVelo[(int)_id];
-   }
+      return mCar2->getLinearVelocity();
 }
 
-std::vector<QVector2D> GameLogic::getCoins(const qint64 &_timestamp)
+std::vector<QVector2D> GameLogic::getCoins()
 {
    std::vector<QVector2D> res;
-   if (_timestamp < 0)
+   for (_ const &coin : mCoins)
    {
-      for (_ const &coin : mCoins)
-      {
-         res.push_back(coin->getCenterPos());
-      }
-   }
-   else
-   {
-      _ data = getOldDataClosest(mOldCoinData, _timestamp);
-      return data.position[0];
+      res.push_back(coin->getCenterPos());
    }
    return res;
 }
@@ -177,16 +145,6 @@ void GameLogic::update(const float &_timestep)
       firstRun = false;
       mAI->setGameLogic(shared_from_this());
    }
-   const _ timestamp = common::getCurrentTimestamp();
-
-   // limit of mOldCarData and mOldCoinData
-   {
-      if ((int)mOldCarData.size() >= 2 * mOldDataSoftLimit)
-         mOldCarData.erase(mOldCarData.begin(), mOldCarData.begin() + mOldCarData.size() / 2);
-      if ((int)mOldCoinData.size() >= 2 * mOldDataSoftLimit)
-         mOldCoinData.erase(mOldCoinData.begin(), mOldCoinData.begin() + mOldCoinData.size() / 2);
-   }
-
    // Remove coins
    for (Coin *coin : mCoinsToRemove)
    {
@@ -202,12 +160,9 @@ void GameLogic::update(const float &_timestep)
 
    if (mCoins.size() < 1)
       spawnCoin();
-
    // run AI
    mAI->tellOwnPosition(mCar2->getCenterPos());
    mAI->update();
-
-
    // 1: apply input
    float factorX = 2;
    float factorY = 2;
@@ -215,7 +170,6 @@ void GameLogic::update(const float &_timestep)
    mCar1->applyForce(QVector2D(0, mUserInput->deltaY[0] * factorY));
    mCar2->applyForce(QVector2D(mUserInput->deltaX[1] * factorX, 0));
    mCar2->applyForce(QVector2D(0, mUserInput->deltaY[1] * factorY));
-
    // 2: step simulation
    {
       int32 velocityIterations = 4;
@@ -225,17 +179,6 @@ void GameLogic::update(const float &_timestep)
    // 3: collect coins/rocks
    {
       // Done via collision-callback: coinCallback(...)
-   }
-   // 4: store old car positions
-   {
-      mOldCarData.push_back(OldData{timestamp,
-                                    {getCarCenterPosition(PlayerID::P1), getCarCenterPosition(PlayerID::P2)},
-                                    {getCarLinearVelocity(PlayerID::P1), getCarLinearVelocity(PlayerID::P2)}});
-   }
-   // 5: store old coin positions
-   for (const _ &c : mCoins)
-   {
-      mOldCoinData.push_back(OldData{timestamp,c->getCenterPos(),QVector2D(0,0)});
    }
    // reset input
    mUserInput->reset();
@@ -270,49 +213,6 @@ void GameLogic::coinCallback(Car *_car, Coin *_coin)
 
    ++mPlayerCoins[(int)player];
 }
-
-GameLogic::OldData GameLogic::getOldDataClosest(const std::vector<OldData> &_data, const qint64 &_timestamp)
-{
-   if (_data.empty())
-      return OldData{-1, QVector2D{-1, -1}, QVector2D{-1, -1}};
-   // do a binary search over mOldCarData
-   std::vector<OldData>::const_iterator itBot = _data.begin();
-   std::vector<OldData>::const_iterator itUp = std::prev(_data.end());
-   std::vector<OldData>::const_iterator itMid;
-   _ size = _data.size();
-   if (size == 1)
-      return *itBot;
-   for (int iteration = 1;; ++iteration)
-   {
-      assert(iteration < size);
-      // set mid of bot & up
-      int fac = size / (std::pow(2, iteration));
-      if (fac <= 0)
-         fac = 1;
-      itMid = itBot + fac;
-      // compare mid, up & bot elements: test for exact match
-      _ currValMid = (*itMid).timestamp;
-      _ currValUp = (*itUp).timestamp;
-      _ currValBot = (*itBot).timestamp;
-      if (currValMid == _timestamp)
-         return (*itMid);
-      if (currValUp == _timestamp)
-         return (*itUp);
-      if (currValBot == _timestamp)
-         return (*itBot);
-      // We searched it all: return closest element
-      _ distance = std::distance(itBot, itUp);
-      if (distance <= 1)
-         break;
-      // either search left or right side
-      if (currValMid < _timestamp)
-         itBot = itMid;
-      else
-         itUp = itMid;
-   }
-   return *itMid;
-}
-
 
 void GameLogic::UserInput::reset()
 {

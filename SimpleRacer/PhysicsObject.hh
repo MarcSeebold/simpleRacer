@@ -4,8 +4,6 @@
 #include "Common.hh"
 
 SHARED(class, b2World);
-namespace simpleRacer
-{
 class PhysicsObject
 {
 public:
@@ -53,4 +51,3 @@ class Car : public PhysicsObject
 public:
    Car(const Sharedb2World &_world, float _width, float _height, float _x, float _y, float _linearDamping = 0.f);
 };
-} // namespace simpleRacer

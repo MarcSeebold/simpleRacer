@@ -2,10 +2,8 @@
 #include "GameLogic.hh"
 #include <cassert>
 
-using namespace simpleRacer;
-
-InputController::InputController(simpleRacer::SharedGameLogic _logic)
-  : mGameLogic(std::forward<simpleRacer::SharedGameLogic>(_logic))
+InputController::InputController(SharedGameLogic _logic)
+  : mGameLogic(std::forward<SharedGameLogic>(_logic))
 {
 }
 

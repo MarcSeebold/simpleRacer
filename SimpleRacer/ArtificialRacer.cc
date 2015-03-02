@@ -4,8 +4,6 @@
 #include <limits>
 #include <cassert>
 
-using namespace simpleRacer;
-
 ArtificialRacer::ArtificialRacer(PlayerID _id) : mNextGoal(-1, -1), mPosition(-1, -1), mID(_id)
 {
 }
