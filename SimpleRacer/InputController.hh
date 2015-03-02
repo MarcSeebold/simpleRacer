@@ -48,9 +48,9 @@ private:
    };
 
 private:
-   int64_t mDelay = 500;                 ///< How much delay should we add to user input?
-   SharedGameLogic mGameLogicClient;     ///< Client-Logic
-   SharedGameLogic mGameLogicServer;     ///< Server-Logic
-   std::vector<QTimer*> mDelayedActions; ///< Delayed input events using QTimer
+   int64_t mDelay = 0;                    ///< How much delay should we add to user input?
+   SharedGameLogic mGameLogicClient;      ///< Client-Logic
+   SharedGameLogic mGameLogicServer;      ///< Server-Logic
+   std::vector<QTimer *> mDelayedActions; ///< Delayed input events using QTimer
    KeyStatus mKeyStatus;
 };

@@ -63,7 +63,7 @@ void GameLogic::reset()
 {
    mCoins.clear();
    // create cars
-   _ linearDamping = 0.85f;
+   _ linearDamping = 2.f;
    // spawn car1 on top left
    mCar1 = UniqueCar(new Car(mPhysicsWorld, sCarWidth, sCarHeight, sCarWidth / 2, sCarHeight / 2, linearDamping));
    // spawn car2 on bottom left
@@ -151,12 +151,9 @@ void GameLogic::update(const float &_timestep)
 
    if (mCoins.size() < 1)
       spawnCoin();
-   // run AI
-   SimpleRacer::ai()->tellOwnPosition(mCar2->getCenterPos());
-   SimpleRacer::ai()->update();
    // 1: apply input
-   float factorX = 2;
-   float factorY = 2;
+   float factorX = 10;
+   float factorY = 6;
    mCar1->applyForce(QVector2D(mUserInput->deltaX[0] * factorX, 0));
    mCar1->applyForce(QVector2D(0, mUserInput->deltaY[0] * factorY));
    mCar2->applyForce(QVector2D(mUserInput->deltaX[1] * factorX, 0));
@@ -183,7 +180,8 @@ void GameLogic::spawnCoin()
    _ coin = UniqueCoin(new Coin(mPhysicsWorld, sCoinSize, sCoinSize, posX, posY));
    mCoins.push_back(std::move(coin));
    // tell AI
-   SimpleRacer::ai()->tellCoinHasBeenSpawned(QVector2D(posX, posY));
+   if (mCoinSpawnCallback)
+      mCoinSpawnCallback(QVector2D(posX, posY));
 }
 
 void GameLogic::coinCallback(Car *_car, Coin *_coin)
@@ -200,7 +198,8 @@ void GameLogic::coinCallback(Car *_car, Coin *_coin)
    }
 
    mCoinsToRemove.push_back(_coin);
-   SimpleRacer::ai()->tellCoinHasBeenCollected(_coin->getCenterPos());
+   if (mCoinCollectedCallback)
+      mCoinCollectedCallback(_coin->getCenterPos());
 
    ++mPlayerCoins[(int)player];
 }

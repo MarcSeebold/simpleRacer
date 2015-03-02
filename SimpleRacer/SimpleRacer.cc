@@ -24,6 +24,16 @@ SimpleRacer *SimpleRacer::the()
    return sInstance;
 }
 
+void SimpleRacer::coinCollectedCallback(QVector2D _pos)
+{
+   the()->ai()->tellCoinHasBeenCollected(_pos);
+}
+
+void SimpleRacer::coinSpawnedCallback(QVector2D _pos)
+{
+   the()->ai()->tellCoinHasBeenSpawned(_pos);
+}
+
 void SimpleRacer::startGame()
 {
    mGameTimer.start(SR_GAMESTEPTIME);
@@ -43,6 +53,7 @@ void SimpleRacer::update()
 {
    mLogicClient->update(float(SR_GAMESTEPTIME)/1000.f); // ms -> s
    mLogicServer->update(float(SR_GAMESTEPTIME)/1000.f); // ms -> s
+   mAI->tellOwnPosition(mLogicServer->getCarCenterPosition(PlayerID::P2));
    mAI->update();
    mInput->update();
    mMainWindow->repaint();
@@ -56,6 +67,8 @@ SimpleRacer::SimpleRacer(MainWindow *_mainWindow, RenderingWidget *_rendering):
    mRendering(_rendering),
    mMainWindow(_mainWindow)
 {
+   mLogicServer->setCoinCollectedCallback(&coinCollectedCallback);
+   mLogicServer->setCoinSpawnCallback(&coinSpawnedCallback);
    connect(&mGameTimer, &QTimer::timeout, this, &SimpleRacer::update);
 }
 

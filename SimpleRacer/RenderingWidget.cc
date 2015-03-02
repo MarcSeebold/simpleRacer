@@ -37,7 +37,7 @@ void RenderingWidget::paintEvent(QPaintEvent *event)
          painter.fillRect(line, Qt::white);
       }
    }
-   animate += 0.6f;
+   animate += 2.f;
    if (animate > 100)
       animate = 0;
 

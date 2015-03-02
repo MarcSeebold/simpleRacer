@@ -30,6 +30,9 @@ public: // static getter
    static SharedArtificialRacer ai() { return the()->mAI; }
    static RenderingWidget *rendering() { return the()->mRendering; }
 
+   static void coinCollectedCallback(QVector2D _pos);
+   static void coinSpawnedCallback(QVector2D _pos);
+
 public slots:
    void startGame();
    void exitGame();

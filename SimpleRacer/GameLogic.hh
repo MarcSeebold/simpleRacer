@@ -72,6 +72,9 @@ public:
 
    int getScore(PlayerID _id);
 
+   void setCoinSpawnCallback(void (*_func)(QVector2D)) { mCoinSpawnCallback = _func; }
+   void setCoinCollectedCallback(void (*_func)(QVector2D)) { mCoinCollectedCallback = _func; }
+
 public slots:
    /// Simulate one time step
    void update(const float &_timestep);
@@ -92,13 +95,15 @@ private:
    SHARED(struct, UserInput);
 
 private:
-   UniqueUserInput mUserInput;                    ///< actions applied to next game state
-   Sharedb2World mPhysicsWorld;                   ///< Box2D World
-   UniqueCar mCar1;                               ///< Physics object for car 1
-   UniqueCar mCar2;                               ///< Physics object for car 2
-   UniquePhysicsObject mStreetBoundaries[4];      ///< Physics objects for end of the street
-   UniquePhysicsContactListener mContactListener; ///< Box2D contact listener
-   std::vector<UniqueCoin> mCoins;                ///< Coins in the world
-   std::vector<Coin *> mCoinsToRemove;            ///< Coins that should be deleted
-   int mPlayerCoins[2];                           ///< the score. 0 coins at beginning
+   UniqueUserInput mUserInput;                          ///< actions applied to next game state
+   Sharedb2World mPhysicsWorld;                         ///< Box2D World
+   UniqueCar mCar1;                                     ///< Physics object for car 1
+   UniqueCar mCar2;                                     ///< Physics object for car 2
+   UniquePhysicsObject mStreetBoundaries[4];            ///< Physics objects for end of the street
+   UniquePhysicsContactListener mContactListener;       ///< Box2D contact listener
+   std::vector<UniqueCoin> mCoins;                      ///< Coins in the world
+   std::vector<Coin *> mCoinsToRemove;                  ///< Coins that should be deleted
+   int mPlayerCoins[2];                                 ///< the score. 0 coins at beginning
+   void (*mCoinSpawnCallback)(QVector2D) = nullptr;     ///< Callback for coin spawning
+   void (*mCoinCollectedCallback)(QVector2D) = nullptr; ///< Callback for coin collecting
 };
