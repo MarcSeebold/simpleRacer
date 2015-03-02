@@ -107,7 +107,7 @@ QVector2D GameLogic::getCarCenterPosition(PlayerID _id, const qint64 &_timestamp
    }
    else
    { // get past info
-      _ data = getOldCarDataClosest(_timestamp);
+      _ data = getOldDataClosest(mOldCarData, _timestamp);
       assert((int)_id == 0 || (int)_id == 1);
       return data.position[(int)_id];
    }
@@ -126,18 +126,26 @@ QVector2D GameLogic::getCarLinearVelocity(PlayerID _id, const qint64 &_timestamp
    }
    else
    { // get past info
-      _ data = getOldCarDataClosest(_timestamp);
+      _ data = getOldDataClosest(mOldCarData, _timestamp);
       assert((int)_id == 0 || (int)_id == 1);
       return data.linVelo[(int)_id];
    }
 }
 
-std::vector<QVector2D> GameLogic::getCoins()
+std::vector<QVector2D> GameLogic::getCoins(const qint64 &_timestamp)
 {
    std::vector<QVector2D> res;
-   for (_ const &coin : mCoins)
+   if (_timestamp < 0)
    {
-      res.push_back(coin->getCenterPos());
+      for (_ const &coin : mCoins)
+      {
+         res.push_back(coin->getCenterPos());
+      }
+   }
+   else
+   {
+      _ data = getOldDataClosest(mOldCoinData, _timestamp);
+      return data.position[0];
    }
    return res;
 }
@@ -169,11 +177,14 @@ void GameLogic::update(const float &_timestep)
       firstRun = false;
       mAI->setGameLogic(shared_from_this());
    }
+   const _ timestamp = common::getCurrentTimestamp();
 
-   // limit of mOldCarData
+   // limit of mOldCarData and mOldCoinData
    {
-      if ((int)mOldCarData.size() >= 2 * mOldCarDataSoftLimit)
+      if ((int)mOldCarData.size() >= 2 * mOldDataSoftLimit)
          mOldCarData.erase(mOldCarData.begin(), mOldCarData.begin() + mOldCarData.size() / 2);
+      if ((int)mOldCoinData.size() >= 2 * mOldDataSoftLimit)
+         mOldCoinData.erase(mOldCoinData.begin(), mOldCoinData.begin() + mOldCoinData.size() / 2);
    }
 
    // Remove coins
@@ -217,10 +228,14 @@ void GameLogic::update(const float &_timestep)
    }
    // 4: store old car positions
    {
-      const _ timestamp = common::getCurrentTimestamp();
-      mOldCarData.push_back(OldCarData{timestamp,
-                                       {getCarCenterPosition(PlayerID::P1), getCarCenterPosition(PlayerID::P2)},
-                                       {getCarLinearVelocity(PlayerID::P1), getCarLinearVelocity(PlayerID::P2)}});
+      mOldCarData.push_back(OldData{timestamp,
+                                    {getCarCenterPosition(PlayerID::P1), getCarCenterPosition(PlayerID::P2)},
+                                    {getCarLinearVelocity(PlayerID::P1), getCarLinearVelocity(PlayerID::P2)}});
+   }
+   // 5: store old coin positions
+   for (const _ &c : mCoins)
+   {
+      mOldCoinData.push_back(OldData{timestamp,c->getCenterPos(),QVector2D(0,0)});
    }
    // reset input
    mUserInput->reset();
@@ -256,15 +271,15 @@ void GameLogic::coinCallback(Car *_car, Coin *_coin)
    ++mPlayerCoins[(int)player];
 }
 
-GameLogic::OldCarData GameLogic::getOldCarDataClosest(const qint64 &_timestamp)
+GameLogic::OldData GameLogic::getOldDataClosest(const std::vector<OldData> &_data, const qint64 &_timestamp)
 {
-   if (mOldCarData.empty())
-      return OldCarData{-1,QVector2D{-1,-1}, QVector2D{-1,-1}};
+   if (_data.empty())
+      return OldData{-1, QVector2D{-1, -1}, QVector2D{-1, -1}};
    // do a binary search over mOldCarData
-   std::vector<OldCarData>::const_iterator itBot = mOldCarData.begin();
-   std::vector<OldCarData>::const_iterator itUp = std::prev(mOldCarData.end());
-   std::vector<OldCarData>::const_iterator itMid;
-   _ size = mOldCarData.size();
+   std::vector<OldData>::const_iterator itBot = _data.begin();
+   std::vector<OldData>::const_iterator itUp = std::prev(_data.end());
+   std::vector<OldData>::const_iterator itMid;
+   _ size = _data.size();
    if (size == 1)
       return *itBot;
    for (int iteration = 1;; ++iteration)
@@ -273,7 +288,7 @@ GameLogic::OldCarData GameLogic::getOldCarDataClosest(const qint64 &_timestamp)
       // set mid of bot & up
       int fac = size / (std::pow(2, iteration));
       if (fac <= 0)
-         fac=1;
+         fac = 1;
       itMid = itBot + fac;
       // compare mid, up & bot elements: test for exact match
       _ currValMid = (*itMid).timestamp;

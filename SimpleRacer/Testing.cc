@@ -49,10 +49,10 @@ bool Testing::gameLogicGetOldCarDataClosest()
    for (int i = 0; i < 100; ++i)
    {
       logic.mOldCarData.push_back(
-          GameLogic::OldCarData{values.top(), {QVector2D(0, 0), QVector2D(0, 0)}, {QVector2D(0, 0), QVector2D(0, 0)}});
+          GameLogic::OldData{values.top(), {QVector2D(0, 0), QVector2D(0, 0)}, {QVector2D(0, 0), QVector2D(0, 0)}});
       values.pop();
    }
    // >>> perform the actual test
-   _ data = logic.getOldCarDataClosest(needle);
+   _ data = logic.getOldDataClosest(needle);
    return data.timestamp == needle;
 }
