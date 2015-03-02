@@ -5,29 +5,34 @@ SimpleRacer *SimpleRacer::sInstance = nullptr;
 
 void SimpleRacer::create()
 {
-   ASSERT(sInstance == nullptr, "create() already called.");
+   SR_ASSERT(!sInstance && "create() already called.");
    sInstance = new SimpleRacer();
 }
 
 void SimpleRacer::destroy()
 {
-   ASSERT(sInstance != nullptr, "destroy called without create or twice");
+   SR_ASSERT(sInstance && "destroy called without create or twice");
    delete sInstance; sInstance=nullptr;
 }
 
 SimpleRacer *SimpleRacer::the()
 {
-   ASSERT(sInstance != nullptr, "the() called, but instance is null");
+   SR_ASSERT(sInstance && "the() called, but instance is null");
    return sInstance;
 }
 
 void SimpleRacer::startGame()
 {
-
+   logicServer()->start();
+   logicClient()->start();
+   mRunning = true;
 }
 
 void SimpleRacer::exitGame()
 {
+   logicClient()->reset();
+   logicServer()->reset();
+   mRunning = false;
    exit(EXIT_SUCCESS);
 }
 

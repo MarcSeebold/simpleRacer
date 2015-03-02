@@ -44,7 +44,7 @@ void ArtificialRacer::update()
    SharedGameLogic logic = mGameLogic.lock();
    SR_ASSERT(logic && "No GameLogic");
 
-   assert(mDifficulty >= 0 && mDifficulty <= 1);
+   SR_ASSERT(mDifficulty >= 0 && mDifficulty <= 1);
    int difficultyFactor = 3+int(10*mDifficulty);
    if (rand()%difficultyFactor == 0)
    {

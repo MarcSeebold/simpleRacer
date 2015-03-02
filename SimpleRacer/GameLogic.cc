@@ -24,13 +24,14 @@ GameLogic::GameLogic()
     mAI(new ArtificialRacer(PlayerID::P2))
 
 {
+   // connect game timer
+   connect(&mTimer, &QTimer::timeout, this, &GameLogic::update);
    // set custom contact listener
    mContactListener->registerCallback([this](Car *car, Coin *coin)
                                       {
                                          coinCallback(car, coin);
                                       });
    mPhysicsWorld->SetContactListener(mContactListener.get());
-
    // create street boundaries
    // bottom
    mStreetBoundaries[0] = UniquePhysicsObject(
@@ -61,8 +62,15 @@ GameLogic::~GameLogic()
    mPhysicsWorld = nullptr;
 }
 
+void GameLogic::start()
+{
+   mTimer.start(SR_GAMESTEPTIME);
+}
+
 void GameLogic::reset()
 {
+   mTimer.stop();
+
    mCoins.clear();
    // create cars
    _ linearDamping = 0.85f;
@@ -136,7 +144,7 @@ void GameLogic::decelerate(PlayerID _id)
    mUserInput->deltaX[id]--;
 }
 
-void GameLogic::update(const float &_timestep)
+void GameLogic::update()
 {
    SR_ASSERT(mRunning && "Update called but not running");
    static bool firstRun = true;
@@ -174,7 +182,7 @@ void GameLogic::update(const float &_timestep)
    {
       int32 velocityIterations = 4;
       int32 positionIterations = 8;
-      mPhysicsWorld->Step(_timestep, velocityIterations, positionIterations);
+      mPhysicsWorld->Step(1/SR_GAMESTEPTIME, velocityIterations, positionIterations);
    }
    // 3: collect coins/rocks
    {

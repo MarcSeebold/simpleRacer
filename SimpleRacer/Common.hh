@@ -5,7 +5,6 @@
 namespace common
 {
 int64_t getCurrentTimestamp();
-void srassert(bool _statement, const char* _text, const char* _function, const char* _file, int _line);
 }
 
 /// Unique player id
@@ -14,9 +13,6 @@ enum class PlayerID : int
    P1 = 0,
    P2 = 1
 };
-
-#define ASSERT(statement, text) common::srassert(statement, text, __FUNCTION__, __FILE__, __LINE__)
-
 #define DO_STRING_JOIN2(arg1, arg2) arg1##arg2
 #define STRING_JOIN2(arg1, arg2) DO_STRING_JOIN2(arg1, arg2)
 

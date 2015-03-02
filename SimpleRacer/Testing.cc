@@ -2,6 +2,7 @@
 #include "Testing.hh"
 #include "GameLogic.hh"
 #include <queue>
+#include <Common.hh>
 #include <random>
 #include <time.h>
 #include <cassert>
@@ -12,7 +13,7 @@
    ok &= func();                   \
    if (!ok)                        \
    {                               \
-      assert(0 && "Test failed."); \
+      SR_ASSERT(0 && "Test failed."); \
    }                               \
    while (0)
 

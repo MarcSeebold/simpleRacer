@@ -40,7 +40,7 @@ void InputController::update()
       ++eventsToRemove;
    }
    // remove processed events
-   assert(eventsToRemove <= mKeyEvents.size() && "Size missmatch.");
+   SR_ASSERT(eventsToRemove <= mKeyEvents.size() && "Size missmatch.");
    if (eventsToRemove != 0)
       mKeyEvents.erase(mKeyEvents.begin(), mKeyEvents.begin() + eventsToRemove);
 }

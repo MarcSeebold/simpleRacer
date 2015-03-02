@@ -59,7 +59,7 @@ bool NetworkEngine::sendHandshake()
    if (mIsServer)
       return false; // client only func
 
-   assert(!mConn1.address.isNull() && "Address is null.");
+   SR_ASSERT(!mConn1.address.isNull() && "Address is null.");
    // say "hello"
    sendData(DataType::HANDSHAKE, QByteArray(), mConn1);
    mConn1.state = ConnState::HANDSHAKING;
@@ -85,7 +85,7 @@ bool NetworkEngine::sendPlayerPosition(const PlayerID &_player, const QVector2D 
 
 void NetworkEngine::onHandshake(const QHostAddress &_sender)
 {
-    assert(mConn1.address.isNull() || mConn2.address.isNull() && "already got 2 clients.");
+    SR_ASSERT(mConn1.address.isNull() || mConn2.address.isNull() && "already got 2 clients.");
     if (mConn1.address.isNull())
     {
         mConn1.address = _sender;

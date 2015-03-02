@@ -3,6 +3,9 @@
 #include <QObject>
 #include <QVector2D>
 #include "Common.hh"
+#include <QTimer>
+
+#define SR_GAMESTEPTIME 10 // every 10 ms = 1/100s * 1000s/ms = 100Hz
 
 SHARED(class, b2World);
 SHARED(class, PhysicsObject);
@@ -49,6 +52,8 @@ public:
    /// c'tor
    ~GameLogic();
 
+   void start();
+
    /// Resets the game state
    void reset();
 
@@ -73,9 +78,9 @@ public:
 
    int getScore(PlayerID _id);
 
-public slots:
+private slots:
    /// Simulate one time step
-   void update(const float &_timestep = 1 / 60.f);
+   void update();
 
 private:
    /// Spawns a coin at a random position
@@ -93,6 +98,7 @@ private:
    SHARED(struct, UserInput);
 
 private:
+   QTimer mTimer;
    UniqueUserInput mUserInput;                    ///< actions applied to next game state
    Sharedb2World mPhysicsWorld;                   ///< Box2D World
    UniqueCar mCar1;                               ///< Physics object for car 1
