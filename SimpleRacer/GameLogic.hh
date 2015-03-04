@@ -42,14 +42,23 @@ public:
    static const float sGameWidth;
    static const float sGameHeight;
 
+   enum class Type : char
+   {
+      SERVER,
+      CLIENT
+   };
+
 public:
    /// c'tor
-   GameLogic();
+   GameLogic(Type _type);
    /// c'tor
    ~GameLogic();
 
    /// Resets the game state
    void reset();
+
+   bool isServer() const { return mType == Type::SERVER; }
+   bool isClient() const { return mType == Type::CLIENT; }
 
    /// accelerates the player by one px/sec
    void accelerate(PlayerID _id);
@@ -75,6 +84,18 @@ public:
    void setCoinSpawnCallback(void (*_func)(QVector2D)) { mCoinSpawnCallback = _func; }
    void setCoinCollectedCallback(void (*_func)(QVector2D)) { mCoinCollectedCallback = _func; }
 
+public: // client only: setter for server data
+   /// Sets the position of _player's car in the physics engine.
+   /// @param _interpolate False: Car will be "teleported" from current position to _pos. True: Use interpolation
+   /// between curr and _pos. This also applies to the velocity.
+   void setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, const QVector2D &_velo, bool _interpolate);
+
+   /// Create a coin at the given position
+   void createCoin(const QVector2D &_pos);
+
+   /// Destroys a coin at the given position
+   void destroyCoin(const QVector2D &_pos);
+
 public slots:
    /// Simulate one time step
    void update(const float &_timestep);
@@ -83,6 +104,7 @@ private:
    /// Spawns a coin at a random position
    void spawnCoin();
 
+   /// Called when a coin has been collected
    void coinCallback(Car *_car, Coin *_coin);
 
 private:
@@ -95,6 +117,7 @@ private:
    SHARED(struct, UserInput);
 
 private:
+   Type mType;                                          ///< Server or Client?
    UniqueUserInput mUserInput;                          ///< actions applied to next game state
    Sharedb2World mPhysicsWorld;                         ///< Box2D World
    UniqueCar mCar1;                                     ///< Physics object for car 1

@@ -38,13 +38,23 @@ PhysicsObject::~PhysicsObject()
    mWorld = nullptr;
 }
 
-QVector2D PhysicsObject::getCenterPos()
+QVector2D PhysicsObject::getCenterPos() const
 {
    _ center = mBody->GetWorldCenter();
    return QVector2D(center.x, center.y);
 }
 
-QVector2D PhysicsObject::getLinearVelocity()
+void PhysicsObject::setCenterPos(const QVector2D &_pos)
+{
+   mBody->SetTransform(b2Vec2(_pos.x(), _pos.y()), 0);
+}
+
+void PhysicsObject::setLinearVelocity(const QVector2D &_velocity)
+{
+   mBody->SetLinearVelocity(b2Vec2(_velocity.x(), _velocity.y()));
+}
+
+QVector2D PhysicsObject::getLinearVelocity() const
 {
    _ velo = mBody->GetLinearVelocity();
    return QVector2D(velo.x, velo.y);

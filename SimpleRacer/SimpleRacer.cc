@@ -60,8 +60,8 @@ void SimpleRacer::update()
 }
 
 SimpleRacer::SimpleRacer(MainWindow *_mainWindow, RenderingWidget *_rendering):
-   mLogicServer(new GameLogic()),
-   mLogicClient(new GameLogic()),
+   mLogicServer(new GameLogic(GameLogic::Type::SERVER)),
+   mLogicClient(new GameLogic(GameLogic::Type::CLIENT)),
    mInput(new InputController(mLogicClient, mLogicServer)),
    mAI(new ArtificialRacer(PlayerID::P2, mLogicServer)),
    mRendering(_rendering),

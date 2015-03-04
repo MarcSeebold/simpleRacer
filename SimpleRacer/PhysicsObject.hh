@@ -26,9 +26,14 @@ public:
                  bool _static = false);
    virtual ~PhysicsObject();
 
-   QVector2D getCenterPos();
-   QVector2D getLinearVelocity();
+   // Getter
+   QVector2D getCenterPos() const;
+   QVector2D getLinearVelocity() const;
+
+   // Setter/Modifier
    void applyForce(const QVector2D &_vec);
+   void setCenterPos(const QVector2D &_pos);
+   void setLinearVelocity(const QVector2D &_velocity);
    void disableCollisions();
 
 protected:

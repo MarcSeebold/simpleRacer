@@ -19,8 +19,9 @@ const float GameLogic::sCoinSize = 30.f * GameLogic::sConversionFactor;
 const float GameLogic::sGameWidth = 800.f * GameLogic::sConversionFactor;
 const float GameLogic::sGameHeight = 300.f * GameLogic::sConversionFactor;
 
-GameLogic::GameLogic()
-  : mPhysicsWorld(new b2World(b2Vec2(0, 0))), // no gravity
+GameLogic::GameLogic(Type _type)
+  : mType(_type),
+    mPhysicsWorld(new b2World(b2Vec2(0, 0))), // no gravity
     mContactListener(new PhysicsContactListener())
 
 {
@@ -122,6 +123,32 @@ int GameLogic::getScore(PlayerID _id)
    return mPlayerCoins[id];
 }
 
+void GameLogic::createCoin(const QVector2D &_pos)
+{
+   _ coin = UniqueCoin(new Coin(mPhysicsWorld, sCoinSize, sCoinSize, _pos.x(), _pos.y()));
+   mCoins.push_back(std::move(coin));
+}
+
+void GameLogic::destroyCoin(const QVector2D &_pos)
+{
+
+}
+
+void GameLogic::setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, const QVector2D &_velo, bool _interpolate)
+{
+   const UniqueCar& car = (_player == PlayerID::P1)? mCar1 : mCar2;
+   if (!_interpolate)
+   {
+      car->setCenterPos(_pos);
+      car->setLinearVelocity(_velo);
+   }
+   else
+   {
+      // TODO
+      std::cerr << "Not implemented" << std::endl;
+   }
+}
+
 void GameLogic::accelerate(PlayerID _id)
 {
    _ id = (int)_id;
@@ -174,6 +201,9 @@ void GameLogic::update(const float &_timestep)
 
 void GameLogic::spawnCoin()
 {
+   // only server must create new coins
+   if (!isServer())
+      return;
    // todo: spawn coins far away from cars
    float posX = sCoinSize / 2.f + (rand() % (int)(sGameWidth - sCoinSize));
    float posY = sCoinSize / 2.f + (rand() % (int)(sGameHeight - sCoinSize));
@@ -186,6 +216,7 @@ void GameLogic::spawnCoin()
 
 void GameLogic::coinCallback(Car *_car, Coin *_coin)
 {
+   // TODO: switch variable for handling this client or/and serverside
    PlayerID player;
    if (mCar1.get() == _car)
       player = PlayerID::P1;
