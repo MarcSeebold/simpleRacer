@@ -74,7 +74,7 @@ void GameLogic::reset()
    mUserInput = UniqueUserInput(new UserInput);
 
    for (int i : {0, 1})
-      mPlayerCoins[i] = 0;
+      mScore[i] = 0;
 
    mUserInput->reset();
 }
@@ -120,18 +120,17 @@ std::vector<QVector2D> GameLogic::getCoins()
 int GameLogic::getScore(PlayerID _id)
 {
    _ id = (int)_id;
-   return mPlayerCoins[id];
+   return mScore[id];
 }
 
-void GameLogic::createCoin(const QVector2D &_pos)
+void GameLogic::setCoins(const std::vector<QVector2D> &_coins)
 {
-   _ coin = UniqueCoin(new Coin(mPhysicsWorld, sCoinSize, sCoinSize, _pos.x(), _pos.y()));
-   mCoins.push_back(std::move(coin));
-}
-
-void GameLogic::destroyCoin(const QVector2D &_pos)
-{
-
+   mCoins.clear();
+   for (_ const &c : _coins)
+   {
+      _ coin = UniqueCoin(new Coin(mPhysicsWorld, sCoinSize, sCoinSize, c.x(), c.y()));
+      mCoins.push_back(std::move(coin));
+   }
 }
 
 void GameLogic::setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, const QVector2D &_velo, bool _interpolate)
@@ -216,6 +215,8 @@ void GameLogic::spawnCoin()
 
 void GameLogic::coinCallback(Car *_car, Coin *_coin)
 {
+   if (mType != Type::SERVER)
+      return; // only server should handle this
    // TODO: switch variable for handling this client or/and serverside
    PlayerID player;
    if (mCar1.get() == _car)
@@ -232,7 +233,7 @@ void GameLogic::coinCallback(Car *_car, Coin *_coin)
    if (mCoinCollectedCallback)
       mCoinCollectedCallback(_coin->getCenterPos());
 
-   ++mPlayerCoins[(int)player];
+   ++mScore[(int)player];
 }
 
 void GameLogic::UserInput::reset()

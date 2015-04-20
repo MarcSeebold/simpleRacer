@@ -4,7 +4,8 @@
 #include <QKeyEvent>
 #include <QTimer>
 
-InputController::InputController()
+InputController::InputController(SharedGameLogic _client)
+: mGameLogicClient(std::forward<SharedGameLogic>(_client))
 {
 }
 

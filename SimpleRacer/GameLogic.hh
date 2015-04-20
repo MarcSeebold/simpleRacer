@@ -90,17 +90,14 @@ public: // client only: setter for server data
    /// between curr and _pos. This also applies to the velocity.
    void setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, const QVector2D &_velo, bool _interpolate);
 
-   /// Create a coin at the given position
-   void createCoin(const QVector2D &_pos);
-
-   /// Destroys a coin at the given position
-   void destroyCoin(const QVector2D &_pos);
-
 public slots:
    /// Simulate one time step
    void update(const float &_timestep);
 
 private:
+   /// Replace all coins by _coins
+   void setCoins(const std::vector<QVector2D> &_coins);
+
    /// Spawns a coin at a random position
    void spawnCoin();
 
@@ -126,7 +123,9 @@ private:
    UniquePhysicsContactListener mContactListener;       ///< Box2D contact listener
    std::vector<UniqueCoin> mCoins;                      ///< Coins in the world
    std::vector<Coin *> mCoinsToRemove;                  ///< Coins that should be deleted
-   int mPlayerCoins[2];                                 ///< the score. 0 coins at beginning
+   int mScore[2];                                 ///< the score. 0 coins at beginning
    void (*mCoinSpawnCallback)(QVector2D) = nullptr;     ///< Callback for coin spawning
    void (*mCoinCollectedCallback)(QVector2D) = nullptr; ///< Callback for coin collecting
+
+   friend class DelaySimulator;
 };

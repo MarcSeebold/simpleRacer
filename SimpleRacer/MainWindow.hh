@@ -27,4 +27,6 @@ public slots:
 
 private:
    Ui::MainWindow *mUI = nullptr;
+
+   friend class SimpleRacer;
 };

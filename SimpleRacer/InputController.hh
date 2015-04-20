@@ -31,7 +31,7 @@ public:
 
 public:
    /// c'tor
-   InputController();
+   InputController(SharedGameLogic _client);
 
    /// d'tor
    ~InputController();

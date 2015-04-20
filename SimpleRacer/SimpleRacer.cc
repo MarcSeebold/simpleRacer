@@ -78,12 +78,17 @@ void SimpleRacer::update()
       // Update function
       mSynch->update();
    }
+   // Update main window
+   {
+      mMainWindow->mUI->labelP1Points->setText(QString::number(mLogicClient->getScore(PlayerID::P1)));
+      mMainWindow->mUI->labelP2Points->setText(QString::number(mLogicClient->getScore(PlayerID::P2)));
+   }
 }
 
 SimpleRacer::SimpleRacer(MainWindow *_mainWindow, RenderingWidget *_rendering)
   : mLogicServer(new GameLogic(GameLogic::Type::SERVER)),
     mLogicClient(new GameLogic(GameLogic::Type::CLIENT)),
-    mInput(new InputController()),
+    mInput(new InputController(mLogicClient)),
     mAI(new ArtificialRacer(PlayerID::P2, mLogicServer)),
     mSynch(new DelaySimulator(mLogicClient, mLogicServer)),
     mRendering(_rendering),
