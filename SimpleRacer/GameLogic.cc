@@ -135,7 +135,7 @@ void GameLogic::setCoins(const std::vector<QVector2D> &_coins)
 
 void GameLogic::setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, const QVector2D &_velo, bool _interpolate)
 {
-   const UniqueCar& car = (_player == PlayerID::P1)? mCar1 : mCar2;
+   const UniqueCar &car = (_player == PlayerID::P1) ? mCar1 : mCar2;
    if (!_interpolate)
    {
       car->setCenterPos(_pos);
@@ -178,17 +178,42 @@ void GameLogic::update(const float &_timestep)
    if (mCoins.size() < 1)
       spawnCoin();
    // 1: apply input
-   float factorX = 10;
-   float factorY = 6;
-   mCar1->applyForce(QVector2D(mUserInput->deltaX[0] * factorX, 0));
-   mCar1->applyForce(QVector2D(0, mUserInput->deltaY[0] * factorY));
-   mCar2->applyForce(QVector2D(mUserInput->deltaX[1] * factorX, 0));
-   mCar2->applyForce(QVector2D(0, mUserInput->deltaY[1] * factorY));
+   {
+      if (isServer())
+      {
+         if (mKeyStatus.down)
+         {
+            steerDown(PlayerID::P1);
+         }
+         if (mKeyStatus.left)
+         {
+            decelerate(PlayerID::P1);
+         }
+         if (mKeyStatus.right)
+         {
+            accelerate(PlayerID::P1);
+         }
+         if (mKeyStatus.up)
+         {
+            steerUp(PlayerID::P1);
+         }
+      }
+      float factorX = 10;
+      float factorY = 6;
+      mCar1->applyForce(QVector2D(mUserInput->deltaX[0] * factorX, 0));
+      mCar1->applyForce(QVector2D(0, mUserInput->deltaY[0] * factorY));
+      mCar2->applyForce(QVector2D(mUserInput->deltaX[1] * factorX, 0));
+      mCar2->applyForce(QVector2D(0, mUserInput->deltaY[1] * factorY));
+      // server only: client input
+   }
    // 2: step simulation
    {
-      int32 velocityIterations = 4;
-      int32 positionIterations = 8;
-      mPhysicsWorld->Step(_timestep, velocityIterations, positionIterations);
+      if (isServer())
+      {
+         int32 velocityIterations = 4;
+         int32 positionIterations = 8;
+         mPhysicsWorld->Step(_timestep, velocityIterations, positionIterations);
+      }
    }
    // 3: collect coins/rocks
    {
@@ -215,7 +240,7 @@ void GameLogic::spawnCoin()
 
 void GameLogic::coinCallback(Car *_car, Coin *_coin)
 {
-   if (mType != Type::SERVER)
+   if (!isServer())
       return; // only server should handle this
    // TODO: switch variable for handling this client or/and serverside
    PlayerID player;

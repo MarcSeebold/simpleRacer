@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QVector2D>
 #include "Common.hh"
+#include "InputController.hh"
 
 SHARED(class, b2World);
 SHARED(class, PhysicsObject);
@@ -123,9 +124,10 @@ private:
    UniquePhysicsContactListener mContactListener;       ///< Box2D contact listener
    std::vector<UniqueCoin> mCoins;                      ///< Coins in the world
    std::vector<Coin *> mCoinsToRemove;                  ///< Coins that should be deleted
-   int mScore[2];                                 ///< the score. 0 coins at beginning
+   int mScore[2];                                       ///< the score. 0 coins at beginning
    void (*mCoinSpawnCallback)(QVector2D) = nullptr;     ///< Callback for coin spawning
    void (*mCoinCollectedCallback)(QVector2D) = nullptr; ///< Callback for coin collecting
+   InputController::KeyStatus mKeyStatus;               ///< Keys pressed (interesting for server only)
 
    friend class DelaySimulator;
 };

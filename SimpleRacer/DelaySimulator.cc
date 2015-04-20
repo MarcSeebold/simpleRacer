@@ -35,48 +35,38 @@ void DelaySimulator::update()
 void DelaySimulator::csSendInput(InputController::KeyStatus _keys)
 {
    // TODO: send keyup & keydown
-   pushDelayedAction([this, _keys](){
-      if (_keys.down)
-      {
-         mGameLogicServer->steerDown(PlayerID::P1);
-      }
-      if (_keys.left)
-      {
-         mGameLogicServer->decelerate(PlayerID::P1);
-      }
-      if (_keys.right)
-      {
-         mGameLogicServer->accelerate(PlayerID::P1);
-      }
-      if (_keys.up)
-      {
-         mGameLogicServer->steerUp(PlayerID::P1);
-      }
-   }, DelayedActionType::CLIENT_TO_SERVER);
+   pushDelayedAction([this, _keys]()
+                     {
+                        mGameLogicServer->mKeyStatus = _keys;
+                     },
+                     DelayedActionType::CLIENT_TO_SERVER);
 }
 
 void DelaySimulator::scSendCar(PlayerID _player, QVector2D _position, QVector2D _velocity)
 {
    pushDelayedAction([this, _player, _position, _velocity]()
-   {
-      mGameLogicClient->setCarPositionVelocity(_player, _position, _velocity, false /*TODO*/);
-   }, DelayedActionType::SERVER_TO_CLIENT);
+                     {
+                        mGameLogicClient->setCarPositionVelocity(_player, _position, _velocity, false /*TODO*/);
+                     },
+                     DelayedActionType::SERVER_TO_CLIENT);
 }
 
 void DelaySimulator::scSendCoins(std::vector<QVector2D> _coins)
 {
    pushDelayedAction([this, _coins]()
-   {
-      mGameLogicClient->setCoins(_coins);
-   }, DelayedActionType::SERVER_TO_CLIENT);
+                     {
+                        mGameLogicClient->setCoins(_coins);
+                     },
+                     DelayedActionType::SERVER_TO_CLIENT);
 }
 
 void DelaySimulator::scSendScore(PlayerID _player, int _score)
 {
    pushDelayedAction([this, _player, _score]()
-   {
-      mGameLogicClient->mScore[int(_player)] = _score;
-   }, DelayedActionType::SERVER_TO_CLIENT);
+                     {
+                        mGameLogicClient->mScore[int(_player)] = _score;
+                     },
+                     DelayedActionType::SERVER_TO_CLIENT);
 }
 
 void DelaySimulator::pushDelayedAction(std::function<void()> _function, DelayedActionType _type)
@@ -88,6 +78,6 @@ void DelaySimulator::pushDelayedAction(std::function<void()> _function, DelayedA
            {
       _function();
    });
-   float delay = (_type == DelayedActionType::CLIENT_TO_SERVER)? mDelayClientToServer : mDelayServerToClient;
+   float delay = (_type == DelayedActionType::CLIENT_TO_SERVER) ? mDelayClientToServer : mDelayServerToClient;
    delayed->start(delay * 1000); // secondsToMilliseconds
 }

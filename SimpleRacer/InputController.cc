@@ -53,6 +53,7 @@ void InputController::keyReleaseEvent(QKeyEvent* e)
 
 void InputController::update()
 {
+#if 0
    if (mKeyStatus.down)
    {
       mGameLogicClient->steerDown(PlayerID::P1);
@@ -69,4 +70,5 @@ void InputController::update()
    {
       mGameLogicClient->steerUp(PlayerID::P1);
    }
+#endif
 }
