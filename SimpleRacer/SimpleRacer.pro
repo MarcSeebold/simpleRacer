@@ -39,7 +39,8 @@ HEADERS  += MainWindow.hh \
     Testing.hh \
     InputController.hh \
     SimpleRacer.hh \
-    DelaySimulator.hh
+    DelaySimulator.hh \
+    LagSettings.hh
 
 FORMS    += MainWindow.ui
 
