@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 #include <list>
-#include <QObject>
 #include "Common.hh"
 
 class QTimer;
@@ -10,9 +9,8 @@ SHARED(class, GameLogic);
 
 /// Processes user input
 /// Mainly used for delaying user input as effect of lag simulation
-class InputController : public QObject
+class InputController
 {
-   Q_OBJECT
 
 public:
    enum class KeyType : char
@@ -23,22 +21,6 @@ public:
       RIGHT
    };
 
-public:
-   /// c'tor
-   InputController(SharedGameLogic _client, SharedGameLogic _server);
-
-   /// d'tor
-   ~InputController();
-
-   void keyPressEvent(QKeyEvent *e);
-   void keyReleaseEvent(QKeyEvent *e);
-
-   /// process keypresses
-   void update();
-   /// Set user-input delay
-   void setDelay(int64_t _delay) { mDelay = _delay; }
-
-private:
    struct KeyStatus
    {
       bool up = false;
@@ -47,10 +29,22 @@ private:
       bool right = false;
    };
 
+public:
+   /// c'tor
+   InputController();
+
+   /// d'tor
+   ~InputController();
+
+   void keyPressEvent(QKeyEvent *e);
+   void keyReleaseEvent(QKeyEvent *e);
+
+   const KeyStatus &getKeyStatus() const { return mKeyStatus; }
+
+   /// process keypresses
+   void update();
+
 private:
-   int64_t mDelay = 0;                    ///< How much delay should we add to user input?
    SharedGameLogic mGameLogicClient;      ///< Client-Logic
-   SharedGameLogic mGameLogicServer;      ///< Server-Logic
-   std::vector<QTimer *> mDelayedActions; ///< Delayed input events using QTimer
    KeyStatus mKeyStatus;
 };

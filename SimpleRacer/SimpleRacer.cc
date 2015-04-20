@@ -2,6 +2,7 @@
 #include "Common.hh"
 #include "RenderingWidget.hh"
 #include "MainWindow.hh"
+#include "DelaySimulator.hh"
 
 SimpleRacer *SimpleRacer::sInstance = nullptr;
 
@@ -15,7 +16,8 @@ void SimpleRacer::create(MainWindow *_mainWindow, RenderingWidget *_rendering)
 void SimpleRacer::destroy()
 {
    SR_ASSERT(sInstance && "destroy called without create or twice");
-   delete sInstance; sInstance=nullptr;
+   delete sInstance;
+   sInstance = nullptr;
 }
 
 SimpleRacer *SimpleRacer::the()
@@ -51,21 +53,41 @@ void SimpleRacer::exitGame()
 
 void SimpleRacer::update()
 {
-   mLogicClient->update(float(SR_GAMESTEPTIME)/1000.f); // ms -> s
-   mLogicServer->update(float(SR_GAMESTEPTIME)/1000.f); // ms -> s
+   // Input
+   mInput->update();
+   // Game Logic
+   mLogicClient->update(float(SR_GAMESTEPTIME) / 1000.f); // ms -> s
+   mLogicServer->update(float(SR_GAMESTEPTIME) / 1000.f); // ms -> s
+   // AI
    mAI->tellOwnPosition(mLogicServer->getCarCenterPosition(PlayerID::P2));
    mAI->update();
-   mInput->update();
+   // Rendering
    mMainWindow->repaint();
+   // Synch Server and Client
+   {
+      // Client->Server
+      mSynch->csSendInput(mInput->getKeyStatus());
+      // Server->Client
+      mSynch->scSendCar(PlayerID::P1, mLogicServer->getCarCenterPosition(PlayerID::P1),
+                        mLogicServer->getCarLinearVelocity(PlayerID::P1));
+      mSynch->scSendCar(PlayerID::P2, mLogicServer->getCarCenterPosition(PlayerID::P2),
+                        mLogicServer->getCarLinearVelocity(PlayerID::P2));
+      mSynch->scSendCoins(mLogicServer->getCoins());
+      mSynch->scSendScore(PlayerID::P1, mLogicServer->getScore(PlayerID::P1));
+      mSynch->scSendScore(PlayerID::P2, mLogicServer->getScore(PlayerID::P2));
+      // Update function
+      mSynch->update();
+   }
 }
 
-SimpleRacer::SimpleRacer(MainWindow *_mainWindow, RenderingWidget *_rendering):
-   mLogicServer(new GameLogic(GameLogic::Type::SERVER)),
-   mLogicClient(new GameLogic(GameLogic::Type::CLIENT)),
-   mInput(new InputController(mLogicClient, mLogicServer)),
-   mAI(new ArtificialRacer(PlayerID::P2, mLogicServer)),
-   mRendering(_rendering),
-   mMainWindow(_mainWindow)
+SimpleRacer::SimpleRacer(MainWindow *_mainWindow, RenderingWidget *_rendering)
+  : mLogicServer(new GameLogic(GameLogic::Type::SERVER)),
+    mLogicClient(new GameLogic(GameLogic::Type::CLIENT)),
+    mInput(new InputController()),
+    mAI(new ArtificialRacer(PlayerID::P2, mLogicServer)),
+    mSynch(new DelaySimulator(mLogicClient, mLogicServer)),
+    mRendering(_rendering),
+    mMainWindow(_mainWindow)
 {
    mLogicServer->setCoinCollectedCallback(&coinCollectedCallback);
    mLogicServer->setCoinSpawnCallback(&coinSpawnedCallback);

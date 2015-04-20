@@ -13,6 +13,7 @@ class RenderingWidget;
 SHARED(class, GameLogic);
 SHARED(class, InputController);
 SHARED(class, ArtificialRacer);
+SHARED(class, DelaySimulator);
 
 class SimpleRacer : public QObject
 {
@@ -51,6 +52,7 @@ private:
    SharedGameLogic mLogicClient;
    SharedInputController mInput;
    SharedArtificialRacer mAI;
+   SharedDelaySimulator mSynch;
 
    RenderingWidget *mRendering = nullptr;
    MainWindow *mMainWindow = nullptr;

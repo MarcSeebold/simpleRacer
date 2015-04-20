@@ -24,7 +24,8 @@ SOURCES += main.cc\
     ArtificialRacer.cc \
     Testing.cc \
     InputController.cc \
-    SimpleRacer.cc
+    SimpleRacer.cc \
+    DelaySimulator.cc
 
 
 HEADERS  += MainWindow.hh \
@@ -37,7 +38,8 @@ HEADERS  += MainWindow.hh \
     ArtificialRacer.hh \
     Testing.hh \
     InputController.hh \
-    SimpleRacer.hh
+    SimpleRacer.hh \
+    DelaySimulator.hh
 
 FORMS    += MainWindow.ui
 
