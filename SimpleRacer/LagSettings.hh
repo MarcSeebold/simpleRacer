@@ -1,6 +1,7 @@
 #pragma once
 
-namespace LagSettings
+namespace lagSettings
 {
-   bool doSomeLagCompensation = false;
+   static bool clientSidePhysics = true;
+   static bool shortCircuiting = true;
 }

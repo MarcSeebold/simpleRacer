@@ -2,6 +2,7 @@
 #include <vector>
 #include <list>
 #include "Common.hh"
+#include <QObject>
 
 class QTimer;
 class QKeyEvent;
@@ -9,8 +10,9 @@ SHARED(class, GameLogic);
 
 /// Processes user input
 /// Mainly used for delaying user input as effect of lag simulation
-class InputController
+class InputController : public QObject
 {
+    Q_OBJECT
 
 public:
    enum class KeyType : char

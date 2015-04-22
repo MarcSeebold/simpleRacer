@@ -3,9 +3,9 @@
 #include "Common.hh"
 #include <QKeyEvent>
 #include <QTimer>
+#include "LagSettings.hh"
 
-InputController::InputController(SharedGameLogic _client)
-: mGameLogicClient(std::forward<SharedGameLogic>(_client))
+InputController::InputController(SharedGameLogic _client) : mGameLogicClient(std::forward<SharedGameLogic>(_client))
 {
 }
 
@@ -53,22 +53,23 @@ void InputController::keyReleaseEvent(QKeyEvent* e)
 
 void InputController::update()
 {
-#if 0
-   if (mKeyStatus.down)
+   if (lagSettings::shortCircuiting)
    {
-      mGameLogicClient->steerDown(PlayerID::P1);
+      if (mKeyStatus.down)
+      {
+         mGameLogicClient->steerDown(PlayerID::P1);
+      }
+      if (mKeyStatus.left)
+      {
+         mGameLogicClient->decelerate(PlayerID::P1);
+      }
+      if (mKeyStatus.right)
+      {
+         mGameLogicClient->accelerate(PlayerID::P1);
+      }
+      if (mKeyStatus.up)
+      {
+         mGameLogicClient->steerUp(PlayerID::P1);
+      }
    }
-   if (mKeyStatus.left)
-   {
-      mGameLogicClient->decelerate(PlayerID::P1);
-   }
-   if (mKeyStatus.right)
-   {
-      mGameLogicClient->accelerate(PlayerID::P1);
-   }
-   if (mKeyStatus.up)
-   {
-      mGameLogicClient->steerUp(PlayerID::P1);
-   }
-#endif
 }

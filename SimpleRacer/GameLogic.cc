@@ -9,6 +9,7 @@
 #include "NetworkEngine.hh"
 #include "ArtificialRacer.hh"
 #include "SimpleRacer.hh"
+#include "LagSettings.hh"
 
 #include <qdebug.h>
 
@@ -179,6 +180,7 @@ void GameLogic::update(const float &_timestep)
       spawnCoin();
    // 1: apply input
    {
+      // Server: Client input
       if (isServer())
       {
          if (mKeyStatus.down)
@@ -208,7 +210,7 @@ void GameLogic::update(const float &_timestep)
    }
    // 2: step simulation
    {
-      if (isServer())
+      if (lagSettings::clientSidePhysics || isServer())
       {
          int32 velocityIterations = 4;
          int32 positionIterations = 8;
@@ -240,7 +242,7 @@ void GameLogic::spawnCoin()
 
 void GameLogic::coinCallback(Car *_car, Coin *_coin)
 {
-   if (!isServer())
+   if (!lagSettings::clientSidePhysics && !isServer())
       return; // only server should handle this
    // TODO: switch variable for handling this client or/and serverside
    PlayerID player;
