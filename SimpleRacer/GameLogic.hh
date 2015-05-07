@@ -87,9 +87,7 @@ public:
 
 public: // client only: setter for server data
    /// Sets the position of _player's car in the physics engine.
-   /// @param _interpolate False: Car will be "teleported" from current position to _pos. True: Use interpolation
-   /// between curr and _pos. This also applies to the velocity.
-   void setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, const QVector2D &_velo, bool _interpolate);
+   void setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, const QVector2D &_velo);
 
 public slots:
    /// Simulate one time step
@@ -115,13 +113,19 @@ private:
    SHARED(struct, UserInput);
 
 private:
-   Type mType;                                          ///< Server or Client?
-   UniqueUserInput mUserInput;                          ///< actions applied to next game state
-   Sharedb2World mPhysicsWorld;                         ///< Box2D World
-   UniqueCar mCar1;                                     ///< Physics object for car 1
-   UniqueCar mCar2;                                     ///< Physics object for car 2
-   UniquePhysicsObject mStreetBoundaries[4];            ///< Physics objects for end of the street
+   Type mType;                     ///< Server or Client?
+   UniqueUserInput mUserInput;     ///< actions applied to next game state
+   Sharedb2World mPhysicsWorld;    ///< Box2D World
+   Sharedb2World mPhysicsWorldOld; ///< Box2D World. This is mPhysicsWorld, but x seconds in the past. x = latency.
+   UniqueCar mCar1;                ///< Physics object for car 1
+   UniqueCar mCar2;                ///< Physics object for car 2
+   UniqueCar mCar1Old;             ///< Physics object for car 1, but x seconds in the past. x = latency.
+   UniqueCar mCar2Old;             ///< Physics object for car 2, but x seconds in the past. x = latency.
+   UniquePhysicsObject mStreetBoundaries[4]; ///< Physics objects for end of the street
+   UniquePhysicsObject
+       mStreetBoundariesOld[4]; ///< Physics objects for end of the street, but x seconds in the past. x = latency.
    UniquePhysicsContactListener mContactListener;       ///< Box2D contact listener
+   DelayedActions mOldWorldUpdater;                     //< This object helps us updating the past game state
    std::vector<UniqueCoin> mCoins;                      ///< Coins in the world
    std::vector<Coin *> mCoinsToRemove;                  ///< Coins that should be deleted
    int mScore[2];                                       ///< the score. 0 coins at beginning

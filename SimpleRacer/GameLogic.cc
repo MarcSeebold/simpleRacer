@@ -22,7 +22,8 @@ const float GameLogic::sGameHeight = 300.f * GameLogic::sConversionFactor;
 
 GameLogic::GameLogic(Type _type)
   : mType(_type),
-    mPhysicsWorld(new b2World(b2Vec2(0, 0))), // no gravity
+    mPhysicsWorld(new b2World(b2Vec2(0, 0))),    // no gravity
+    mPhysicsWorldOld(new b2World(b2Vec2(0, 0))), // no gravity
     mContactListener(new PhysicsContactListener())
 
 {
@@ -33,18 +34,37 @@ GameLogic::GameLogic(Type _type)
                                       });
    mPhysicsWorld->SetContactListener(mContactListener.get());
    // create street boundaries
-   // bottom
-   mStreetBoundaries[0] = UniquePhysicsObject(
-       new PhysicsObject(mPhysicsWorld, sGameWidth, 1, sGameWidth / 2, -.5f, PhysicsObject::Type::BOUNDARY, 0, true));
-   // top
-   mStreetBoundaries[1] = UniquePhysicsObject(new PhysicsObject(
-       mPhysicsWorld, sGameWidth, 1, sGameWidth / 2, sGameHeight + .5f, PhysicsObject::Type::BOUNDARY, 0, true));
-   // left
-   mStreetBoundaries[2] = UniquePhysicsObject(
-       new PhysicsObject(mPhysicsWorld, 1, sGameHeight, -.5f, sGameHeight / 2, PhysicsObject::Type::BOUNDARY, 0, true));
-   // right
-   mStreetBoundaries[3] = UniquePhysicsObject(new PhysicsObject(
-       mPhysicsWorld, 1, sGameHeight, sGameWidth + .5f, sGameHeight / 2, PhysicsObject::Type::BOUNDARY, 0, true));
+   // world
+   {
+      // bottom
+      mStreetBoundaries[0] = UniquePhysicsObject(
+          new PhysicsObject(mPhysicsWorld, sGameWidth, 1, sGameWidth / 2, -.5f, PhysicsObject::Type::BOUNDARY, 0, true));
+      // top
+      mStreetBoundaries[1] = UniquePhysicsObject(new PhysicsObject(
+          mPhysicsWorld, sGameWidth, 1, sGameWidth / 2, sGameHeight + .5f, PhysicsObject::Type::BOUNDARY, 0, true));
+      // left
+      mStreetBoundaries[2] = UniquePhysicsObject(new PhysicsObject(mPhysicsWorld, 1, sGameHeight, -.5f, sGameHeight / 2,
+                                                                   PhysicsObject::Type::BOUNDARY, 0, true));
+      // right
+      mStreetBoundaries[3] = UniquePhysicsObject(new PhysicsObject(
+          mPhysicsWorld, 1, sGameHeight, sGameWidth + .5f, sGameHeight / 2, PhysicsObject::Type::BOUNDARY, 0, true));
+   }
+   // "old" world
+   {
+      // bottom
+      mStreetBoundariesOld[0] = UniquePhysicsObject(new PhysicsObject(mPhysicsWorldOld, sGameWidth, 1, sGameWidth / 2,
+                                                                      -.5f, PhysicsObject::Type::BOUNDARY, 0, true));
+      // top
+      mStreetBoundariesOld[1] = UniquePhysicsObject(new PhysicsObject(
+          mPhysicsWorldOld, sGameWidth, 1, sGameWidth / 2, sGameHeight + .5f, PhysicsObject::Type::BOUNDARY, 0, true));
+      // left
+      mStreetBoundariesOld[2] = UniquePhysicsObject(new PhysicsObject(
+          mPhysicsWorldOld, 1, sGameHeight, -.5f, sGameHeight / 2, PhysicsObject::Type::BOUNDARY, 0, true));
+      // right
+      mStreetBoundariesOld[3] = UniquePhysicsObject(new PhysicsObject(
+          mPhysicsWorldOld, 1, sGameHeight, sGameWidth + .5f, sGameHeight / 2, PhysicsObject::Type::BOUNDARY, 0, true));
+   }
+
    // reset state
    reset();
 }
@@ -56,9 +76,12 @@ GameLogic::~GameLogic()
    mCar2 = nullptr;
    for (int i = 0; i < 4; ++i)
       mStreetBoundaries[i] = nullptr;
+   for (int i = 0; i < 4; ++i)
+      mStreetBoundariesOld[i] = nullptr;
    mContactListener = nullptr;
    mCoins.clear();
    mPhysicsWorld = nullptr;
+   mPhysicsWorldOld = nullptr;
 }
 
 void GameLogic::reset()
@@ -70,6 +93,13 @@ void GameLogic::reset()
    mCar1 = UniqueCar(new Car(mPhysicsWorld, sCarWidth, sCarHeight, sCarWidth / 2, sCarHeight / 2, linearDamping));
    // spawn car2 on bottom left
    mCar2 = UniqueCar(new Car(mPhysicsWorld, sCarWidth, sCarHeight, sCarWidth / 2, sGameHeight - sCarHeight / 2, linearDamping));
+   {
+      // cars for the "past" world
+      // spawn car1 on top left
+      mCar1Old = UniqueCar(new Car(mPhysicsWorldOld, sCarWidth, sCarHeight, sCarWidth / 2, sCarHeight / 2, linearDamping));
+      // spawn car2 on bottom left
+      mCar2Old = UniqueCar(new Car(mPhysicsWorldOld, sCarWidth, sCarHeight, sCarWidth / 2, sGameHeight - sCarHeight / 2, linearDamping));
+   }
 
    // reset other member vars
    mUserInput = UniqueUserInput(new UserInput);
@@ -134,18 +164,28 @@ void GameLogic::setCoins(const std::vector<QVector2D> &_coins)
    }
 }
 
-void GameLogic::setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, const QVector2D &_velo, bool _interpolate)
+void GameLogic::setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, const QVector2D &_velo)
 {
+   SR_ASSERT(isClient() && "Client-only function");
    const UniqueCar &car = (_player == PlayerID::P1) ? mCar1 : mCar2;
-   if (!_interpolate)
-   {
+   const UniqueCar &carOld = (_player == PlayerID::P1) ? mCar1Old : mCar2Old;
+   static float carWidthSquared = GameLogic::sCarWidth * GameLogic::sCarWidth;
+
+
+   _ ourPos = carOld->getCenterPos();
+   _ posDiff = ourPos - _pos;
+   // no interpolation flag or position offset is too high: hard-set position
+   if (!lagSettings::clientSideInterpolation || posDiff.lengthSquared() >= carWidthSquared / 2)
+   { // no interpolation
       car->setCenterPos(_pos);
       car->setLinearVelocity(_velo);
    }
    else
-   {
-      // TODO
-      std::cerr << "Not implemented" << std::endl;
+   { // interpolation
+      _ interpInterval = lagSettings::clientSideInterpolationInterval;
+      // interpolate by adjusting velocity
+      _ adjustedVelo = _velo - posDiff / interpInterval;
+      car->setLinearVelocity(adjustedVelo);
    }
 }
 
@@ -216,11 +256,29 @@ void GameLogic::update(const float &_timestep)
          int32 velocityIterations = 4;
          int32 positionIterations = 8;
          mPhysicsWorld->Step(_timestep, velocityIterations, positionIterations);
+         mPhysicsWorldOld->Step(_timestep, velocityIterations, positionIterations);
       }
    }
    // 3: collect coins/rocks
    {
       // Done via collision-callback: coinCallback(...)
+   }
+   // 4: update our "old" physics state
+   {
+      DelayedActions::DelayedActionType type = isClient() ? DelayedActions::DelayedActionType::SERVER_TO_CLIENT
+                                                          : DelayedActions::DelayedActionType::CLIENT_TO_SERVER;
+      QVector2D car1Pos = mCar1->getCenterPos();
+      QVector2D car2Pos = mCar2->getCenterPos();
+      QVector2D car1Velo = mCar1->getLinearVelocity();
+      QVector2D car2Velo = mCar2->getLinearVelocity();
+      _ func = [this, car1Pos, car2Pos, car1Velo, car2Velo]()
+      {
+         mCar1Old->setCenterPos(car1Pos);
+         mCar2Old->setCenterPos(car2Pos);
+         mCar1Old->setLinearVelocity(car1Velo);
+         mCar2Old->setLinearVelocity(car2Velo);
+      };
+      mOldWorldUpdater.pushDelayedAction(std::move(func), type);
    }
    // reset input
    mUserInput->reset();
