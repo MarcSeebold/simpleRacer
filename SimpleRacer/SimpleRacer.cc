@@ -56,15 +56,17 @@ void SimpleRacer::update()
    // Input
    mInput->update();
    // Game Logic
-   mLogicClient->update(float(SR_GAMESTEPTIME) / 1000.f); // ms -> s
-   mLogicServer->update(float(SR_GAMESTEPTIME) / 1000.f); // ms -> s
+   mLogicClient->update(SR_GAMESTEPTIME / 1000.f); // ms -> s
+   mLogicServer->update(SR_GAMESTEPTIME / 1000.f); // ms -> s
    // AI
    mAI->tellOwnPosition(mLogicServer->getCarCenterPosition(PlayerID::P2));
    mAI->update();
    // Rendering
    mMainWindow->repaint();
    // Synch Server and Client
-   {
+   static int counter = 0;
+   if (counter == 5)
+   { // only send network stuff all six frames (at 60Hz that means 10Hz, compareable with a source server)
       // Client->Server
       mSynch->csSendInput(mInput->getKeyStatus());
       // Server->Client
@@ -77,6 +79,11 @@ void SimpleRacer::update()
       mSynch->scSendScore(PlayerID::P2, mLogicServer->getScore(PlayerID::P2));
       // Update function
       mSynch->update();
+      counter = 0;
+   }
+   else
+   {
+      ++counter;
    }
    // Update main window
    {
@@ -98,22 +105,3 @@ SimpleRacer::SimpleRacer(MainWindow *_mainWindow, RenderingWidget *_rendering)
    mLogicServer->setCoinSpawnCallback(&coinSpawnedCallback);
    connect(&mGameTimer, &QTimer::timeout, this, &SimpleRacer::update);
 }
-
-#if 0
-
-void MainWindow::performGameUpdateStep()
-{
-   // process input
-   processInput();
-   mInput->update();
-   // game logic
-   mGameLogic->update(SR_RESOLUTION);
-   // rendering
-   update();
-   // update score
-   _ p1Score = mGameLogic->getScore(PlayerID::P1);
-   _ p2Score = mGameLogic->getScore(PlayerID::P2);
-   mUI->labelP1Points->setText(QString::number(p1Score));
-   mUI->labelP2Points->setText(QString::number(p2Score));
-}
-#endif
