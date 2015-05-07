@@ -6,8 +6,8 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mUI(new Ui::MainWindow)
 {
-   SimpleRacer::create(this, mUI->widget);
    mUI->setupUi(this);
+   SimpleRacer::create(this, mUI->widget);
 
    connect(mUI->actionStart_Singleplayer, &QAction::triggered, SimpleRacer::the(), &SimpleRacer::startGame);
    connect(mUI->actionExit, &QAction::triggered, SimpleRacer::the(), &SimpleRacer::exitGame);
