@@ -5,7 +5,7 @@
 #include <cassert>
 
 ArtificialRacer::ArtificialRacer(PlayerID _id, WeakGameLogic _gameLogic)
-  : mNextGoal(-1, -1), mPosition(-1, -1), mID(_id), mGameLogic(std::forward<WeakGameLogic>(_gameLogic))
+  : mNextGoal(-1, -1), mPosition(-1, -1), mGameLogic(std::forward<WeakGameLogic>(_gameLogic)), mID(_id)
 {
 }
 
