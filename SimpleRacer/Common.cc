@@ -14,5 +14,5 @@ void _sr_assert_fail(const char *_expr, const char *_file, int _line, const char
 
 int64_t common::getCurrentTimestamp()
 {
-    return QDateTime::currentMSecsSinceEpoch();
+   return QDateTime::currentMSecsSinceEpoch();
 }

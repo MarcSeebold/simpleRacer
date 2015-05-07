@@ -8,7 +8,7 @@ class Car;
 class PhysicsContactListener : public b2ContactListener
 {
 public:
-   typedef std::function<void(Car*, Coin*)> CallbackFunc;
+   typedef std::function<void(Car *, Coin *)> CallbackFunc;
 
 public:
    PhysicsContactListener();

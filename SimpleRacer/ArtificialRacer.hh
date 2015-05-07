@@ -26,7 +26,7 @@ private:
 private:
    QVector2D mNextGoal;
    QVector2D mPosition;
-   std::vector< QVector2D > mCoinPositions;
+   std::vector<QVector2D> mCoinPositions;
    WeakGameLogic mGameLogic;
    PlayerID mID;
    float mDifficulty = 0.1f; ///< Value from 0(easy) to 1(hard)

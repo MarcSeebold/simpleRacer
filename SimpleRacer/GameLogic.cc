@@ -166,12 +166,13 @@ void GameLogic::update(const float &_timestep)
    // Remove coins
    for (Coin *coin : mCoinsToRemove)
    {
-      mCoins.erase(std::remove_if(mCoins.begin(), mCoins.end(), [coin](const UniqueCoin &_curr)
+      mCoins.erase(std::remove_if(mCoins.begin(), mCoins.end(),
+                                  [coin](const UniqueCoin &_curr)
                                   {
-                      if (_curr.get() == coin)
-                         return true;
-                      return false;
-                   }),
+                                     if (_curr.get() == coin)
+                                        return true;
+                                     return false;
+                                  }),
                    mCoins.end());
    }
    mCoinsToRemove.clear();

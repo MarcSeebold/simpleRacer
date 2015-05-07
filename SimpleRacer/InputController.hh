@@ -12,7 +12,7 @@ SHARED(class, GameLogic);
 /// Mainly used for delaying user input as effect of lag simulation
 class InputController : public QObject
 {
-    Q_OBJECT
+   Q_OBJECT
 
 public:
    enum class KeyType : char
@@ -47,6 +47,6 @@ public:
    void update();
 
 private:
-   SharedGameLogic mGameLogicClient;      ///< Client-Logic
+   SharedGameLogic mGameLogicClient; ///< Client-Logic
    KeyStatus mKeyStatus;
 };

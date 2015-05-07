@@ -9,12 +9,12 @@
 #include <functional>
 #include <QMessageBox>
 
-#define TESTING_RUN_TEST(func)     \
-   ok &= func();                   \
-   if (!ok)                        \
-   {                               \
+#define TESTING_RUN_TEST(func)        \
+   ok &= func();                      \
+   if (!ok)                           \
+   {                                  \
       SR_ASSERT(0 && "Test failed."); \
-   }                               \
+   }                                  \
    while (0)
 
 using namespace simpleRacer;

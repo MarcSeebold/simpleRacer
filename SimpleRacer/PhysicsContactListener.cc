@@ -12,17 +12,17 @@ void PhysicsContactListener::BeginContact(b2Contact *_contact)
    if (!mCallback)
       return;
 
-   PhysicsObject* aClass = (PhysicsObject*)_contact->GetFixtureA()->GetBody()->GetUserData();
-   PhysicsObject* bClass = (PhysicsObject*)_contact->GetFixtureB()->GetBody()->GetUserData();
-   _ aCar = dynamic_cast<Car*>(aClass);
-   _ aCoin = dynamic_cast<Coin*>(aClass);
+   PhysicsObject *aClass = (PhysicsObject *)_contact->GetFixtureA()->GetBody()->GetUserData();
+   PhysicsObject *bClass = (PhysicsObject *)_contact->GetFixtureB()->GetBody()->GetUserData();
+   _ aCar = dynamic_cast<Car *>(aClass);
+   _ aCoin = dynamic_cast<Coin *>(aClass);
 
-   Car *car = (aCar ? aCar : dynamic_cast<Car*>(bClass));
-   Coin *coin = (aCoin ? aCoin : dynamic_cast<Coin*>(bClass));
+   Car *car = (aCar ? aCar : dynamic_cast<Car *>(bClass));
+   Coin *coin = (aCoin ? aCoin : dynamic_cast<Coin *>(bClass));
 
    if (car && coin)
    {
-      //coin->
+      // coin->
       mCallback(car, coin);
    }
 }
