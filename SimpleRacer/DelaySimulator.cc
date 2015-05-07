@@ -1,6 +1,7 @@
 #include "DelaySimulator.hh"
 #include <QTimer>
 #include "GameLogic.hh"
+#include "LagSettings.hh"
 
 DelaySimulator::DelaySimulator(SharedGameLogic _client, SharedGameLogic _server)
   : mGameLogicClient(std::forward<SharedGameLogic>(_client)), mGameLogicServer(std::forward<SharedGameLogic>(_server))
@@ -82,6 +83,6 @@ void DelaySimulator::pushDelayedAction(std::function<void()> _function, DelayedA
            {
               _function();
            });
-   float delay = (_type == DelayedActionType::CLIENT_TO_SERVER) ? mDelayClientToServer : mDelayServerToClient;
+   float delay = (_type == DelayedActionType::CLIENT_TO_SERVER) ? lagSettings::latencyClientToServer : lagSettings::latencyServerToClient;
    delayed->start(delay * 1000); // secondsToMilliseconds
 }

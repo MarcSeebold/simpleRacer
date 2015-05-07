@@ -39,8 +39,6 @@ private:
    void pushDelayedAction(std::function<void()> _function, DelayedActionType _type);
 
 private:
-   float mDelayClientToServer = 0.5f; //< in seconds
-   float mDelayServerToClient = 0.5f; //< in seconds
    std::vector<QTimer *> mDelayedActions;
    SharedGameLogic mGameLogicClient;
    SharedGameLogic mGameLogicServer;
