@@ -6,15 +6,16 @@ namespace lagSettings
 static float latencyServerToClient = 500 /*ms*/ / 1000.f;
 static float latencyClientToServer = 500 /*ms*/ / 1000.f;
 // Client-side
+static bool clientSideCompensations = true;
 static bool clientSidePhysics = true;
-static bool shortCircuiting = true;
-static bool clientSideInterpolation = false; // TODO: implement
+static bool shortCircuiting = false && clientSideCompensations; // TODO: implement
+static bool clientSidePrediction = true && clientSideCompensations;
+static bool clientSideInterpolation = true && clientSideCompensations;
 // Server-side
-static bool serverSideLagCompensation = true; // TODO: implement
+static bool serverSideLagCompensation = false; // TODO: implement
 // Other
-/// Time interval for offset corrections in seconds
-static float clientSideInterpolationInterval = 1000 /*ms*/ / 1000.f;
-
+/// Factor for applying prediction
+static float clientSideInterpolationFactor = 5;
 // supress defined but not used warnings
 static void func()
 {
@@ -22,10 +23,11 @@ static void func()
    (void)&latencyClientToServer;
    (void)&clientSidePhysics;
    (void)&shortCircuiting;
-   (void)&clientSideInterpolation;
+   (void)&clientSidePrediction;
    (void)&latencyServerToClient;
    (void)&serverSideLagCompensation;
-   (void)&clientSideInterpolationInterval;
+   (void)&clientSideInterpolationFactor;
+   (void)&clientSideInterpolation;
    (void)&func;
 }
 }

@@ -93,6 +93,13 @@ void GameLogic::reset()
    mCar1 = UniqueCar(new Car(mPhysicsWorld, sCarWidth, sCarHeight, sCarWidth / 2, sCarHeight / 2, linearDamping));
    // spawn car2 on bottom left
    mCar2 = UniqueCar(new Car(mPhysicsWorld, sCarWidth, sCarHeight, sCarWidth / 2, sGameHeight - sCarHeight / 2, linearDamping));
+   if (isClient())
+   {
+      // disable collisions on client-side
+      // either this must be done by prediction or server handles collisions
+      mCar1->disableCollisions();
+      mCar2->disableCollisions();
+   }
    {
       // cars for the "past" world
       // spawn car1 on top left
@@ -167,25 +174,37 @@ void GameLogic::setCoins(const std::vector<QVector2D> &_coins)
 void GameLogic::setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, const QVector2D &_velo)
 {
    SR_ASSERT(isClient() && "Client-only function");
-   const UniqueCar &car = (_player == PlayerID::P1) ? mCar1 : mCar2;
-   const UniqueCar &carOld = (_player == PlayerID::P1) ? mCar1Old : mCar2Old;
-   static float carWidthSquared = GameLogic::sCarWidth * GameLogic::sCarWidth;
 
+   static float maxOffsetSquared = 10 * 10;
+   const UniqueCar &carNew = (_player == PlayerID::P1) ? mCar1 : mCar2;
 
-   _ ourPos = carOld->getCenterPos();
-   _ posDiff = ourPos - _pos;
-   // no interpolation flag or position offset is too high: hard-set position
-   if (!lagSettings::clientSideInterpolation || posDiff.lengthSquared() >= carWidthSquared / 2)
-   { // no interpolation
+   if (lagSettings::clientSidePrediction)
+   { // client side prediction
+      const UniqueCar &car = (_player == PlayerID::P1) ? mCar1Old : mCar2Old;
+      // update past state
       car->setCenterPos(_pos);
       car->setLinearVelocity(_velo);
+      // predict current position
+      // TODO: use user input in prediction
+      mPhysicsWorldOld->Step(lagSettings::latencyServerToClient, 4, 8);
+      // update current state
+      _ posDiff = car->getCenterPos() - carNew->getCenterPos();
+      // do not interpolate if offset is too high
+      if (lagSettings::clientSideInterpolation && !(posDiff.lengthSquared() >= maxOffsetSquared / 2))
+      { // interpolate
+         _ velo = posDiff * lagSettings::clientSideInterpolationFactor;
+         carNew->setLinearVelocity(velo);
+      }
+      else
+      { // hard-set
+         carNew->setCenterPos(car->getCenterPos());
+         carNew->setLinearVelocity(car->getLinearVelocity());
+      }
    }
    else
-   { // interpolation
-      _ interpInterval = lagSettings::clientSideInterpolationInterval;
-      // interpolate by adjusting velocity
-      _ adjustedVelo = _velo - posDiff / interpInterval;
-      car->setLinearVelocity(adjustedVelo);
+   { // no client-side prediction
+      carNew->setCenterPos(_pos);
+      carNew->setLinearVelocity(_velo);
    }
 }
 
@@ -241,8 +260,8 @@ void GameLogic::update(const float &_timestep)
             steerUp(PlayerID::P1);
          }
       }
-      float factorX = 10;
-      float factorY = 6;
+      float factorX = 19;
+      float factorY = 12;
       mCar1->applyForce(QVector2D(mUserInput->deltaX[0] * factorX, 0));
       mCar1->applyForce(QVector2D(0, mUserInput->deltaY[0] * factorY));
       mCar2->applyForce(QVector2D(mUserInput->deltaX[1] * factorX, 0));
@@ -256,29 +275,11 @@ void GameLogic::update(const float &_timestep)
          int32 velocityIterations = 4;
          int32 positionIterations = 8;
          mPhysicsWorld->Step(_timestep, velocityIterations, positionIterations);
-         mPhysicsWorldOld->Step(_timestep, velocityIterations, positionIterations);
       }
    }
    // 3: collect coins/rocks
    {
       // Done via collision-callback: coinCallback(...)
-   }
-   // 4: update our "old" physics state
-   {
-      DelayedActions::DelayedActionType type = isClient() ? DelayedActions::DelayedActionType::SERVER_TO_CLIENT
-                                                          : DelayedActions::DelayedActionType::CLIENT_TO_SERVER;
-      QVector2D car1Pos = mCar1->getCenterPos();
-      QVector2D car2Pos = mCar2->getCenterPos();
-      QVector2D car1Velo = mCar1->getLinearVelocity();
-      QVector2D car2Velo = mCar2->getLinearVelocity();
-      _ func = [this, car1Pos, car2Pos, car1Velo, car2Velo]()
-      {
-         mCar1Old->setCenterPos(car1Pos);
-         mCar2Old->setCenterPos(car2Pos);
-         mCar1Old->setLinearVelocity(car1Velo);
-         mCar2Old->setLinearVelocity(car2Velo);
-      };
-      mOldWorldUpdater.pushDelayedAction(std::move(func), type);
    }
    // reset input
    mUserInput->reset();
