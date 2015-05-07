@@ -3,7 +3,6 @@
 #include "Common.hh"
 #include "InputController.hh"
 #include <functional>
-#include <QObject>
 
 SHARED(class, GameLogic);
 
@@ -11,10 +10,8 @@ SHARED(class, GameLogic);
  * @todo Server-Side Lag-Kompensation
  *       "Pakete" zwischen Server und Client peridisch senden (zB 20Hz)
  */
-class DelaySimulator : public QObject
+class DelaySimulator
 {
-   Q_OBJECT
-
 public:
    DelaySimulator(SharedGameLogic _client, SharedGameLogic _server);
    ~DelaySimulator();
@@ -31,15 +28,7 @@ public:
    void scSendScore(PlayerID _player, int _score);
 
 private:
-   enum class DelayedActionType : char
-   {
-      SERVER_TO_CLIENT,
-      CLIENT_TO_SERVER
-   };
-   void pushDelayedAction(std::function<void()> _function, DelayedActionType _type);
-
-private:
-   std::vector<QTimer *> mDelayedActions;
    SharedGameLogic mGameLogicClient;
    SharedGameLogic mGameLogicServer;
+   DelayedActions mDelayManager;
 };

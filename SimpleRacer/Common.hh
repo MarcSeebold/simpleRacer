@@ -1,11 +1,34 @@
 #pragma once
 #include <memory>
+#include <vector>
+#include <QObject>
 // some usefull stuff
 
 namespace common
 {
 int64_t getCurrentTimestamp();
 }
+
+class QTimer;
+class DelayedActions : public QObject
+{
+   Q_OBJECT
+public:
+   DelayedActions();
+   ~DelayedActions();
+
+   void update();
+
+   enum class DelayedActionType : char
+   {
+      SERVER_TO_CLIENT,
+      CLIENT_TO_SERVER
+   };
+   void pushDelayedAction(std::function<void()> _function, DelayedActionType _type);
+
+private:
+   std::vector<QTimer*> mDelayedActions;
+};
 
 /// Unique player id
 enum class PlayerID : int
