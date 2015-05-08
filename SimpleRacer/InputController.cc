@@ -53,7 +53,7 @@ void InputController::keyReleaseEvent(QKeyEvent* e)
 
 void InputController::update()
 {
-   if (lagSettings::shortCircuiting)
+   if (LagSettings::the()->getShortCircuiting())
    {
       if (mKeyStatus.down)
       {

@@ -129,10 +129,20 @@
      <string>Menu</string>
     </property>
     <addaction name="actionStart_Singleplayer"/>
-    <addaction name="actionRun_Tests"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menuConfig">
+    <property name="title">
+     <string>Config</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="actionEnable_Client_Side_Latency_Compensation"/>
+    <addaction name="actionDisable_Client_Side_Latency_Compensation"/>
+    <addaction name="actionEnable_Server_Side_Latency_Compensation"/>
+    <addaction name="actionDisable_Server_Side_Latency_Compensation"/>
+   </widget>
    <addaction name="menuMenu"/>
+   <addaction name="menuConfig"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionStart_Singleplayer">
@@ -148,6 +158,26 @@
   <action name="actionRun_Tests">
    <property name="text">
     <string>Run Tests</string>
+   </property>
+  </action>
+  <action name="actionEnable_Client_Side_Latency_Compensation">
+   <property name="text">
+    <string>Enable Client-Side Latency Compensation</string>
+   </property>
+  </action>
+  <action name="actionEnable_Server_Side_Latency_Compensation">
+   <property name="text">
+    <string>Enable Server-Side Latency Compensation</string>
+   </property>
+  </action>
+  <action name="actionDisable_Client_Side_Latency_Compensation">
+   <property name="text">
+    <string>Disable Client-Side Latency Compensation</string>
+   </property>
+  </action>
+  <action name="actionDisable_Server_Side_Latency_Compensation">
+   <property name="text">
+    <string>Disable Server-Side Latency Compensation</string>
    </property>
   </action>
  </widget>

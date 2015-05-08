@@ -2,6 +2,7 @@
 #include <memory>
 #include <vector>
 #include <QObject>
+#include <functional>
 // some usefull stuff
 
 namespace common

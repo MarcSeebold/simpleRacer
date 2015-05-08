@@ -25,6 +25,15 @@ public slots:
    /// Clears status bar text
    void clearStatusbarText();
 
+private slots:
+   void on_actionDisable_Server_Side_Latency_Compensation_triggered();
+
+   void on_actionDisable_Client_Side_Latency_Compensation_triggered();
+
+   void on_actionEnable_Server_Side_Latency_Compensation_triggered();
+
+   void on_actionEnable_Client_Side_Latency_Compensation_triggered();
+
 private:
    Ui::MainWindow *mUI = nullptr;
 

@@ -25,7 +25,8 @@ SOURCES += main.cc\
     Testing.cc \
     InputController.cc \
     SimpleRacer.cc \
-    DelaySimulator.cc
+    DelaySimulator.cc \
+    LagSettings.cc
 
 
 HEADERS  += MainWindow.hh \

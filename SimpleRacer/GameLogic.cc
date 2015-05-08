@@ -178,7 +178,7 @@ void GameLogic::setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, 
    static float maxOffsetSquared = 10 * 10;
    const UniqueCar &carNew = (_player == PlayerID::P1) ? mCar1 : mCar2;
 
-   if (lagSettings::clientSidePrediction)
+   if (LagSettings::the()->getClientSidePrediction())
    { // client side prediction
       const UniqueCar &car = (_player == PlayerID::P1) ? mCar1Old : mCar2Old;
       // update past state
@@ -186,13 +186,13 @@ void GameLogic::setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, 
       car->setLinearVelocity(_velo);
       // predict current position
       // TODO: use user input in prediction
-      mPhysicsWorldOld->Step(lagSettings::latencyServerToClient, 4, 8);
+      mPhysicsWorldOld->Step(LagSettings::the()->getLatencyServerToClient(), 4, 8);
       // update current state
       _ posDiff = car->getCenterPos() - carNew->getCenterPos();
       // do not interpolate if offset is too high
-      if (lagSettings::clientSideInterpolation && !(posDiff.lengthSquared() >= maxOffsetSquared / 2))
+      if (LagSettings::the()->getClientSideInterpolation() && !(posDiff.lengthSquared() >= maxOffsetSquared / 2))
       { // interpolate
-         _ velo = posDiff * lagSettings::clientSideInterpolationFactor;
+         _ velo = posDiff * LagSettings::the()->getClientSideInterpolationFactor();
          carNew->setLinearVelocity(velo);
       }
       else
@@ -270,7 +270,7 @@ void GameLogic::update(const float &_timestep)
    }
    // 2: step simulation
    {
-      if (lagSettings::clientSidePhysics || isServer())
+      if (LagSettings::the()->getClientSidePhysics() || isServer())
       {
          int32 velocityIterations = 4;
          int32 positionIterations = 8;
@@ -302,7 +302,7 @@ void GameLogic::spawnCoin()
 
 void GameLogic::coinCallback(Car *_car, Coin *_coin)
 {
-   if (!lagSettings::clientSidePhysics && !isServer())
+   if (!LagSettings::the()->getClientSidePhysics() && !isServer())
       return; // only server should handle this
    // TODO: switch variable for handling this client or/and serverside
    PlayerID player;

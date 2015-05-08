@@ -1,5 +1,6 @@
 #include "MainWindow.hh"
 #include "SimpleRacer.hh"
+#include "LagSettings.hh"
 
 #include <iostream>
 #include <QKeyEvent>
@@ -42,4 +43,24 @@ void MainWindow::changeStatusbarText(const QString &_newText)
 void MainWindow::clearStatusbarText()
 {
    mUI->statusBar->clearMessage();
+}
+
+void MainWindow::on_actionDisable_Server_Side_Latency_Compensation_triggered()
+{
+    LagSettings::the()->setServerSideCompensation(false);
+}
+
+void MainWindow::on_actionDisable_Client_Side_Latency_Compensation_triggered()
+{
+    LagSettings::the()->setClientSideCompensation(false);
+}
+
+void MainWindow::on_actionEnable_Server_Side_Latency_Compensation_triggered()
+{
+    LagSettings::the()->setServerSideCompensation(true);
+}
+
+void MainWindow::on_actionEnable_Client_Side_Latency_Compensation_triggered()
+{
+    LagSettings::the()->setClientSideCompensation(true);
 }

@@ -2,6 +2,7 @@
 #include "Common.hh"
 #include "RenderingWidget.hh"
 #include "MainWindow.hh"
+#include "LagSettings.hh"
 #include "DelaySimulator.hh"
 
 SimpleRacer *SimpleRacer::sInstance = nullptr;
@@ -10,6 +11,7 @@ void SimpleRacer::create(MainWindow *_mainWindow, RenderingWidget *_rendering)
 {
    SR_ASSERT(_rendering && "rendering is null");
    SR_ASSERT(!sInstance && "create() already called.");
+   LagSettings::the();
    sInstance = new SimpleRacer(_mainWindow, _rendering);
 }
 

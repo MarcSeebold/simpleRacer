@@ -29,7 +29,7 @@ void DelayedActions::pushDelayedAction(std::function<void ()> _function, Delayed
            {
               _function();
            });
-   float delay = (_type == DelayedActionType::CLIENT_TO_SERVER) ? lagSettings::latencyClientToServer : lagSettings::latencyServerToClient;
+   float delay = (_type == DelayedActionType::CLIENT_TO_SERVER) ? LagSettings::the()->getLatencyClientToServer() : LagSettings::the()->getLatencyServerToClient();
    delayed->start(delay * 1000); // secondsToMilliseconds
 }
 
