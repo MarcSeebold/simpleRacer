@@ -80,3 +80,8 @@ Car::Car(const Sharedb2World &_world, float _width, float _height, float _x, flo
   : PhysicsObject(_world, _width, _height, _x, _y, Type::CAR, _linearDamping, false)
 {
 }
+
+Boundary::Boundary(const Sharedb2World &_world, float _width, float _height, float _x, float _y)
+  : PhysicsObject(_world, _width, _height, _x, _y, Type::BOUNDARY, 0, true)
+{
+}

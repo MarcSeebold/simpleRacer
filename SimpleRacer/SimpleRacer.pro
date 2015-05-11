@@ -19,14 +19,14 @@ SOURCES += main.cc\
     Common.cc \
     RenderingWidget.cc \
     PhysicsObject.cc \
-    PhysicsContactListener.cc \
     NetworkEngine.cc\
     ArtificialRacer.cc \
     Testing.cc \
     InputController.cc \
     SimpleRacer.cc \
     DelaySimulator.cc \
-    LagSettings.cc
+    LagSettings.cc \
+    ContactListener.cc
 
 
 HEADERS  += MainWindow.hh \
@@ -34,14 +34,14 @@ HEADERS  += MainWindow.hh \
     Common.hh \
     RenderingWidget.hh \
     PhysicsObject.hh \
-    PhysicsContactListener.hh \
     NetworkEngine.hh\
     ArtificialRacer.hh \
     Testing.hh \
     InputController.hh \
     SimpleRacer.hh \
     DelaySimulator.hh \
-    LagSettings.hh
+    LagSettings.hh \
+    ContactListener.hh
 
 FORMS    += MainWindow.ui
 

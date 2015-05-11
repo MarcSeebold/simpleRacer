@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <Box2D/Box2D.h>
 #include "PhysicsObject.hh"
-#include "PhysicsContactListener.hh"
+#include "ContactListener.hh"
 #include "NetworkEngine.hh"
 #include "ArtificialRacer.hh"
 #include "SimpleRacer.hh"
@@ -24,7 +24,7 @@ GameLogic::GameLogic(Type _type)
   : mType(_type),
     mPhysicsWorld(new b2World(b2Vec2(0, 0))),    // no gravity
     mPhysicsWorldOld(new b2World(b2Vec2(0, 0))), // no gravity
-    mContactListener(new PhysicsContactListener())
+    mContactListener(new ContactListenerCarCoin())
 
 {
    // set custom contact listener
@@ -37,32 +37,32 @@ GameLogic::GameLogic(Type _type)
    // world
    {
       // bottom
-      mStreetBoundaries[0] = UniquePhysicsObject(
-          new PhysicsObject(mPhysicsWorld, sGameWidth, 1, sGameWidth / 2, -.5f, PhysicsObject::Type::BOUNDARY, 0, true));
+      mStreetBoundaries[0]
+          = UniqueBoundary(new Boundary(mPhysicsWorld, sGameWidth, 1, sGameWidth / 2, -.5f));
       // top
-      mStreetBoundaries[1] = UniquePhysicsObject(new PhysicsObject(
-          mPhysicsWorld, sGameWidth, 1, sGameWidth / 2, sGameHeight + .5f, PhysicsObject::Type::BOUNDARY, 0, true));
+      mStreetBoundaries[1] = UniqueBoundary(
+          new Boundary(mPhysicsWorld, sGameWidth, 1, sGameWidth / 2, sGameHeight + .5f));
       // left
-      mStreetBoundaries[2] = UniquePhysicsObject(new PhysicsObject(mPhysicsWorld, 1, sGameHeight, -.5f, sGameHeight / 2,
-                                                                   PhysicsObject::Type::BOUNDARY, 0, true));
+      mStreetBoundaries[2]
+          = UniqueBoundary(new Boundary(mPhysicsWorld, 1, sGameHeight, -.5f, sGameHeight / 2));
       // right
-      mStreetBoundaries[3] = UniquePhysicsObject(new PhysicsObject(
-          mPhysicsWorld, 1, sGameHeight, sGameWidth + .5f, sGameHeight / 2, PhysicsObject::Type::BOUNDARY, 0, true));
+      mStreetBoundaries[3] = UniqueBoundary(
+          new Boundary(mPhysicsWorld, 1, sGameHeight, sGameWidth + .5f, sGameHeight / 2));
    }
    // "old" world
    {
       // bottom
-      mStreetBoundariesOld[0] = UniquePhysicsObject(new PhysicsObject(mPhysicsWorldOld, sGameWidth, 1, sGameWidth / 2,
-                                                                      -.5f, PhysicsObject::Type::BOUNDARY, 0, true));
+      mStreetBoundariesOld[0]
+          = UniqueBoundary(new Boundary(mPhysicsWorldOld, sGameWidth, 1, sGameWidth / 2, -.5f));
       // top
-      mStreetBoundariesOld[1] = UniquePhysicsObject(new PhysicsObject(
-          mPhysicsWorldOld, sGameWidth, 1, sGameWidth / 2, sGameHeight + .5f, PhysicsObject::Type::BOUNDARY, 0, true));
+      mStreetBoundariesOld[1] = UniqueBoundary(new Boundary(mPhysicsWorldOld, sGameWidth, 1, sGameWidth / 2,
+                                                            sGameHeight + .5f));
       // left
-      mStreetBoundariesOld[2] = UniquePhysicsObject(new PhysicsObject(
-          mPhysicsWorldOld, 1, sGameHeight, -.5f, sGameHeight / 2, PhysicsObject::Type::BOUNDARY, 0, true));
+      mStreetBoundariesOld[2]
+          = UniqueBoundary(new Boundary(mPhysicsWorldOld, 1, sGameHeight, -.5f, sGameHeight / 2));
       // right
-      mStreetBoundariesOld[3] = UniquePhysicsObject(new PhysicsObject(
-          mPhysicsWorldOld, 1, sGameHeight, sGameWidth + .5f, sGameHeight / 2, PhysicsObject::Type::BOUNDARY, 0, true));
+      mStreetBoundariesOld[3] = UniqueBoundary(new Boundary(mPhysicsWorldOld, 1, sGameHeight, sGameWidth + .5f,
+                                                            sGameHeight / 2));
    }
 
    // reset state
@@ -225,13 +225,12 @@ void GameLogic::update(const float &_timestep)
    // Remove coins
    for (Coin *coin : mCoinsToRemove)
    {
-      mCoins.erase(std::remove_if(mCoins.begin(), mCoins.end(),
-                                  [coin](const UniqueCoin &_curr)
+      mCoins.erase(std::remove_if(mCoins.begin(), mCoins.end(), [coin](const UniqueCoin &_curr)
                                   {
-                                     if (_curr.get() == coin)
-                                        return true;
-                                     return false;
-                                  }),
+                      if (_curr.get() == coin)
+                         return true;
+                      return false;
+                   }),
                    mCoins.end());
    }
    mCoinsToRemove.clear();

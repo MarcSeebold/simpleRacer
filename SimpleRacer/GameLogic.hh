@@ -6,10 +6,10 @@
 #include "InputController.hh"
 
 SHARED(class, b2World);
-SHARED(class, PhysicsObject);
+SHARED(class, Boundary);
 SHARED(class, Car);
 SHARED(class, Coin);
-SHARED(class, PhysicsContactListener);
+SHARED(class, ContactListenerCarCoin);
 
 /**
  * @brief Game concept: 1 on 1 racing game.
@@ -113,19 +113,19 @@ private:
    SHARED(struct, UserInput);
 
 private:
-   Type mType;                     ///< Server or Client?
-   UniqueUserInput mUserInput;     ///< actions applied to next game state
-   Sharedb2World mPhysicsWorld;    ///< Box2D World
-   Sharedb2World mPhysicsWorldOld; ///< Box2D World. This is mPhysicsWorld, but x seconds in the past. x = latency.
-   UniqueCar mCar1;                ///< Physics object for car 1
-   UniqueCar mCar2;                ///< Physics object for car 2
-   UniqueCar mCar1Old;             ///< Physics object for car 1, but x seconds in the past. x = latency.
-   UniqueCar mCar2Old;             ///< Physics object for car 2, but x seconds in the past. x = latency.
-   UniquePhysicsObject mStreetBoundaries[4]; ///< Physics objects for end of the street
-   UniquePhysicsObject
+   Type mType;                          ///< Server or Client?
+   UniqueUserInput mUserInput;          ///< actions applied to next game state
+   Sharedb2World mPhysicsWorld;         ///< Box2D World
+   Sharedb2World mPhysicsWorldOld;      ///< Box2D World. This is mPhysicsWorld, but x seconds in the past. x = latency.
+   UniqueCar mCar1;                     ///< Physics object for car 1
+   UniqueCar mCar2;                     ///< Physics object for car 2
+   UniqueCar mCar1Old;                  ///< Physics object for car 1, but x seconds in the past. x = latency.
+   UniqueCar mCar2Old;                  ///< Physics object for car 2, but x seconds in the past. x = latency.
+   UniqueBoundary mStreetBoundaries[4]; ///< Physics objects for end of the street
+   UniqueBoundary
        mStreetBoundariesOld[4]; ///< Physics objects for end of the street, but x seconds in the past. x = latency.
-   UniquePhysicsContactListener mContactListener;       ///< Box2D contact listener
-   DelayedActions mOldWorldUpdater;                     //< This object helps us updating the past game state
+   UniqueContactListenerCarCoin mContactListener;          ///< Box2D contact listener
+   DelayedActions mOldWorldUpdater;                     ///< This object helps us updating the past game state
    std::vector<UniqueCoin> mCoins;                      ///< Coins in the world
    std::vector<Coin *> mCoinsToRemove;                  ///< Coins that should be deleted
    int mScore[2];                                       ///< the score. 0 coins at beginning
