@@ -109,6 +109,9 @@ private:
    /// Called on a Car/Boundary collision
    void callbackCarBoundary(Car *_car, Boundary *_boundary);
 
+   /// Called whenever a critical situation occurs
+   void criticalSituationOccured();
+
 private:
    struct UserInput
    {
@@ -135,7 +138,7 @@ private:
 
    UniqueContactListener mContactListener; ///< Box2D contact listener
 
-   DelayedActions mOldWorldUpdater;                     ///< This object helps us updating the past game state
+   DelayedActions mDelayedLagDisabling;                 ///< Helper for delayed stuff
    std::vector<UniqueCoin> mCoins;                      ///< Coins in the world
    std::vector<Coin *> mCoinsToRemove;                  ///< Coins that should be deleted
    int mScore[2];                                       ///< the score. 0 coins at beginning

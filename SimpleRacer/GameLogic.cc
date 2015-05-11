@@ -29,48 +29,41 @@ GameLogic::GameLogic(Type _type)
 {
    // set custom contact listener
    mContactListener->registerCallbackCarCoin([this](Car *car, Coin *coin)
-                                      {
-                                         callbackCarCoin(car, coin);
-                                      });
+                                             {
+                                                callbackCarCoin(car, coin);
+                                             });
    mContactListener->registerCallbackCarCar([this](Car *car, Car *coin)
-                                      {
-                                         callbackCarCar(car, coin);
-                                      });
+                                            {
+                                               callbackCarCar(car, coin);
+                                            });
    mContactListener->registerCallbackCarBoundary([this](Car *car, Boundary *coin)
-                                      {
-                                         callbackCarBoundary(car, coin);
-                                      });
+                                                 {
+                                                    callbackCarBoundary(car, coin);
+                                                 });
    mPhysicsWorld->SetContactListener(mContactListener.get());
    // create street boundaries
    // world
    {
       // bottom
-      mStreetBoundaries[0]
-          = UniqueBoundary(new Boundary(mPhysicsWorld, sGameWidth, 1, sGameWidth / 2, -.5f));
+      mStreetBoundaries[0] = UniqueBoundary(new Boundary(mPhysicsWorld, sGameWidth, 1, sGameWidth / 2, -.5f));
       // top
-      mStreetBoundaries[1] = UniqueBoundary(
-          new Boundary(mPhysicsWorld, sGameWidth, 1, sGameWidth / 2, sGameHeight + .5f));
+      mStreetBoundaries[1] = UniqueBoundary(new Boundary(mPhysicsWorld, sGameWidth, 1, sGameWidth / 2, sGameHeight + .5f));
       // left
-      mStreetBoundaries[2]
-          = UniqueBoundary(new Boundary(mPhysicsWorld, 1, sGameHeight, -.5f, sGameHeight / 2));
+      mStreetBoundaries[2] = UniqueBoundary(new Boundary(mPhysicsWorld, 1, sGameHeight, -.5f, sGameHeight / 2));
       // right
-      mStreetBoundaries[3] = UniqueBoundary(
-          new Boundary(mPhysicsWorld, 1, sGameHeight, sGameWidth + .5f, sGameHeight / 2));
+      mStreetBoundaries[3] = UniqueBoundary(new Boundary(mPhysicsWorld, 1, sGameHeight, sGameWidth + .5f, sGameHeight / 2));
    }
    // "old" world
    {
       // bottom
-      mStreetBoundariesOld[0]
-          = UniqueBoundary(new Boundary(mPhysicsWorldOld, sGameWidth, 1, sGameWidth / 2, -.5f));
+      mStreetBoundariesOld[0] = UniqueBoundary(new Boundary(mPhysicsWorldOld, sGameWidth, 1, sGameWidth / 2, -.5f));
       // top
-      mStreetBoundariesOld[1] = UniqueBoundary(new Boundary(mPhysicsWorldOld, sGameWidth, 1, sGameWidth / 2,
-                                                            sGameHeight + .5f));
+      mStreetBoundariesOld[1] = UniqueBoundary(new Boundary(mPhysicsWorldOld, sGameWidth, 1, sGameWidth / 2, sGameHeight + .5f));
       // left
-      mStreetBoundariesOld[2]
-          = UniqueBoundary(new Boundary(mPhysicsWorldOld, 1, sGameHeight, -.5f, sGameHeight / 2));
+      mStreetBoundariesOld[2] = UniqueBoundary(new Boundary(mPhysicsWorldOld, 1, sGameHeight, -.5f, sGameHeight / 2));
       // right
-      mStreetBoundariesOld[3] = UniqueBoundary(new Boundary(mPhysicsWorldOld, 1, sGameHeight, sGameWidth + .5f,
-                                                            sGameHeight / 2));
+      mStreetBoundariesOld[3]
+          = UniqueBoundary(new Boundary(mPhysicsWorldOld, 1, sGameHeight, sGameWidth + .5f, sGameHeight / 2));
    }
 
    // reset state
@@ -290,6 +283,8 @@ void GameLogic::update(const float &_timestep)
    }
    // reset input
    mUserInput->reset();
+   // Update delayed stuff
+   mDelayedLagDisabling.update();
 }
 
 void GameLogic::spawnCoin()
@@ -309,6 +304,7 @@ void GameLogic::spawnCoin()
 
 void GameLogic::callbackCarCoin(Car *_car, Coin *_coin)
 {
+   criticalSituationOccured();
    if (!LagSettings::the()->getClientSidePhysics() && !isServer())
       return; // only server should handle this
    // TODO: switch variable for handling this client or/and serverside
@@ -332,12 +328,33 @@ void GameLogic::callbackCarCoin(Car *_car, Coin *_coin)
 
 void GameLogic::callbackCarCar(Car *_carA, Car *_carB)
 {
-    std::cerr << "car car" << std::endl;
+   (void)&_carA;
+   (void)&_carB;
+   criticalSituationOccured();
 }
 
 void GameLogic::callbackCarBoundary(Car *_car, Boundary *_boundary)
 {
-    std::cerr << "car boundary" << std::endl;
+   (void)&_car;
+   (void)&_boundary;
+   criticalSituationOccured();
+}
+
+void GameLogic::criticalSituationOccured()
+{
+   _ probability = LagSettings::the()->getLagProbability();
+   float random = rand() % 100;
+   if (random >= 100.f * probability)
+   {
+      // activate lag for a period of time
+      LagSettings::the()->setLagEnabled(true);
+      mDelayedLagDisabling.clear(); // ensure there is only one delayed task
+      _ func = [this]()
+      {
+         LagSettings::the()->setLagEnabled(false);
+      };
+      mDelayedLagDisabling.pushDelayedAction(func, LagSettings::the()->getLagDuration());
+   }
 }
 
 void GameLogic::UserInput::reset()

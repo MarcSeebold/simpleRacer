@@ -20,28 +20,47 @@ int64_t common::getCurrentTimestamp()
 }
 
 
-void DelayedActions::pushDelayedAction(std::function<void ()> _function, DelayedActionType _type)
+void DelayedActions::pushDelayedAction(std::function<void()> _function, DelayedActionType _type)
 {
    _ delayed = new QTimer();
    mDelayedActions.push_back(delayed);
    delayed->setSingleShot(true);
    connect(delayed, &QTimer::timeout, [this, _function]()
            {
-              _function();
-           });
-   float delay = (_type == DelayedActionType::CLIENT_TO_SERVER) ? LagSettings::the()->getLatencyClientToServer() : LagSettings::the()->getLatencyServerToClient();
+      _function();
+   });
+   float delay = (_type == DelayedActionType::CLIENT_TO_SERVER) ? LagSettings::the()->getLatencyClientToServer()
+                                                                : LagSettings::the()->getLatencyServerToClient();
    delayed->start(delay * 1000); // secondsToMilliseconds
+}
+
+void DelayedActions::pushDelayedAction(std::function<void()> _function, float _delay)
+{
+   _ delayed = new QTimer();
+   mDelayedActions.push_back(delayed);
+   delayed->setSingleShot(true);
+   connect(delayed, &QTimer::timeout, [this, _function]()
+           {
+      _function();
+   });
+   delayed->start(_delay * 1000); // secondsToMilliseconds
+}
+
+void DelayedActions::clear()
+{
+   for (const _ &a : mDelayedActions)
+      delete a;
+   mDelayedActions.clear();
 }
 
 
 DelayedActions::DelayedActions()
 {
-
 }
 
 DelayedActions::~DelayedActions()
 {
-   for (_& a : mDelayedActions)
+   for (_ &a : mDelayedActions)
       delete a;
    mDelayedActions.clear();
 }

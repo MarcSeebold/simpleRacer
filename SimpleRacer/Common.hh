@@ -25,7 +25,14 @@ public:
       SERVER_TO_CLIENT,
       CLIENT_TO_SERVER
    };
+   /// Simulates lag by executing the given function delayed
    void pushDelayedAction(std::function<void()> _function, DelayedActionType _type);
+
+   /// Execute the given function after _delay seconds
+   void pushDelayedAction(std::function<void()> _function, float _delay);
+
+   /// Stops all delayed actions and delets them
+   void clear();
 
 private:
    std::vector<QTimer*> mDelayedActions;
