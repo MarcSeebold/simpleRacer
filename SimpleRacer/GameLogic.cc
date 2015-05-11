@@ -24,13 +24,21 @@ GameLogic::GameLogic(Type _type)
   : mType(_type),
     mPhysicsWorld(new b2World(b2Vec2(0, 0))),    // no gravity
     mPhysicsWorldOld(new b2World(b2Vec2(0, 0))), // no gravity
-    mContactListener(new ContactListenerCarCoin())
+    mContactListener(new ContactListener())
 
 {
    // set custom contact listener
-   mContactListener->registerCallback([this](Car *car, Coin *coin)
+   mContactListener->registerCallbackCarCoin([this](Car *car, Coin *coin)
                                       {
-                                         coinCallback(car, coin);
+                                         callbackCarCoin(car, coin);
+                                      });
+   mContactListener->registerCallbackCarCar([this](Car *car, Car *coin)
+                                      {
+                                         callbackCarCar(car, coin);
+                                      });
+   mContactListener->registerCallbackCarBoundary([this](Car *car, Boundary *coin)
+                                      {
+                                         callbackCarBoundary(car, coin);
                                       });
    mPhysicsWorld->SetContactListener(mContactListener.get());
    // create street boundaries
@@ -299,7 +307,7 @@ void GameLogic::spawnCoin()
       mCoinSpawnCallback(QVector2D(posX, posY));
 }
 
-void GameLogic::coinCallback(Car *_car, Coin *_coin)
+void GameLogic::callbackCarCoin(Car *_car, Coin *_coin)
 {
    if (!LagSettings::the()->getClientSidePhysics() && !isServer())
       return; // only server should handle this
@@ -320,6 +328,16 @@ void GameLogic::coinCallback(Car *_car, Coin *_coin)
       mCoinCollectedCallback(_coin->getCenterPos());
 
    ++mScore[(int)player];
+}
+
+void GameLogic::callbackCarCar(Car *_carA, Car *_carB)
+{
+    std::cerr << "car car" << std::endl;
+}
+
+void GameLogic::callbackCarBoundary(Car *_car, Boundary *_boundary)
+{
+    std::cerr << "car boundary" << std::endl;
 }
 
 void GameLogic::UserInput::reset()

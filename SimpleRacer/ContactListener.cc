@@ -3,28 +3,65 @@
 #include "PhysicsObject.hh"
 #include "Common.hh"
 
-template <class A, class B>
-void ContactListener<A,B>::BeginContact(b2Contact *_contact)
+void ContactListener::BeginContact(b2Contact *_contact)
 {
-    if (!mCallback)
-       return;
-
-    PhysicsObject *aClass = (PhysicsObject *)_contact->GetFixtureA()->GetBody()->GetUserData();
-    PhysicsObject *bClass = (PhysicsObject *)_contact->GetFixtureB()->GetBody()->GetUserData();
-    _ obj1 = dynamic_cast<A *>(aClass);
-    _ obj2 = dynamic_cast<B *>(aClass);
-
-    A *objA = (obj1 ? obj1 : dynamic_cast<A *>(bClass));
-    B *objb = (obj2 ? obj2 : dynamic_cast<B *>(bClass));
-
-    if (objA && objb)
-    {
-       // coin->
-       mCallback(objA, objb);
-    }
+   PhysicsObject *aClass = (PhysicsObject *)_contact->GetFixtureA()->GetBody()->GetUserData();
+   PhysicsObject *bClass = (PhysicsObject *)_contact->GetFixtureB()->GetBody()->GetUserData();
+   if (aClass == nullptr || bClass == nullptr)
+   {
+      SR_ASSERT(0 && "Unknown physic object");
+      return; // unknown object
+   }
+   _ carA = dynamic_cast<Car *>(aClass);
+   _ carB = dynamic_cast<Car *>(bClass);
+   // 1: Get a car
+   Car *car = nullptr;
+   PhysicsObject *otherObject = nullptr;
+   if (carA != nullptr)
+   {
+      car = carA;
+      otherObject = bClass;
+   }
+   else if (carB != nullptr)
+   {
+      car = carB;
+      otherObject = aClass;
+   }
+   else
+      return; // we only handle car/? collisions
+   // 2: Get type of the other object and call callback
+   switch (otherObject->getType())
+   {
+   case PhysicsObject::Type::BOUNDARY:
+   {
+      if (!mCallbackCarBoundary)
+         return;
+      _ boundary = dynamic_cast<Boundary *>(otherObject);
+      SR_ASSERT(boundary && "expected a boundary obj");
+      mCallbackCarBoundary(car, boundary);
+   }
+   break;
+   case PhysicsObject::Type::CAR:
+   {
+      if (!mCallbackCarCar)
+         return;
+      _ otherCar = dynamic_cast<Car *>(otherObject);
+      SR_ASSERT(otherCar && "expected a car obj");
+      mCallbackCarCar(car, otherCar);
+   }
+   break;
+   case PhysicsObject::Type::COIN:
+   {
+      if (!mCallbackCarCoin)
+         return;
+      _ coin = dynamic_cast<Coin *>(otherObject);
+      SR_ASSERT(coin && "expected a coin obj");
+      mCallbackCarCoin(car, coin);
+   }
+   break;
+   case PhysicsObject::Type::OTHER: // fallthrough
+   default:
+      // Ignore unknown objects
+      break;
+   }
 }
-
-// specializations
-template void ContactListener<Car,Coin>::BeginContact(b2Contact *_contact);
-template void ContactListener<Car,Car>::BeginContact(b2Contact *_contact);
-template void ContactListener<Car,Boundary>::BeginContact(b2Contact *_contact);

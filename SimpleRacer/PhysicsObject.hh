@@ -35,6 +35,7 @@ public:
    void setCenterPos(const QVector2D &_pos);
    void setLinearVelocity(const QVector2D &_velocity);
    void disableCollisions();
+   Type getType() const { return mType; }
 
 protected:
    b2Body *mBody = nullptr;
