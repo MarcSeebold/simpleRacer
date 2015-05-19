@@ -260,7 +260,7 @@ void GameLogic::update(const float &_timestep)
             steerUp(PlayerID::P1);
          }
       }
-      float factorX = 19;
+      float factorX = 30;
       float factorY = 12;
       mCar1->applyForce(QVector2D(mUserInput->deltaX[0] * factorX, 0));
       mCar1->applyForce(QVector2D(0, mUserInput->deltaY[0] * factorY));
@@ -344,10 +344,12 @@ void GameLogic::criticalSituationOccured()
 {
    _ probability = LagSettings::the()->getLagProbability();
    float random = rand() % 100;
-   if (random >= 100.f * probability)
+   std::cerr << random << " vs " << 100.f * probability << std::endl;
+   if (random <= 100.f * probability)
    {
       // activate lag for a period of time
       LagSettings::the()->setLagEnabled(true);
+
       mDelayedLagDisabling.clear(); // ensure there is only one delayed task
       _ func = [this]()
       {

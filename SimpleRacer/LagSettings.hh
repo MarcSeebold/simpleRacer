@@ -58,7 +58,7 @@ private:
    bool mServerSideLagCompensation = false; // TODO: implement
    // Other
    /// Factor for applying prediction
-   float mClientSideInterpolationFactor = 5;
+   float mClientSideInterpolationFactor = 9;
 
    /// Singleton instance
    static LagSettings* instance;
@@ -73,6 +73,7 @@ public: // Getter
    GETTER(ServerSideLagCompensation);
    GETTER(ClientSideInterpolationFactor);
    GETTER(LagDuration);
-   PROPERTY(LagEnabled);
+   GETTER(LagEnabled);
+   void setLagEnabled(bool _val);
    float getLagProbability() const;
 };

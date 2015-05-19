@@ -1,4 +1,5 @@
 #include "LagSettings.hh"
+#include <iostream>
 
 LagSettings* LagSettings::instance = nullptr;
 
@@ -34,6 +35,12 @@ float LagSettings::getLatencyClientToServer() const
     if (!getLagEnabled())
         return 0.f;
     return mLatencyClientToServer;
+}
+
+void LagSettings::setLagEnabled(bool _val)
+{
+   std::cerr << "Set lag to: " << (_val? "enabled":"disabled") << std::endl;
+   mLagEnabled = _val;
 }
 
 float LagSettings::getLagProbability() const
