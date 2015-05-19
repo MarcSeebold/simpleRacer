@@ -281,6 +281,18 @@ void GameLogic::update(const float &_timestep)
    {
       // Done via collision-callback: coinCallback(...)
    }
+   // 4: Keep a copy of the world state for X seconds (for server-side lag compensation)
+   if (isServer())
+   {
+      _ func = [this]()
+      {
+         // set car position and velocity (only for car1, since AI has no delay to the server)
+         mCar1Old->setCenterPos(mCar1->getCenterPos());
+         mCar1Old->setLinearVelocity(mCar1->getLinearVelocity());
+      };
+      // execute it after x seconds
+      mDelayedLagDisabling.pushDelayedAction(func, LagSettings::the()->getLagDuration());
+   }
    // reset input
    mUserInput->reset();
    // Update delayed stuff

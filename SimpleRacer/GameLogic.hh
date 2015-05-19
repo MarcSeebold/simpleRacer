@@ -139,6 +139,7 @@ private:
    UniqueContactListener mContactListener; ///< Box2D contact listener
 
    DelayedActions mDelayedLagDisabling;                 ///< Helper for delayed stuff
+   DelayedActions mDelayedServerCarPosUpdate;           ///< Helper for synchronizing server lag compensation
    std::vector<UniqueCoin> mCoins;                      ///< Coins in the world
    std::vector<Coin *> mCoinsToRemove;                  ///< Coins that should be deleted
    int mScore[2];                                       ///< the score. 0 coins at beginning
