@@ -2,7 +2,6 @@
 #include <cassert>
 #include <iostream>
 #include <QDateTime>
-#include <QTimer>
 #include "LagSettings.hh"
 
 void _sr_assert_fail(const char *_expr, const char *_file, int _line, const char *_function)
@@ -22,28 +21,26 @@ int64_t common::getCurrentTimestamp()
 
 void DelayedActions::pushDelayedAction(std::function<void()> _function, DelayedActionType _type)
 {
-   _ delayed = new QTimer();
-   mDelayedActions.push_back(delayed);
-   delayed->setSingleShot(true);
-   connect(delayed, &QTimer::timeout, [this, _function]()
-           {
-      _function();
-   });
    float delay = (_type == DelayedActionType::CLIENT_TO_SERVER) ? LagSettings::the()->getLatencyClientToServer()
                                                                 : LagSettings::the()->getLatencyServerToClient();
-   delayed->start(delay * 1000); // secondsToMilliseconds
+   if (delay == 0)
+      _function();
+   else
+   {
+      _ a = new DelayedAction{common::getCurrentTimestamp() + int64_t(delay * 1000.f) /*s to ms*/, _function};
+      mDelayedActions.push_back(a);
+   }
 }
 
 void DelayedActions::pushDelayedAction(std::function<void()> _function, float _delay)
 {
-   _ delayed = new QTimer();
-   mDelayedActions.push_back(delayed);
-   delayed->setSingleShot(true);
-   connect(delayed, &QTimer::timeout, [this, _function]()
-           {
+   if (_delay == 0)
       _function();
-   });
-   delayed->start(_delay * 1000); // secondsToMilliseconds
+   else
+   {
+      _ a = new DelayedAction{common::getCurrentTimestamp() + int64_t(_delay * 1000.f) /*s to ms*/, _function};
+      mDelayedActions.push_back(a);
+   }
 }
 
 void DelayedActions::clear()
@@ -67,18 +64,20 @@ DelayedActions::~DelayedActions()
 
 void DelayedActions::update()
 {
-   // clean up delayed actions
+   // execute delayed actions
+   _ currT = common::getCurrentTimestamp();
    for (_ it = mDelayedActions.begin(); it != mDelayedActions.end();)
    {
-      if (!(*it)->isActive())
+      DelayedAction *a = *it;
+      if (a->timestamp <= currT)
       {
-         _ obj = *it;
+         // execute func and erase action
+         a->function();
+         delete a;
+         a = nullptr;
          it = mDelayedActions.erase(it);
-         delete obj;
       }
       else
-      {
          ++it;
-      }
    }
 }

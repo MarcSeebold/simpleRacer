@@ -104,9 +104,9 @@ void GameLogic::reset()
    {
       // cars for the "past" world
       // spawn car1 on top left
-      mCar1Old = UniqueCar(new Car(mPhysicsWorldOld, sCarWidth, sCarHeight, sCarWidth / 2, sCarHeight / 2, linearDamping));
+      mCar1Old = UniqueCar(new Car(mPhysicsWorldOld, sCarWidth, sCarHeight, sCarWidth / 2, sCarHeight / 2, 0));
       // spawn car2 on bottom left
-      mCar2Old = UniqueCar(new Car(mPhysicsWorldOld, sCarWidth, sCarHeight, sCarWidth / 2, sGameHeight - sCarHeight / 2, linearDamping));
+      mCar2Old = UniqueCar(new Car(mPhysicsWorldOld, sCarWidth, sCarHeight, sCarWidth / 2, sGameHeight - sCarHeight / 2, 0));
    }
 
    // reset other member vars
@@ -133,7 +133,9 @@ void GameLogic::steerDown(PlayerID _id)
 QVector2D GameLogic::getCarCenterPosition(PlayerID _id)
 {
    if (_id == PlayerID::P1)
+   {
       return mCar1->getCenterPos();
+   }
    else
       return mCar2->getCenterPos();
 }
@@ -266,6 +268,18 @@ void GameLogic::update(const float &_timestep)
       mCar1->applyForce(QVector2D(0, mUserInput->deltaY[0] * factorY));
       mCar2->applyForce(QVector2D(mUserInput->deltaX[1] * factorX, 0));
       mCar2->applyForce(QVector2D(0, mUserInput->deltaY[1] * factorY));
+      // do this for the "old" game state too
+      {
+         _ func = [this, factorX, factorY]()
+         {
+            mCar1Old->applyForce(QVector2D(mUserInput->deltaX[0] * factorX, 0));
+            mCar1Old->applyForce(QVector2D(0, mUserInput->deltaY[0] * factorY));
+            mCar2Old->applyForce(QVector2D(mUserInput->deltaX[1] * factorX, 0));
+            mCar2Old->applyForce(QVector2D(0, mUserInput->deltaY[1] * factorY));
+         };
+         // execute it after x seconds
+         mDelayedLagDisabling.pushDelayedAction(func, LagSettings::the()->getLatencyClientToServer());
+      }
       // server only: client input
    }
    // 2: step simulation
@@ -286,17 +300,31 @@ void GameLogic::update(const float &_timestep)
    {
       _ func = [this]()
       {
-         // set car position and velocity (only for car1, since AI has no delay to the server)
+         // set car positions and velocities
          mCar1Old->setCenterPos(mCar1->getCenterPos());
+         mCar2Old->setCenterPos(mCar2->getCenterPos());
          mCar1Old->setLinearVelocity(mCar1->getLinearVelocity());
+         mCar2Old->setLinearVelocity(mCar2->getLinearVelocity());
       };
       // execute it after x seconds
-      mDelayedLagDisabling.pushDelayedAction(func, LagSettings::the()->getLagDuration());
+      mDelayedLagDisabling.pushDelayedAction(func, LagSettings::the()->getLatencyClientToServer());
+   }
+   // 5: actual server-side lag compensation: step old physics world and update present
+   if (isServer() && LagSettings::the()->getServerSideLagCompensation())
+   {
+      // server-side lag compensation for player 1
+      // step old physics world to present
+      // it would be more accurate to re-play AI's input. however, this is not so easy.
+      mPhysicsWorldOld->Step(LagSettings::the()->getLatencyClientToServer(), 4, 8);
+      // store new data (only for P1!, P2 lives on the server)
+      mCar1->setCenterPos(mCar1Old->getCenterPos());
+      mCar1->setLinearVelocity(mCar1Old->getLinearVelocity());
    }
    // reset input
    mUserInput->reset();
    // Update delayed stuff
    mDelayedLagDisabling.update();
+   mDelayedServerCarPosUpdate.update();
 }
 
 void GameLogic::spawnCoin()

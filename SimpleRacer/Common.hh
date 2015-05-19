@@ -14,6 +14,13 @@ class QTimer;
 class DelayedActions : public QObject
 {
    Q_OBJECT
+
+private:
+   struct DelayedAction{
+      int64_t timestamp;
+      std::function<void()> function;
+   };
+
 public:
    DelayedActions();
    ~DelayedActions();
@@ -35,7 +42,7 @@ public:
    void clear();
 
 private:
-   std::vector<QTimer*> mDelayedActions;
+   std::vector<DelayedAction*> mDelayedActions;
 };
 
 /// Unique player id
