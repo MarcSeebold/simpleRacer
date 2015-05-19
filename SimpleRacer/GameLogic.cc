@@ -344,7 +344,6 @@ void GameLogic::criticalSituationOccured()
 {
    _ probability = LagSettings::the()->getLagProbability();
    float random = rand() % 100;
-   std::cerr << random << " vs " << 100.f * probability << std::endl;
    if (random <= 100.f * probability)
    {
       // activate lag for a period of time

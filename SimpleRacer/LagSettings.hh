@@ -3,9 +3,10 @@
 
 enum class LagProbability
 {
-    LOW,
-    MEDIUM,
-    HIGH
+   LOW,
+   MEDIUM,
+   HIGH,
+   CUSTOM
 };
 
 class LagSettings
@@ -28,9 +29,10 @@ private:
    float mLagProbabilityLow = 0.1f;
    float mLagProbabilityMedium = 0.5f;
    float mLagProbabilityHigh = 0.9f;
+   float mLagProbabilityCustom = 0.5f;
    /// @}
    /// Current selected probability
-   LagProbability mLagProbability = LagProbability::LOW;
+   LagProbability mLagProbability = LagProbability::CUSTOM;
 
    /// How long is the lag activated after triggered (seconds)
    float mLagDuration = 1.0f;
@@ -66,14 +68,17 @@ private:
 public: // Getter
    float getLatencyServerToClient() const;
    float getLatencyClientToServer() const;
+   SETTER(LatencyServerToClient);
+   SETTER(LatencyClientToServer);
    GETTER(ClientSidePhysics);
    GETTER(ShortCircuiting);
    GETTER(ClientSidePrediction);
    GETTER(ClientSideInterpolation);
    GETTER(ServerSideLagCompensation);
    GETTER(ClientSideInterpolationFactor);
-   GETTER(LagDuration);
+   PROPERTY(LagDuration);
    GETTER(LagEnabled);
+   SETTER(LagProbabilityCustom);
    void setLagEnabled(bool _val);
    float getLagProbability() const;
 };

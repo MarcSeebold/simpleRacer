@@ -1,5 +1,7 @@
 #include "LagSettings.hh"
 #include <iostream>
+#include <QApplication>
+#include "MainWindow.hh"
 
 LagSettings* LagSettings::instance = nullptr;
 
@@ -20,41 +22,51 @@ void LagSettings::setClientSideCompensation(bool _val)
 
 void LagSettings::setServerSideCompensation(bool _val)
 {
-    mServerSideLagCompensation = _val;
+   mServerSideLagCompensation = _val;
+}
+
+void LagSettings::setLagProbability(LagProbability _probability)
+{
+   mLagProbability = _probability;
 }
 
 float LagSettings::getLatencyServerToClient() const
 {
-    if (!getLagEnabled())
-        return 0.f;
-    return mLatencyServerToClient;
+   if (!getLagEnabled())
+      return 0.f;
+   return mLatencyServerToClient;
 }
 
 float LagSettings::getLatencyClientToServer() const
 {
-    if (!getLagEnabled())
-        return 0.f;
-    return mLatencyClientToServer;
+   if (!getLagEnabled())
+      return 0.f;
+   return mLatencyClientToServer;
 }
 
 void LagSettings::setLagEnabled(bool _val)
 {
-   std::cerr << "Set lag to: " << (_val? "enabled":"disabled") << std::endl;
+   _ widget = qApp->topLevelWidgets().first();
+   _ mainWindow = dynamic_cast<MainWindow*>(widget);
+   if (mainWindow)
+      mainWindow->setLagStatusLabel(_val);
    mLagEnabled = _val;
 }
 
 float LagSettings::getLagProbability() const
 {
-    switch (mLagProbability)
-    {
-        case LagProbability::LOW:
-            return mLagProbabilityLow;
-        case LagProbability::MEDIUM:
-            return mLagProbabilityMedium;
-        case LagProbability::HIGH:
-            return mLagProbabilityHigh;
-        default:
-            SR_ASSERT("Unknown lag probability value");
-    }
-    return -1.f;
+   switch (mLagProbability)
+   {
+   case LagProbability::LOW:
+      return mLagProbabilityLow;
+   case LagProbability::MEDIUM:
+      return mLagProbabilityMedium;
+   case LagProbability::HIGH:
+      return mLagProbabilityHigh;
+   case LagProbability::CUSTOM:
+      return mLagProbabilityCustom;
+   default:
+      SR_ASSERT("Unknown lag probability value");
+   }
+   return -1.f;
 }

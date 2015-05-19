@@ -12,6 +12,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mUI(new Ui::MainW
 
    connect(mUI->actionStart_Singleplayer, &QAction::triggered, SimpleRacer::the(), &SimpleRacer::startGame);
    connect(mUI->actionExit, &QAction::triggered, SimpleRacer::the(), &SimpleRacer::exitGame);
+   // set focus on game
+   mUI->widget->setFocus();
 }
 
 MainWindow::~MainWindow()
@@ -45,22 +47,65 @@ void MainWindow::clearStatusbarText()
    mUI->statusBar->clearMessage();
 }
 
-void MainWindow::on_actionDisable_Server_Side_Latency_Compensation_triggered()
+void MainWindow::setLagStatusLabel(bool _val)
 {
-    LagSettings::the()->setServerSideCompensation(false);
+   mUI->labelLagStatus->setText((_val? "on":"off"));
 }
 
-void MainWindow::on_actionDisable_Client_Side_Latency_Compensation_triggered()
+void MainWindow::on_checkBox_stateChanged(int arg1)
 {
-    LagSettings::the()->setClientSideCompensation(false);
+   bool checked = (arg1 == Qt::Checked);
+   LagSettings::the()->setClientSideCompensation(checked);
+   // set focus on game
+   mUI->widget->setFocus();
 }
 
-void MainWindow::on_actionEnable_Server_Side_Latency_Compensation_triggered()
+void MainWindow::on_checkBox_2_stateChanged(int arg1)
 {
-    LagSettings::the()->setServerSideCompensation(true);
+   bool checked = (arg1 == Qt::Checked);
+   LagSettings::the()->setServerSideCompensation(checked);
+   // set focus on game
+   mUI->widget->setFocus();
 }
 
-void MainWindow::on_actionEnable_Client_Side_Latency_Compensation_triggered()
+void MainWindow::on_pushButton_clicked()
 {
-    LagSettings::the()->setClientSideCompensation(true);
+   // lag amount
+   {
+      bool ok = true;
+      float l = mUI->editLatency->text().toInt(&ok);
+      l /= 1000; // ms to s
+      if (ok && l >= 0)
+      {
+         LagSettings::the()->setLatencyServerToClient(l);
+         LagSettings::the()->setLatencyClientToServer(l);
+      }
+      else
+         mUI->editLatency->setText("150");
+   }
+   // lag probability
+   {
+      bool ok = true;
+      float p = mUI->editProbability->text().toFloat(&ok);
+      if (p >= 0 && p <= 1 && ok)
+      {
+         LagSettings::the()->setLagProbability(LagProbability::CUSTOM);
+         LagSettings::the()->setLagProbabilityCustom(p);
+      }
+      else
+         mUI->editProbability->setText("0.5");
+   }
+   // lag duration
+   {
+      bool ok = true;
+      float d = mUI->editDuration->text().toFloat(&ok);
+      if (d >= 0 && ok)
+      {
+         LagSettings::the()->setLagDuration(d);
+      }
+      else
+         mUI->editDuration->setText("1.0");
+   }
+   // set focus on game
+   mUI->widget->setFocus();
 }

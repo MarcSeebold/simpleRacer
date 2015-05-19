@@ -25,14 +25,14 @@ public slots:
    /// Clears status bar text
    void clearStatusbarText();
 
+   void setLagStatusLabel(bool _val);
+
 private slots:
-   void on_actionDisable_Server_Side_Latency_Compensation_triggered();
+   void on_checkBox_stateChanged(int arg1);
 
-   void on_actionDisable_Client_Side_Latency_Compensation_triggered();
+   void on_checkBox_2_stateChanged(int arg1);
 
-   void on_actionEnable_Server_Side_Latency_Compensation_triggered();
-
-   void on_actionEnable_Client_Side_Latency_Compensation_triggered();
+   void on_pushButton_clicked();
 
 private:
    Ui::MainWindow *mUI = nullptr;
