@@ -12,7 +12,7 @@ enum class LagProbability
 class LagSettings
 {
 public:
-    /// Singelton getter
+   /// Singelton getter
    static LagSettings* the();
 
    /// Enable/Disable artificial lag
@@ -23,6 +23,7 @@ public:
 
    /// Set lag probability
    void setLagProbability(LagProbability _probability);
+
 private:
    /// Probabilities that a critical game situations activates lag
    /// @{
@@ -60,7 +61,7 @@ private:
    bool mServerSideLagCompensation = false; // TODO: implement
    // Other
    /// Factor for applying prediction
-   float mClientSideInterpolationFactor = 9;
+   float mClientSideInterpolationFactor = 2;
 
    /// Singleton instance
    static LagSettings* instance;

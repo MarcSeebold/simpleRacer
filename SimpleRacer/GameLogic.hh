@@ -85,6 +85,8 @@ public:
    void setCoinSpawnCallback(void (*_func)(QVector2D)) { mCoinSpawnCallback = _func; }
    void setCoinCollectedCallback(void (*_func)(QVector2D)) { mCoinCollectedCallback = _func; }
 
+   void setKeyStatus(const InputController::KeyStatus &_status) { mKeyStatus = _status; }
+
 public: // client only: setter for server data
    /// Sets the position of _player's car in the physics engine.
    void setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, const QVector2D &_velo);
@@ -113,17 +115,17 @@ private:
    void criticalSituationOccured();
 
 private:
-   struct UserInput
+   struct AIInput
    {
       void reset();
       int deltaX[2]; ///< Horizontal Delta
       int deltaY[2]; ///< Vertical Delta
    };
-   SHARED(struct, UserInput);
+   SHARED(struct, AIInput);
 
 private:
    Type mType;                     ///< Server or Client?
-   UniqueUserInput mUserInput;     ///< actions applied to next game state
+   UniqueAIInput mAIInput;       ///< actions applied to next game state
    Sharedb2World mPhysicsWorld;    ///< Box2D World
    Sharedb2World mPhysicsWorldOld; ///< Box2D World. This is mPhysicsWorld, but x seconds in the past. x = latency.
 

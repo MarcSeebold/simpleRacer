@@ -46,10 +46,13 @@ float LagSettings::getLatencyClientToServer() const
 
 void LagSettings::setLagEnabled(bool _val)
 {
-   _ widget = qApp->topLevelWidgets().first();
-   _ mainWindow = dynamic_cast<MainWindow*>(widget);
-   if (mainWindow)
-      mainWindow->setLagStatusLabel(_val);
+    for (_ const & w : qApp->topLevelWidgets())
+    {
+        _ mainWindow = dynamic_cast<MainWindow*>(w);
+        if (mainWindow)
+           mainWindow->setLagStatusLabel(_val);
+    }
+
    mLagEnabled = _val;
 }
 

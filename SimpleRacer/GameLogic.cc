@@ -10,6 +10,7 @@
 #include "ArtificialRacer.hh"
 #include "SimpleRacer.hh"
 #include "LagSettings.hh"
+#include <qmath.h>
 
 #include <qdebug.h>
 
@@ -72,7 +73,6 @@ GameLogic::GameLogic(Type _type)
 
 GameLogic::~GameLogic()
 {
-   mUserInput = nullptr;
    mCar1 = nullptr;
    mCar2 = nullptr;
    for (int i = 0; i < 4; ++i)
@@ -94,13 +94,6 @@ void GameLogic::reset()
    mCar1 = UniqueCar(new Car(mPhysicsWorld, sCarWidth, sCarHeight, sCarWidth / 2, sCarHeight / 2, linearDamping));
    // spawn car2 on bottom left
    mCar2 = UniqueCar(new Car(mPhysicsWorld, sCarWidth, sCarHeight, sCarWidth / 2, sGameHeight - sCarHeight / 2, linearDamping));
-   if (isClient())
-   {
-      // disable collisions on client-side
-      // either this must be done by prediction or server handles collisions
-      mCar1->disableCollisions();
-      mCar2->disableCollisions();
-   }
    {
       // cars for the "past" world
       // spawn car1 on top left
@@ -110,24 +103,24 @@ void GameLogic::reset()
    }
 
    // reset other member vars
-   mUserInput = UniqueUserInput(new UserInput);
+   mAIInput = UniqueAIInput(new AIInput);
 
    for (int i : {0, 1})
       mScore[i] = 0;
 
-   mUserInput->reset();
+   mAIInput->reset();
 }
 
 void GameLogic::steerUp(PlayerID _id)
 {
    _ id = (int)_id;
-   mUserInput->deltaY[id]++;
+   mAIInput->deltaY[id]++;
 }
 
 void GameLogic::steerDown(PlayerID _id)
 {
    _ id = (int)_id;
-   mUserInput->deltaY[id]--;
+   mAIInput->deltaY[id]--;
 }
 
 QVector2D GameLogic::getCarCenterPosition(PlayerID _id)
@@ -188,18 +181,30 @@ void GameLogic::setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, 
       car->setCenterPos(_pos);
       car->setLinearVelocity(_velo);
       // predict current position
-      // TODO: use user input in prediction
       mPhysicsWorldOld->Step(LagSettings::the()->getLatencyServerToClient(), 4, 8);
       // update current state
       _ posDiff = car->getCenterPos() - carNew->getCenterPos();
       // do not interpolate if offset is too high
       if (LagSettings::the()->getClientSideInterpolation() && !(posDiff.lengthSquared() >= maxOffsetSquared / 2))
       { // interpolate
-         _ velo = posDiff * LagSettings::the()->getClientSideInterpolationFactor();
-         carNew->setLinearVelocity(velo);
+         // we use a exponential function for position correction
+         // why: small errors are tolerable, but big errors not
+         _ signedPow = [](float x) -> float
+         {
+            bool minus = (x < 0);
+            x = qAbs(x);
+            x = x * x;
+            x *= (minus ? -1.f : 1.f);
+            return x;
+         };
+         _ squaredPosDiff = QVector2D(signedPow(posDiff.x()), signedPow(posDiff.y()));
+         _ velo = squaredPosDiff * LagSettings::the()->getClientSideInterpolationFactor();
+         // the current velocity already cointains user input
+         carNew->setLinearVelocity(car->getLinearVelocity() + velo);
       }
       else
       { // hard-set
+         std::cerr << "hard-set" << std::endl;
          carNew->setCenterPos(car->getCenterPos());
          carNew->setLinearVelocity(car->getLinearVelocity());
       }
@@ -214,13 +219,13 @@ void GameLogic::setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, 
 void GameLogic::accelerate(PlayerID _id)
 {
    _ id = (int)_id;
-   mUserInput->deltaX[id]++;
+   mAIInput->deltaX[id]++;
 }
 
 void GameLogic::decelerate(PlayerID _id)
 {
    _ id = (int)_id;
-   mUserInput->deltaX[id]--;
+   mAIInput->deltaX[id]--;
 }
 
 void GameLogic::update(const float &_timestep)
@@ -264,18 +269,22 @@ void GameLogic::update(const float &_timestep)
       }
       float factorX = 30;
       float factorY = 12;
-      mCar1->applyForce(QVector2D(mUserInput->deltaX[0] * factorX, 0));
-      mCar1->applyForce(QVector2D(0, mUserInput->deltaY[0] * factorY));
-      mCar2->applyForce(QVector2D(mUserInput->deltaX[1] * factorX, 0));
-      mCar2->applyForce(QVector2D(0, mUserInput->deltaY[1] * factorY));
+      // player
+      int dirX = (mKeyStatus.right ? 1 : 0) + (mKeyStatus.left ? -1 : 0);
+      int dirY = (mKeyStatus.up ? 1 : 0) + (mKeyStatus.down ? -1 : 0);
+      mCar1->applyForce(QVector2D(dirX * factorX, 0));
+      mCar1->applyForce(QVector2D(0, dirY * factorY));
+      // AI
+      mCar2->applyForce(QVector2D(mAIInput->deltaX[1] * factorX, 0));
+      mCar2->applyForce(QVector2D(0, mAIInput->deltaY[1] * factorY));
       // do this for the "old" game state too
       {
-         _ func = [this, factorX, factorY]()
+         _ func = [this, factorX, factorY, dirX, dirY]()
          {
-            mCar1Old->applyForce(QVector2D(mUserInput->deltaX[0] * factorX, 0));
-            mCar1Old->applyForce(QVector2D(0, mUserInput->deltaY[0] * factorY));
-            mCar2Old->applyForce(QVector2D(mUserInput->deltaX[1] * factorX, 0));
-            mCar2Old->applyForce(QVector2D(0, mUserInput->deltaY[1] * factorY));
+            mCar1Old->applyForce(QVector2D(dirX * factorX, 0));
+            mCar1Old->applyForce(QVector2D(0, dirY * factorY));
+            mCar2Old->applyForce(QVector2D(mAIInput->deltaX[1] * factorX, 0));
+            mCar2Old->applyForce(QVector2D(0, mAIInput->deltaY[1] * factorY));
          };
          // execute it after x seconds
          mDelayedLagDisabling.pushDelayedAction(func, LagSettings::the()->getLatencyClientToServer());
@@ -320,8 +329,8 @@ void GameLogic::update(const float &_timestep)
       mCar1->setCenterPos(mCar1Old->getCenterPos());
       mCar1->setLinearVelocity(mCar1Old->getLinearVelocity());
    }
-   // reset input
-   mUserInput->reset();
+   // reset AI input
+   mAIInput->reset();
    // Update delayed stuff
    mDelayedLagDisabling.update();
    mDelayedServerCarPosUpdate.update();
@@ -398,7 +407,7 @@ void GameLogic::criticalSituationOccured()
    }
 }
 
-void GameLogic::UserInput::reset()
+void GameLogic::AIInput::reset()
 {
    deltaX[0] = 0;
    deltaX[1] = 0;

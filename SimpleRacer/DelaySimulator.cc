@@ -19,7 +19,6 @@ void DelaySimulator::update()
 
 void DelaySimulator::csSendInput(InputController::KeyStatus _keys)
 {
-   // TODO: send keyup & keydown
    mDelayManager.pushDelayedAction(
        [this, _keys]()
        {

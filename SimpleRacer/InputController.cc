@@ -54,22 +54,5 @@ void InputController::keyReleaseEvent(QKeyEvent* e)
 void InputController::update()
 {
    if (LagSettings::the()->getShortCircuiting())
-   {
-      if (mKeyStatus.down)
-      {
-         mGameLogicClient->steerDown(PlayerID::P1);
-      }
-      if (mKeyStatus.left)
-      {
-         mGameLogicClient->decelerate(PlayerID::P1);
-      }
-      if (mKeyStatus.right)
-      {
-         mGameLogicClient->accelerate(PlayerID::P1);
-      }
-      if (mKeyStatus.up)
-      {
-         mGameLogicClient->steerUp(PlayerID::P1);
-      }
-   }
+      mGameLogicClient->setKeyStatus(mKeyStatus);
 }
