@@ -75,6 +75,7 @@ void MainWindow::on_pushButton_clicked()
       bool ok = true;
       float l = mUI->editLatency->text().toInt(&ok);
       l /= 1000; // ms to s
+      l /= 2; // latency: server->client + client->server
       if (ok && l >= 0)
       {
          LagSettings::the()->setLatencyServerToClient(l);
