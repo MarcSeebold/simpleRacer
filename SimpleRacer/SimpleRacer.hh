@@ -6,7 +6,7 @@
 #include "QTimer"
 #include "ArtificialRacer.hh"
 
-#define SR_GAMESTEPTIME (1/60.f * 1000.f) // every 16,666... ms = 1/60s * 1000s/ms = 60Hz
+#define SR_GAMESTEPTIME (1 / 60.f * 1000.f) // every 16,666... ms = 1/60s * 1000s/ms = 60Hz
 
 class MainWindow;
 class RenderingWidget;
@@ -36,6 +36,7 @@ public: // static getter
 
 public slots:
    void startGame();
+   void stopGame();
    void exitGame();
    void update();
 
@@ -53,6 +54,7 @@ private:
    SharedInputController mInput;
    SharedArtificialRacer mAI;
    SharedDelaySimulator mSynch;
+   float mTimeLeft = -1; ///< Game-Timer
 
    RenderingWidget *mRendering = nullptr;
    MainWindow *mMainWindow = nullptr;

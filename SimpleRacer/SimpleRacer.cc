@@ -13,6 +13,7 @@ void SimpleRacer::create(MainWindow *_mainWindow, RenderingWidget *_rendering)
    SR_ASSERT(!sInstance && "create() already called.");
    LagSettings::the();
    sInstance = new SimpleRacer(_mainWindow, _rendering);
+   _mainWindow->mUI->widget->hide();
 }
 
 void SimpleRacer::destroy()
@@ -40,26 +41,63 @@ void SimpleRacer::coinSpawnedCallback(QVector2D _pos)
 
 void SimpleRacer::startGame()
 {
+   mMainWindow->mUI->labelBG->hide();
+   mMainWindow->mUI->widget->show();
+   mTimeLeft = 60.f; // One minute gameplay
    mGameTimer.start(SR_GAMESTEPTIME);
    mRunning = true;
 }
 
-void SimpleRacer::exitGame()
+void SimpleRacer::stopGame()
 {
    mGameTimer.stop();
    logicClient()->reset();
    logicServer()->reset();
    mRunning = false;
+}
+
+void SimpleRacer::exitGame()
+{
+   if (isRunning())
+      stopGame();
    exit(EXIT_SUCCESS);
 }
 
 void SimpleRacer::update()
 {
+   const float timeStep = SR_GAMESTEPTIME / 1000.f; // ms -> s
+   // Game-Timer
+   {
+      mTimeLeft -= timeStep;
+      if (mTimeLeft <= 0)
+      {
+         mMainWindow->mUI->labelTimer->setText("0");
+         int scoreP1 = mLogicServer->getScore(PlayerID::P1);
+         int scoreP2 = mLogicServer->getScore(PlayerID::P2);
+         // time's up: game over
+         stopGame();
+         // declare winner
+         {
+            mMainWindow->mUI->widget->hide();
+            QString gameOverText = "Game Over\n";
+            if (scoreP1 > scoreP2)
+               gameOverText += "You have won!";
+            else if (scoreP1 < scoreP2)
+               gameOverText += "You have lost!";
+            else
+               gameOverText += "Draw!";
+            mMainWindow->mUI->labelBG->setText(gameOverText);
+            mMainWindow->mUI->labelBG->show();
+         }
+         return;
+      }
+      mMainWindow->mUI->labelTimer->setText(QString::number((int)mTimeLeft));
+   }
    // Input
    mInput->update();
    // Game Logic
-   mLogicClient->update(SR_GAMESTEPTIME / 1000.f); // ms -> s
-   mLogicServer->update(SR_GAMESTEPTIME / 1000.f); // ms -> s
+   mLogicClient->update(timeStep);
+   mLogicServer->update(timeStep);
    // AI
    mAI->tellOwnPosition(mLogicServer->getCarCenterPosition(PlayerID::P2));
    mAI->update();
