@@ -46,13 +46,17 @@ void RenderingWidget::paintEvent(QPaintEvent *event)
    _ carHeight = GameLogic::sCarHeight / convFac;
    QSize carTarget(carWidth, carHeight);
 
-   static QImage car(":/assets/car.png");
-   static QImage carScaled;
+   static QImage carRed(":/assets/carRed.png");
+   static QImage carBlue(":/assets/carBlue.png");
+   static QImage carScaledP1;
+   static QImage carScaledP2;
    static QSize currSize = size();
-   if (size() != currSize || !carScaled.valid(1, 1))
+   if (size() != currSize || !carScaledP1.valid(1, 1) || !carScaledP2.valid(1, 1))
    {
-      carScaled = car.scaled(carTarget, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+      carScaledP1 = carRed.scaled(carTarget, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+      carScaledP2 = carBlue.scaled(carTarget, Qt::KeepAspectRatio, Qt::SmoothTransformation);
    }
+
 
    for (int p : {0, 1})
    {
@@ -64,8 +68,7 @@ void RenderingWidget::paintEvent(QPaintEvent *event)
       x -= carWidth / 2;
       y -= carHeight / 2;
 
-
-      painter.drawImage(x, y, carScaled);
+      painter.drawImage(x, y, (p == 0? carScaledP1 : carScaledP2));
    }
 
    // draw coins

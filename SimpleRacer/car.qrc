@@ -1,7 +1,8 @@
 <RCC>
     <qresource prefix="/">
-        <file>assets/car.png</file>
         <file>assets/coin.png</file>
         <file>assets/mud.png</file>
+        <file>assets/carBlue.png</file>
+        <file>assets/carRed.png</file>
     </qresource>
 </RCC>
