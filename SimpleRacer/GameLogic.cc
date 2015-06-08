@@ -18,6 +18,7 @@ const float GameLogic::sConversionFactor = 1 / 15.f;
 const float GameLogic::sCarHeight = 16.f * 3 * GameLogic::sConversionFactor;
 const float GameLogic::sCarWidth = 35.f * 3 * GameLogic::sConversionFactor;
 const float GameLogic::sCoinSize = 30.f * GameLogic::sConversionFactor;
+const float GameLogic::sMudSize = 50.f * GameLogic::sConversionFactor;
 const float GameLogic::sGameWidth = 800.f * GameLogic::sConversionFactor;
 const float GameLogic::sGameHeight = 300.f * GameLogic::sConversionFactor;
 
@@ -33,6 +34,10 @@ GameLogic::GameLogic(Type _type)
                                              {
                                                 callbackCarCoin(car, coin);
                                              });
+   mContactListener->registerCallbackCarMud([this](Car *car, Mud *mud)
+                                            {
+                                               callbackCarMud(car, mud);
+                                            });
    mContactListener->registerCallbackCarCar([this](Car *car, Car *coin)
                                             {
                                                callbackCarCar(car, coin);
@@ -81,6 +86,7 @@ GameLogic::~GameLogic()
       mStreetBoundariesOld[i] = nullptr;
    mContactListener = nullptr;
    mCoins.clear();
+   mMuds.clear();
    mPhysicsWorld = nullptr;
    mPhysicsWorldOld = nullptr;
 }
@@ -88,6 +94,7 @@ GameLogic::~GameLogic()
 void GameLogic::reset()
 {
    mCoins.clear();
+   mMuds.clear();
    // create cars
    _ linearDamping = 2.f;
    // spawn car1 on top left
@@ -151,6 +158,16 @@ std::vector<QVector2D> GameLogic::getCoins()
    return res;
 }
 
+std::vector<QVector2D> GameLogic::getMuds()
+{
+   std::vector<QVector2D> res;
+   for (_ const &mud : mMuds)
+   {
+      res.push_back(mud->getCenterPos());
+   }
+   return res;
+}
+
 int GameLogic::getScore(PlayerID _id)
 {
    _ id = (int)_id;
@@ -164,6 +181,16 @@ void GameLogic::setCoins(const std::vector<QVector2D> &_coins)
    {
       _ coin = UniqueCoin(new Coin(mPhysicsWorld, sCoinSize, sCoinSize, c.x(), c.y()));
       mCoins.push_back(std::move(coin));
+   }
+}
+
+void GameLogic::setMuds(const std::vector<QVector2D> &_muds)
+{
+   mMuds.clear();
+   for (_ const &m : _muds)
+   {
+      _ mud = UniqueMud(new Mud(mPhysicsWorld, sMudSize, sMudSize, m.x(), m.y()));
+      mMuds.push_back(std::move(mud));
    }
 }
 
@@ -230,21 +257,53 @@ void GameLogic::decelerate(PlayerID _id)
 
 void GameLogic::update(const float &_timestep)
 {
+   // find coins and mud puddles that left the play-field
+   {
+      for (_ const &c : mCoins)
+      {
+         if (c->getCenterPos().x() < 0)
+            mCoinsToRemove.push_back(c.get());
+      }
+      for (_ const &m : mMuds)
+      {
+         if (m->getCenterPos().x() < 0)
+            mMudsToRemove.push_back(m.get());
+      }
+   }
+
    // Remove coins
    for (Coin *coin : mCoinsToRemove)
    {
-      mCoins.erase(std::remove_if(mCoins.begin(), mCoins.end(), [coin](const UniqueCoin &_curr)
+      mCoins.erase(std::remove_if(mCoins.begin(), mCoins.end(),
+                                  [coin](const UniqueCoin &_curr)
                                   {
-                      if (_curr.get() == coin)
-                         return true;
-                      return false;
-                   }),
+                                     if (_curr.get() == coin)
+                                        return true;
+                                     return false;
+                                  }),
                    mCoins.end());
    }
    mCoinsToRemove.clear();
+   // Remove mud puddles
+   for (Mud *mud : mMudsToRemove)
+   {
+      mMuds.erase(std::remove_if(mMuds.begin(), mMuds.end(),
+                                 [mud](const UniqueMud &_curr)
+                                 {
+                                    if (_curr.get() == mud)
+                                       return true;
+                                    return false;
+                                 }),
+                  mMuds.end());
+   }
+   mMudsToRemove.clear();
 
+   // spawn stuff
    if (mCoins.size() < 1)
       spawnCoin();
+   if (mMuds.size() < 1)
+      spawnMud();
+
    // 5: Update delayed stuff
    mDelayedLagDisabling.update();
    mDelayedServerCarPosUpdate.update();
@@ -346,14 +405,96 @@ void GameLogic::spawnCoin()
    // only server must create new coins
    if (!isServer())
       return;
-   // todo: spawn coins far away from cars
-   float posX = sCoinSize / 2.f + (rand() % (int)(sGameWidth - sCoinSize));
-   float posY = sCoinSize / 2.f + (rand() % (int)(sGameHeight - sCoinSize));
+   // random y-pos, but on the right
+   float posX = sCoinSize / 2.f + ((int)(sGameWidth - sCoinSize));
+   float posY = -1;
+   // Get a random y-value. However, do not place coins to close to mud puddles
+   _ rndY = [this]()
+   {
+      return sCoinSize + (rand() % (int)(sGameHeight - sCoinSize));
+   };
+   if (mMuds.empty())
+   {
+      posY = rndY();
+   }
+   else
+   {
+      QVector2D mudPos = mMuds[0]->getCenterPos();
+      float distanceToMud = 0;
+      while (distanceToMud <= sMudSize + sCoinSize)
+      {
+         posY = rndY();
+         distanceToMud = std::abs(mudPos.distanceToPoint(QVector2D(posX, posY)));
+      }
+   }
    _ coin = UniqueCoin(new Coin(mPhysicsWorld, sCoinSize, sCoinSize, posX, posY));
+   // let coins move to the left over time
+   coin->setLinearVelocity(QVector2D(-10, 0));
    mCoins.push_back(std::move(coin));
    // tell AI
    if (mCoinSpawnCallback)
       mCoinSpawnCallback(QVector2D(posX, posY));
+}
+
+void GameLogic::spawnMud()
+{
+   // only server must create new mud puddles
+   if (!isServer())
+      return;
+   // random y-pos, but on the right
+   float posX = sMudSize / 2.f + ((int)(sGameWidth - sMudSize));
+   float posY = -1;
+   // Get a random y-value. However, do not place mud puddles to close to coins
+   _ rndY = [this]()
+   {
+      return sMudSize + (rand() % (int)(sGameHeight - sMudSize));
+   };
+   if (mCoins.empty())
+   {
+      posY = rndY();
+   }
+   else
+   {
+      QVector2D coinPos = mCoins[0]->getCenterPos();
+      float distanceToCoin = 0;
+      while (distanceToCoin <= sMudSize + sCoinSize)
+      {
+         posY = rndY();
+         distanceToCoin = std::abs(coinPos.distanceToPoint(QVector2D(posX, posY)));
+      }
+   }
+   _ mud = UniqueMud(new Mud(mPhysicsWorld, sMudSize, sMudSize, posX, posY));
+   // let mud puddles move to the left over time
+   mud->setLinearVelocity(QVector2D(-10, 0));
+   mMuds.push_back(std::move(mud));
+   // tell AI
+   if (mMudSpawnCallback)
+      mMudSpawnCallback(QVector2D(posX, posY));
+}
+
+void GameLogic::callbackCarMud(Car *_car, Mud *_mud)
+{
+   criticalSituationOccured();
+   if (!LagSettings::the()->getClientSidePhysics() && !isServer())
+      return; // only server should handle this
+   // TODO: switch variable for handling this client or/and serverside
+   PlayerID player;
+   if (mCar1.get() == _car)
+      player = PlayerID::P1;
+   else if (mCar2.get() == _car)
+      player = PlayerID::P2;
+   else
+   {
+      SR_ASSERT(0 && "Unknown car");
+      return;
+   }
+
+   mMudsToRemove.push_back(_mud);
+   if (mMudCollectedCallback)
+      mMudCollectedCallback(_mud->getCenterPos());
+
+   // hit mud puddle: minus 2 points
+   mScore[(int)player] -= 2;
 }
 
 void GameLogic::callbackCarCoin(Car *_car, Coin *_coin)
@@ -377,6 +518,7 @@ void GameLogic::callbackCarCoin(Car *_car, Coin *_coin)
    if (mCoinCollectedCallback)
       mCoinCollectedCallback(_coin->getCenterPos());
 
+   // collected coin: 1 point
    ++mScore[(int)player];
 }
 

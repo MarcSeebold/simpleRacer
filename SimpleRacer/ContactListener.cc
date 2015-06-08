@@ -59,6 +59,15 @@ void ContactListener::BeginContact(b2Contact *_contact)
       mCallbackCarCoin(car, coin);
    }
    break;
+   case PhysicsObject::Type::MUD:
+   {
+      if (!mCallbackCarMud)
+         return;
+      _ mud = dynamic_cast<Mud *>(otherObject);
+      SR_ASSERT(mud && "expected a mud obj");
+      mCallbackCarMud(car, mud);
+   }
+   break;
    case PhysicsObject::Type::OTHER: // fallthrough
    default:
       // Ignore unknown objects

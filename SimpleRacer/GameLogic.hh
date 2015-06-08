@@ -9,6 +9,7 @@ SHARED(class, b2World);
 SHARED(class, Boundary);
 SHARED(class, Car);
 SHARED(class, Coin);
+SHARED(class, Mud);
 SHARED(class, ContactListener);
 
 /**
@@ -40,6 +41,7 @@ public:
    static const float sCarHeight;
    static const float sCarWidth;
    static const float sCoinSize;
+   static const float sMudSize;
    static const float sGameWidth;
    static const float sGameHeight;
 
@@ -80,10 +82,18 @@ public:
    /// Get positions of all coins
    std::vector<QVector2D> getCoins();
 
+   /// Get positions of all mud puddles
+   std::vector<QVector2D> getMuds();
+
    int getScore(PlayerID _id);
 
+   // Coin callbacks
    void setCoinSpawnCallback(void (*_func)(QVector2D)) { mCoinSpawnCallback = _func; }
    void setCoinCollectedCallback(void (*_func)(QVector2D)) { mCoinCollectedCallback = _func; }
+
+   // Mud callbacks
+   void setMudSpawnCallback(void (*_func)(QVector2D)) { mMudSpawnCallback = _func; }
+   void setMudCollectedCallback(void (*_func)(QVector2D)) { mMudCollectedCallback = _func; }
 
    void setKeyStatus(const InputController::KeyStatus &_status) { mKeyStatus = _status; }
 
@@ -99,8 +109,17 @@ private:
    /// Replace all coins by _coins
    void setCoins(const std::vector<QVector2D> &_coins);
 
-   /// Spawns a coin at a random position
+   /// Replace all mud puddles by _muds
+   void setMuds(const std::vector<QVector2D> &_muds);
+
+   /// Spawns a coin
    void spawnCoin();
+
+   /// Spawns a mud puddle
+   void spawnMud();
+
+   /// Called when a mud puddle has been collected
+   void callbackCarMud(Car *_car, Mud *_mud);
 
    /// Called when a coin has been collected
    void callbackCarCoin(Car *_car, Coin *_coin);
@@ -125,7 +144,7 @@ private:
 
 private:
    Type mType;                     ///< Server or Client?
-   UniqueAIInput mAIInput;       ///< actions applied to next game state
+   UniqueAIInput mAIInput;         ///< actions applied to next game state
    Sharedb2World mPhysicsWorld;    ///< Box2D World
    Sharedb2World mPhysicsWorldOld; ///< Box2D World. This is mPhysicsWorld, but x seconds in the past. x = latency.
 
@@ -143,10 +162,14 @@ private:
    DelayedActions mDelayedLagDisabling;                 ///< Helper for delayed stuff
    DelayedActions mDelayedServerCarPosUpdate;           ///< Helper for synchronizing server lag compensation
    std::vector<UniqueCoin> mCoins;                      ///< Coins in the world
+   std::vector<UniqueMud> mMuds;                        ///< Mud puddles in the world
    std::vector<Coin *> mCoinsToRemove;                  ///< Coins that should be deleted
+   std::vector<Mud *> mMudsToRemove;                    ///< Mud puddles that should be deleted
    int mScore[2];                                       ///< the score. 0 coins at beginning
    void (*mCoinSpawnCallback)(QVector2D) = nullptr;     ///< Callback for coin spawning
    void (*mCoinCollectedCallback)(QVector2D) = nullptr; ///< Callback for coin collecting
+   void (*mMudSpawnCallback)(QVector2D) = nullptr;     ///< Callback for mud spawning
+   void (*mMudCollectedCallback)(QVector2D) = nullptr; ///< Callback for mud collecting
    InputController::KeyStatus mKeyStatus;               ///< Keys pressed (interesting for server only)
 
    friend class DelaySimulator;

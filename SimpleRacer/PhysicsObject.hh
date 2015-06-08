@@ -10,6 +10,7 @@ public:
    enum class Type : char
    {
       COIN,
+      MUD,
       CAR,
       BOUNDARY,
       OTHER
@@ -49,7 +50,13 @@ protected:
 class Coin : public PhysicsObject
 {
 public:
-   Coin(const Sharedb2World &_world, float _width, float _height, float _x, float _y, float _linearDamping = 0.f);
+   Coin(const Sharedb2World &_world, float _width, float _height, float _x, float _y);
+};
+
+class Mud : public PhysicsObject
+{
+public:
+   Mud(const Sharedb2World &_world, float _width, float _height, float _x, float _y);
 };
 
 class Car : public PhysicsObject

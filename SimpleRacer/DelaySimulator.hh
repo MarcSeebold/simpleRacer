@@ -25,6 +25,7 @@ public:
    // Server -> Client
    void scSendCar(PlayerID _player, QVector2D _position, QVector2D _velocity);
    void scSendCoins(std::vector<QVector2D> _coins);
+   void scSendMuds(std::vector<QVector2D> _muds);
    void scSendScore(PlayerID _player, int _score);
 
 private:

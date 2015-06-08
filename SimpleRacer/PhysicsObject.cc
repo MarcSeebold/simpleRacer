@@ -70,8 +70,8 @@ void PhysicsObject::disableCollisions()
    mBody->GetFixtureList()->SetSensor(true);
 }
 
-Coin::Coin(const Sharedb2World &_world, float _width, float _height, float _x, float _y, float _linearDamping)
-  : PhysicsObject(_world, _width, _height, _x, _y, Type::COIN, _linearDamping, true)
+Coin::Coin(const Sharedb2World &_world, float _width, float _height, float _x, float _y)
+  : PhysicsObject(_world, _width, _height, _x, _y, Type::COIN, 0, false)
 {
    disableCollisions();
 }
@@ -84,4 +84,11 @@ Car::Car(const Sharedb2World &_world, float _width, float _height, float _x, flo
 Boundary::Boundary(const Sharedb2World &_world, float _width, float _height, float _x, float _y)
   : PhysicsObject(_world, _width, _height, _x, _y, Type::BOUNDARY, 0, true)
 {
+}
+
+
+Mud::Mud(const Sharedb2World &_world, float _width, float _height, float _x, float _y)
+  : PhysicsObject(_world, _width, _height, _x, _y, Type::MUD, 0, false)
+{
+   disableCollisions();
 }

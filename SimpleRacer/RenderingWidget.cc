@@ -69,20 +69,41 @@ void RenderingWidget::paintEvent(QPaintEvent *event)
    }
 
    // draw coins
-   static QImage coinImg(":/assets/coin.png");
-   static QImage coinScaled;
-   coinScaled = coinImg.scaled(QSize(GameLogic::sCoinSize / convFac, GameLogic::sCoinSize / convFac),
-                               Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
-   _ coins = SimpleRacer::logicClient()->getCoins();
-   for (_ const &coin : coins)
    {
-      _ x = coin.x() / convFac;
-      _ y = (GameLogic::sGameHeight - coin.y()) / convFac;
-      // convert center pos to top left
-      x -= GameLogic::sCoinSize / convFac / 2;
-      y -= GameLogic::sCoinSize / convFac / 2;
-      painter.drawImage(x, y, coinScaled);
+      static QImage coinImg(":/assets/coin.png");
+      static QImage coinScaled;
+      coinScaled = coinImg.scaled(QSize(GameLogic::sCoinSize / convFac, GameLogic::sCoinSize / convFac),
+                                  Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+      _ coins = SimpleRacer::logicClient()->getCoins();
+      for (_ const &coin : coins)
+      {
+         _ x = coin.x() / convFac;
+         _ y = (GameLogic::sGameHeight - coin.y()) / convFac;
+         // convert center pos to top left
+         x -= GameLogic::sCoinSize / convFac / 2;
+         y -= GameLogic::sCoinSize / convFac / 2;
+         painter.drawImage(x, y, coinScaled);
+      }
+   }
+
+   // draw muds
+   {
+      static QImage mudImg(":/assets/mud.png");
+      static QImage mudScaled;
+      mudScaled = mudImg.scaled(QSize(GameLogic::sMudSize / convFac, GameLogic::sMudSize / convFac),
+                                Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+      _ muds = SimpleRacer::logicClient()->getMuds();
+      for (_ const &mud : muds)
+      {
+         _ x = mud.x() / convFac;
+         _ y = (GameLogic::sGameHeight - mud.y()) / convFac;
+         // convert center pos to top left
+         x -= GameLogic::sMudSize / convFac / 2;
+         y -= GameLogic::sMudSize / convFac / 2;
+         painter.drawImage(x, y, mudScaled);
+      }
    }
 
    painter.end();

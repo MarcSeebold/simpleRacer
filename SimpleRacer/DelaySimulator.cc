@@ -44,7 +44,17 @@ void DelaySimulator::scSendCoins(std::vector<QVector2D> _coins)
        {
           mGameLogicClient->setCoins(_coins);
        },
-       DelayedActions::DelayedActionType::SERVER_TO_CLIENT);
+   DelayedActions::DelayedActionType::SERVER_TO_CLIENT);
+}
+
+void DelaySimulator::scSendMuds(std::vector<QVector2D> _muds)
+{
+   mDelayManager.pushDelayedAction(
+       [this, _muds]()
+       {
+          mGameLogicClient->setMuds(_muds);
+       },
+   DelayedActions::DelayedActionType::SERVER_TO_CLIENT);
 }
 
 void DelaySimulator::scSendScore(PlayerID _player, int _score)

@@ -115,6 +115,7 @@ void SimpleRacer::update()
       mSynch->scSendCar(PlayerID::P2, mLogicServer->getCarCenterPosition(PlayerID::P2),
                         mLogicServer->getCarLinearVelocity(PlayerID::P2));
       mSynch->scSendCoins(mLogicServer->getCoins());
+      mSynch->scSendMuds(mLogicServer->getMuds());
       mSynch->scSendScore(PlayerID::P1, mLogicServer->getScore(PlayerID::P1));
       mSynch->scSendScore(PlayerID::P2, mLogicServer->getScore(PlayerID::P2));
       // Update function
