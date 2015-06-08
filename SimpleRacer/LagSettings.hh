@@ -43,25 +43,25 @@ private:
 
    /// Latencies in seconds
    /// @{
-   float mLatencyServerToClient = 150 /*ms*/ / 1000.f;
-   float mLatencyClientToServer = 150 /*ms*/ / 1000.f;
+   float mLatencyServerToClient = 200 /*ms*/ / 1000.f;
+   float mLatencyClientToServer = 200 /*ms*/ / 1000.f;
    /// @}
 
    // Client
    /// Client-side lag settings
    /// @{
-   bool mClientSidePhysics = false;
-   bool mShortCircuiting = false; // TODO: implement properly
-   bool mClientSidePrediction = false;
-   bool mClientSideInterpolation = false;
+   bool mClientSidePhysics = true;
+   bool mShortCircuiting = true;
+   bool mClientSidePrediction = true;
+   bool mClientSideInterpolation = true;
    /// @}
 
    // Server
    /// Server-side lag settings
-   bool mServerSideLagCompensation = false; // TODO: implement
+   bool mServerSideLagCompensation = true;
    // Other
    /// Factor for applying prediction
-   float mClientSideInterpolationFactor = 2;
+   float mClientSideInterpolationFactor = 3;
 
    /// Singleton instance
    static LagSettings* instance;

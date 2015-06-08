@@ -126,6 +126,9 @@
     <property name="text">
      <string>Client-Side Compensation</string>
     </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_2">
     <property name="geometry">
@@ -138,6 +141,9 @@
     </property>
     <property name="text">
      <string>Server-Side Compensation</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QLineEdit" name="editProbability">
@@ -163,7 +169,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>150</string>
+     <string>200</string>
     </property>
    </widget>
    <widget class="QLabel" name="label">
