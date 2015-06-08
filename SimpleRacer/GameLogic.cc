@@ -258,6 +258,33 @@ void GameLogic::decelerate(PlayerID _id)
 
 void GameLogic::update(const float &_timestep)
 {
+   // interpolate coins and mud?
+   if (isClient())
+   {
+      if (LagSettings::the()->getClientSideInterpolation())
+      {
+         for (_ const &c : mCoins)
+         {
+            c->setLinearVelocity(QVector2D(-7.9f, 0));
+         }
+         for (_ const &m : mMuds)
+         {
+            m->setLinearVelocity(QVector2D(-7.9f, 0));
+         }
+      }
+      else
+      {
+         for (_ const &c : mCoins)
+         {
+            c->setLinearVelocity(QVector2D(0, 0));
+         }
+         for (_ const &m : mMuds)
+         {
+            m->setLinearVelocity(QVector2D(0, 0));
+         }
+      }
+   }
+
    // find coins and mud puddles that left the play-field
    {
       for (_ const &c : mCoins)
@@ -455,7 +482,7 @@ void GameLogic::spawnCoin()
    }
    _ coin = UniqueCoin(new Coin(mPhysicsWorld, sCoinSize, sCoinSize, posX, posY));
    // let coins move to the left over time
-   coin->setLinearVelocity(QVector2D(-7.9f, 0));
+   coin->setLinearVelocity(QVector2D(-7.8f, 0));
    mCoins.push_back(std::move(coin));
    // tell AI
    if (mCoinSpawnCallback)
@@ -491,7 +518,7 @@ void GameLogic::spawnMud()
    }
    _ mud = UniqueMud(new Mud(mPhysicsWorld, sMudSize, sMudSize, posX, posY));
    // let mud puddles move to the left over time
-   mud->setLinearVelocity(QVector2D(-7.9f, 0));
+   mud->setLinearVelocity(QVector2D(-7.8f, 0));
    mMuds.push_back(std::move(mud));
    // tell AI
    if (mMudSpawnCallback)
@@ -531,7 +558,7 @@ void GameLogic::callbackCarMud(Car *_car, Mud *_mud)
 
       // hit mud puddle: minus 2 points
       mScore[(int)player] -= 2;
-      _ eventType = (player == PlayerID::P1)? StatisticsEngine::EventType::P1MUD : StatisticsEngine::EventType::P2MUD;
+      _ eventType = (player == PlayerID::P1) ? StatisticsEngine::EventType::P1MUD : StatisticsEngine::EventType::P2MUD;
       StatisticsEngine::the()->tellEvent(eventType);
    }
 }
@@ -568,7 +595,7 @@ void GameLogic::callbackCarCoin(Car *_car, Coin *_coin)
 
       // collected coin: 1 point
       ++mScore[(int)player];
-      _ eventType = (player == PlayerID::P1)? StatisticsEngine::EventType::P1COIN : StatisticsEngine::EventType::P2COIN;
+      _ eventType = (player == PlayerID::P1) ? StatisticsEngine::EventType::P1COIN : StatisticsEngine::EventType::P2COIN;
       StatisticsEngine::the()->tellEvent(eventType);
    }
 }
@@ -596,7 +623,7 @@ void GameLogic::callbackCarBoundary(Car *_car, Boundary *_boundary)
 bool GameLogic::criticalSituationOccured()
 {
    _ probability = LagSettings::the()->getLagProbability();
-   float random = rand() % 100 + 1; // 100 values: [1,100]
+   float random = rand() % 100 + 1;   // 100 values: [1,100]
    if (random <= 100.f * probability) // probability: [0,1] * 100 -> [0,100]
    {
       // activate lag for a period of time
