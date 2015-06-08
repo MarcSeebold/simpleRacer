@@ -61,7 +61,7 @@ private:
    bool mServerSideLagCompensation = true;
    // Other
    /// Factor for applying prediction
-   float mClientSideInterpolationFactor = 2.f;
+   float mClientSideInterpolationFactor = 2.3f;
 
    /// Singleton instance
    static LagSettings* instance;

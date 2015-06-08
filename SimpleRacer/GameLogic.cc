@@ -200,7 +200,6 @@ void GameLogic::setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, 
    SR_ASSERT(isClient() && "Client-only function");
 
    static float maxOffsetSquared = 10 * 10;
-   static int errorCount = 0; // count big position errors
    const UniqueCar &carNew = (_player == PlayerID::P1) ? mCar1 : mCar2;
 
    if (LagSettings::the()->getClientSidePrediction())
@@ -215,10 +214,8 @@ void GameLogic::setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, 
       _ posDiff = car->getCenterPos() - carNew->getCenterPos();
       // server position differs largely from ours
       bool highOffset = (posDiff.lengthSquared() >= maxOffsetSquared / 2);
-      if (highOffset)
-         errorCount++;
       // do not interpolate if offset is too high
-      if (LagSettings::the()->getClientSideInterpolation() && (!highOffset || errorCount < 10))
+      if (LagSettings::the()->getClientSideInterpolation() && !highOffset)
       { // interpolate
          // we use a exponential function for position correction
          // why: small errors are tolerable, but big errors not
@@ -231,18 +228,14 @@ void GameLogic::setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, 
             return x;
          };
          _ squaredPosDiff = QVector2D(signedPow(posDiff.x()), signedPow(posDiff.y()));
-         // game states are nearly synchronized. reset error counter.
-         if (squaredPosDiff.lengthSquared() < 3*3)
-            errorCount = 0;
+
          _ velo = squaredPosDiff * LagSettings::the()->getClientSideInterpolationFactor();
          // the current velocity already contains user input
-         //carNew->setLinearVelocity(car->getLinearVelocity());
-         carNew->applyForce(velo * 3);
+         carNew->setLinearVelocity(car->getLinearVelocity() + velo);
       }
       else
       { // hard-set
          std::cerr << "hard-set" << std::endl;
-         errorCount = 0;
          carNew->setCenterPos(car->getCenterPos());
          carNew->setLinearVelocity(car->getLinearVelocity());
       }
