@@ -20,6 +20,7 @@ void SimpleRacer::create(MainWindow *_mainWindow, RenderingWidget *_rendering)
 void SimpleRacer::destroy()
 {
    SR_ASSERT(sInstance && "destroy called without create or twice");
+   StatisticsEngine::the()->saveToFile();
    delete sInstance;
    sInstance = nullptr;
 }

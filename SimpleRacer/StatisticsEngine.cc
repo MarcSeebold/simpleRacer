@@ -1,4 +1,9 @@
 #include "StatisticsEngine.hh"
+#include <QFile>
+#include <QDir>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
 
 StatisticsEngine *StatisticsEngine::sInstance = nullptr;
 
@@ -46,12 +51,92 @@ void StatisticsEngine::tellEvent(StatisticsEngine::EventType _type)
    }
 }
 
+void StatisticsEngine::saveToFile()
+{
+   QDir dir("./stats/");
+   if (!dir.exists())
+      dir.mkpath("."); // ensure path exists
+   QFile h("./stats/" + QString::number(common::getCurrentTimestamp()));
+   _ ok = h.open(QIODevice::ReadWrite | QIODevice::Text);
+   SR_ASSERT(ok && "failed to open file");
+   QJsonArray jStats;
+   // use json for saving stats
+   for (_ const &s : mGameStats)
+   {
+      QJsonObject jStat;
+      jStat["round"] = s.first;
+      s.second->write(jStat);
+      jStats.append(jStat);
+   }
+   QJsonDocument jDoc(jStats);
+   h.write(jDoc.toJson());
+   h.close();
+}
+
+void StatisticsEngine::GameStat::Collision::write(QJsonObject &_json)
+{
+   // helper function for enum stringification
+   _ colTypeToString = [](PhysicsObject::Type _type) -> QString
+   {
+      switch (_type)
+      {
+      case PhysicsObject::Type::BOUNDARY:
+         return "BOUNDARY";
+         break;
+      case PhysicsObject::Type::CAR:
+         return "CAR";
+         break;
+      case PhysicsObject::Type::COIN:
+         return "COIN";
+         break;
+      case PhysicsObject::Type::MUD:
+         return "MUD";
+         break;
+      case PhysicsObject::Type::OTHER:
+         return "OTHER";
+         break;
+      default:
+         SR_ASSERT(0 && "unhandled case");
+         return "INVALID";
+      }
+   };
+   // serialize
+   _json["objA"] = colTypeToString(objAType);
+   _json["objB"] = colTypeToString(objBType);
+   _json["latActive"] = latencyActive;
+   _json["latTriggered"] = triggeredLatency;
+   _json["timestamp"] = QString::number(timestamp);
+   _json["player"] = (int)involvedPlayer;
+}
+
+
+void StatisticsEngine::GameStat::write(QJsonObject &_json)
+{
+   _json["p1Muds"] = p1Muds;
+   _json["p2Muds"] = p2Muds;
+   _json["p1Coins"] = p1Coins;
+   _json["p2Coins"] = p2Coins;
+   QJsonArray jCollisions;
+   for (_ const &c : collisions)
+   {
+      QJsonObject jObj;
+      c->write(jObj);
+      jCollisions.append(jObj);
+   }
+   _json["collision"] = jCollisions;
+}
+
 StatisticsEngine::StatisticsEngine()
 {
 }
 
-
-StatisticsEngine::GameStat::Collision::Collision(PhysicsObject::Type _typeA, PhysicsObject::Type _typeB, bool _latencyActive, bool _triggeredLatency, int64_t _timestamp, PlayerID _player)
-  : objAType(_typeA), objBType(_typeB), latencyActive(_latencyActive), triggeredLatency(_triggeredLatency), timestamp(_timestamp), involvedPlayer(_player)
+StatisticsEngine::GameStat::Collision::Collision(
+    PhysicsObject::Type _typeA, PhysicsObject::Type _typeB, bool _latencyActive, bool _triggeredLatency, int64_t _timestamp, PlayerID _player)
+  : objAType(_typeA),
+    objBType(_typeB),
+    latencyActive(_latencyActive),
+    triggeredLatency(_triggeredLatency),
+    timestamp(_timestamp),
+    involvedPlayer(_player)
 {
 }

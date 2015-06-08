@@ -2,6 +2,8 @@
 #include "PhysicsObject.hh"
 #include "Common.hh"
 
+class QJsonObject;
+
 /**
  * @brief The StatisticsEngine class is a singleton for collecting game statistics
  */
@@ -21,6 +23,8 @@ public:
 private:
    struct GameStat
    {
+      void write(QJsonObject &_json);
+
       // player specific
       int p1Muds = 0;
       int p2Muds = 0;
@@ -30,6 +34,8 @@ private:
       struct Collision
       {
          Collision(PhysicsObject::Type _typeA, PhysicsObject::Type _typeB, bool _latencyActive, bool _triggeredLatency, int64_t _timestamp, PlayerID _player);
+         void write(QJsonObject &_json);
+
          PhysicsObject::Type objAType = PhysicsObject::Type::OTHER;
          PhysicsObject::Type objBType = PhysicsObject::Type::OTHER;
          bool latencyActive = false;
@@ -52,6 +58,8 @@ public:
    void tellCollision(PhysicsObject::Type _typeA, PhysicsObject::Type _typeB, bool _latencyActive, bool _triggeredLatency, PlayerID _involvedPlayer = PlayerID::P1);
    /// Something happend
    void tellEvent(EventType _type);
+   // Save generated stats to disk
+   void saveToFile();
 
 private:
    StatisticsEngine();
