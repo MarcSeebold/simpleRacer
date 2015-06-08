@@ -455,7 +455,7 @@ void GameLogic::spawnCoin()
    }
    _ coin = UniqueCoin(new Coin(mPhysicsWorld, sCoinSize, sCoinSize, posX, posY));
    // let coins move to the left over time
-   coin->setLinearVelocity(QVector2D(-10, 0));
+   coin->setLinearVelocity(QVector2D(-7.9f, 0));
    mCoins.push_back(std::move(coin));
    // tell AI
    if (mCoinSpawnCallback)
@@ -491,7 +491,7 @@ void GameLogic::spawnMud()
    }
    _ mud = UniqueMud(new Mud(mPhysicsWorld, sMudSize, sMudSize, posX, posY));
    // let mud puddles move to the left over time
-   mud->setLinearVelocity(QVector2D(-10, 0));
+   mud->setLinearVelocity(QVector2D(-7.9f, 0));
    mMuds.push_back(std::move(mud));
    // tell AI
    if (mMudSpawnCallback)
