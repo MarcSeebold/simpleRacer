@@ -5,29 +5,18 @@
 #include <cassert>
 
 ArtificialRacer::ArtificialRacer(PlayerID _id, WeakGameLogic _gameLogic)
-  : mNextGoal(-1, -1), mPosition(-1, -1), mGameLogic(std::forward<WeakGameLogic>(_gameLogic)), mID(_id)
+  : mPosition(-1, -1), mGameLogic(std::forward<WeakGameLogic>(_gameLogic)), mID(_id)
 {
 }
 
-void ArtificialRacer::tellCoinHasBeenSpawned(const QVector2D &_pos)
+void ArtificialRacer::tellCoinPosition(const QVector2D &_pos)
 {
-   mCoinPositions.push_back(_pos);
+   mCoinPosition = _pos;
 }
 
-void ArtificialRacer::tellCoinHasBeenCollected(const QVector2D &_pos)
+void ArtificialRacer::tellMudPosition(const QVector2D &_pos)
 {
-   if (_pos == mNextGoal)
-      mNextGoal = QVector2D(-1, -1);
-
-   // remove coin from list
-   for (_ it = mCoinPositions.begin(); it != mCoinPositions.end(); ++it)
-   {
-      if (*it == _pos)
-      {
-         mCoinPositions.erase(it);
-         break;
-      }
-   }
+   mMudPosition = _pos;
 }
 
 void ArtificialRacer::tellOwnPosition(const QVector2D &_pos)
@@ -63,51 +52,50 @@ void ArtificialRacer::update()
       return;
    }
 
+   _ coinPos = mCoinPosition;
    // is current goal still valid?
-   if (mNextGoal == QVector2D(-1, -1))
+   if (coinPos == QVector2D(-1, -1))
    {
-      // invalid goal. search new.
-      if (mCoinPositions.empty())
-         return; // no possible new goals
-      mNextGoal = getClosestCoin();
+      // No goal: hold distance to right border
+      coinPos = QVector2D( (GameLogic::sGameWidth - GameLogic::sCarWidth * 1.5f),(GameLogic::sGameHeight/2.f) );
    }
 
-   // move us closer to next goal
-   if (std::abs(mPosition.x() - mNextGoal.x()) >= GameLogic::sCarWidth / 2)
+   // How our AI works:
+   // Seperate logic for x and y axes
+   _ distToMud = std::abs(mMudPosition.distanceToPoint(mPosition));
+   // Corner case: mud is in same lane as coin
+   bool mudSameLaneAsCoin = std::abs(mMudPosition.y() - coinPos.y()) <= GameLogic::sMudSize;
+   bool weAreSameLaneAsMud = std::abs(mMudPosition.y() - mPosition.y()) <= GameLogic::sCarHeight * 1.1f;
+   bool coinAboveUs = (coinPos.y() >= mPosition.y());
+   bool mudIsNear = (distToMud < GameLogic::sCarHeight * 1.1f);
+   // 1) y-axis
    {
-      if (mPosition.x() < mNextGoal.x())
-      {
-         logic->accelerate(mID);
-      }
-      else
-         logic->decelerate(mID);
-   }
-
-   if (std::abs(mPosition.y() - mNextGoal.y()) >= GameLogic::sCarHeight / 2)
-   {
-      if (mPosition.y() < mNextGoal.y())
-      {
+      if (coinAboveUs || (mudSameLaneAsCoin && mudIsNear))
          logic->steerUp(mID);
-      }
       else
          logic->steerDown(mID);
    }
-}
-
-QVector2D ArtificialRacer::getClosestCoin()
-{
-   QVector2D closestCoin(-1, -1);
-   float distance = std::numeric_limits<float>::max();
-
-   for (_ const &coin : mCoinPositions)
+   // 2) x-axis
    {
-      _ currDistance = mPosition.distanceToPoint(coin);
-      if (currDistance < distance)
+      if (mudIsNear && weAreSameLaneAsMud)
       {
-         closestCoin = coin;
-         distance = currDistance;
+         // avoid mud
+         if (mMudPosition.x() < mPosition.x())
+         {
+            // mud is left from us
+            logic->accelerate(mID);
+         }
+         else
+            logic->decelerate(mID);
+      }
+      else
+      {
+         if (coinPos.x() > mPosition.x())
+         { // coin is right from us: accelerate
+            logic->accelerate(mID);
+         }
+         else
+            logic->decelerate(mID);
       }
    }
-
-   return closestCoin;
 }

@@ -13,21 +13,20 @@ class ArtificialRacer
 public:
    ArtificialRacer(PlayerID _id, WeakGameLogic _gameLogic);
 
-   void tellCoinHasBeenSpawned(const QVector2D &_pos);
-   void tellCoinHasBeenCollected(const QVector2D &_pos);
+   /// Tells AI the coin position or (-1,-1) if there is none
+   void tellCoinPosition(const QVector2D &_pos);
+   /// Tells AI the mud puddle position or (-1,-1) if there is none
+   void tellMudPosition(const QVector2D &_pos);
+   /// Tells AI its own position
    void tellOwnPosition(const QVector2D &_pos);
 
    void update();
 
 private:
-   /// Returns the closest coin or (-1,-1) if there are no coins.
-   QVector2D getClosestCoin();
-
-private:
-   QVector2D mNextGoal;
    QVector2D mPosition;
-   std::vector<QVector2D> mCoinPositions;
+   QVector2D mCoinPosition;
+   QVector2D mMudPosition;
    WeakGameLogic mGameLogic;
    PlayerID mID;
-   float mDifficulty = 0.1f; ///< Value from 0(easy) to 1(hard)
+   float mDifficulty = 0.5f; ///< Value from 0(easy) to 1(hard)
 };

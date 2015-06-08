@@ -10,7 +10,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mUI(new Ui::MainW
    mUI->setupUi(this);
    SimpleRacer::create(this, mUI->widget);
 
-   connect(mUI->actionStart_Singleplayer, &QAction::triggered, SimpleRacer::the(), &SimpleRacer::startGame);
    connect(mUI->actionExit, &QAction::triggered, SimpleRacer::the(), &SimpleRacer::exitGame);
    // set focus on game
    mUI->widget->setFocus();
@@ -107,6 +106,13 @@ void MainWindow::on_pushButton_clicked()
       else
          mUI->editDuration->setText("1.0");
    }
+   // set focus on game
+   mUI->widget->setFocus();
+}
+
+void MainWindow::on_actionStart_Singleplayer_triggered()
+{
+   SimpleRacer::the()->startGame();
    // set focus on game
    mUI->widget->setFocus();
 }

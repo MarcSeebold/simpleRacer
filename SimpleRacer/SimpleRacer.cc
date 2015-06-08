@@ -29,16 +29,6 @@ SimpleRacer *SimpleRacer::the()
    return sInstance;
 }
 
-void SimpleRacer::coinCollectedCallback(QVector2D _pos)
-{
-   the()->ai()->tellCoinHasBeenCollected(_pos);
-}
-
-void SimpleRacer::coinSpawnedCallback(QVector2D _pos)
-{
-   the()->ai()->tellCoinHasBeenSpawned(_pos);
-}
-
 void SimpleRacer::startGame()
 {
    mMainWindow->mUI->labelBG->hide();
@@ -100,6 +90,16 @@ void SimpleRacer::update()
    mLogicServer->update(timeStep);
    // AI
    mAI->tellOwnPosition(mLogicServer->getCarCenterPosition(PlayerID::P2));
+   const _ coins = mLogicServer->getCoins();
+   const _ muds = mLogicServer->getMuds();
+   QVector2D cPos(-1,-1);
+   QVector2D mPos(-1,-1);
+   if (!coins.empty())
+      cPos = coins[0];
+   if (!muds.empty())
+      mPos = muds[0];
+   mAI->tellCoinPosition(cPos);
+   mAI->tellMudPosition(mPos);
    mAI->update();
    // Rendering
    mMainWindow->repaint();
@@ -142,7 +142,5 @@ SimpleRacer::SimpleRacer(MainWindow *_mainWindow, RenderingWidget *_rendering)
     mRendering(_rendering),
     mMainWindow(_mainWindow)
 {
-   mLogicServer->setCoinCollectedCallback(&coinCollectedCallback);
-   mLogicServer->setCoinSpawnCallback(&coinSpawnedCallback);
    connect(&mGameTimer, &QTimer::timeout, this, &SimpleRacer::update);
 }

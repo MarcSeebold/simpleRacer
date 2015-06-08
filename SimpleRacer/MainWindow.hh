@@ -34,6 +34,8 @@ private slots:
 
    void on_pushButton_clicked();
 
+   void on_actionStart_Singleplayer_triggered();
+
 private:
    Ui::MainWindow *mUI = nullptr;
 
