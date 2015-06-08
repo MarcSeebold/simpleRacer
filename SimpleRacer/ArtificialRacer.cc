@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <limits>
 #include <cassert>
+#include <qdebug.h>
 
 ArtificialRacer::ArtificialRacer(PlayerID _id, WeakGameLogic _gameLogic)
   : mPosition(-1, -1), mGameLogic(std::forward<WeakGameLogic>(_gameLogic)), mID(_id)
@@ -57,27 +58,53 @@ void ArtificialRacer::update()
    if (coinPos == QVector2D(-1, -1))
    {
       // No goal: hold distance to right border
-      coinPos = QVector2D( (GameLogic::sGameWidth - GameLogic::sCarWidth * 1.5f),(GameLogic::sGameHeight/2.f) );
+      coinPos = QVector2D((GameLogic::sGameWidth - GameLogic::sCarWidth * 2.5f), (GameLogic::sGameHeight / 2.f));
    }
 
-   // How our AI works:
    // Seperate logic for x and y axes
-   _ distToMud = std::abs(mMudPosition.distanceToPoint(mPosition));
    // Corner case: mud is in same lane as coin
    bool mudSameLaneAsCoin = std::abs(mMudPosition.y() - coinPos.y()) <= GameLogic::sMudSize;
-   bool weAreSameLaneAsMud = std::abs(mMudPosition.y() - mPosition.y()) <= GameLogic::sCarHeight * 1.1f;
    bool coinAboveUs = (coinPos.y() >= mPosition.y());
-   bool mudIsNear = (distToMud < GameLogic::sCarHeight * 1.1f);
+   bool mudLeftToCar = (mMudPosition.x() < mPosition.x());
+   bool mudAboveCar = (mMudPosition.y() > mPosition.y());
+   QVector2D distToMud;
+   // get shortest distance between bounding box of mud and car
+   {
+      float distX, distY;
+      // x
+      if (mudLeftToCar)
+         distX = (mPosition.x() - GameLogic::sCarWidth / 2.f) - (mMudPosition.x() + GameLogic::sMudSize / 2.f);
+      else
+         distX = (mMudPosition.x() - GameLogic::sMudSize / 2.f) - (mPosition.x() + GameLogic::sCarWidth / 2.f);
+      // y
+      if (mudAboveCar)
+         distY = (mMudPosition.y() - GameLogic::sMudSize / 2.f) - (mPosition.y() + GameLogic::sCarHeight / 2.f);
+      else
+         distY = (mPosition.y() - GameLogic::sCarHeight / 2.f) - (mMudPosition.y() + GameLogic::sMudSize / 2.f);
+      distToMud = QVector2D(std::abs(distX), std::abs(distY));
+   }
+   bool mudIsNear = (distToMud.length() < GameLogic::sMudSize * 1.5f);
+
    // 1) y-axis
    {
-      if (coinAboveUs || (mudSameLaneAsCoin && mudIsNear))
-         logic->steerUp(mID);
+      if (mudIsNear)
+      { // avoid mud
+         if (!mudAboveCar)
+            logic->steerUp(mID);
+         else
+            logic->steerDown(mID);
+      }
       else
-         logic->steerDown(mID);
+      { // no near mud: get closer to coin
+         if (coinAboveUs)
+            logic->steerUp(mID);
+         else
+            logic->steerDown(mID);
+      }
    }
    // 2) x-axis
    {
-      if (mudIsNear && weAreSameLaneAsMud)
+      if (mudIsNear)
       {
          // avoid mud
          if (mMudPosition.x() < mPosition.x())

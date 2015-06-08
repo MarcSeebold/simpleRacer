@@ -161,6 +161,7 @@ private:
 
    DelayedActions mDelayedLagDisabling;                 ///< Helper for delayed stuff
    DelayedActions mDelayedServerCarPosUpdate;           ///< Helper for synchronizing server lag compensation
+   DelayedActions mDelayedSpawner;                      ///< Helper for spawning coins and mud puddles
    std::vector<UniqueCoin> mCoins;                      ///< Coins in the world
    std::vector<UniqueMud> mMuds;                        ///< Mud puddles in the world
    std::vector<Coin *> mCoinsToRemove;                  ///< Coins that should be deleted
@@ -168,8 +169,8 @@ private:
    int mScore[2];                                       ///< the score. 0 coins at beginning
    void (*mCoinSpawnCallback)(QVector2D) = nullptr;     ///< Callback for coin spawning
    void (*mCoinCollectedCallback)(QVector2D) = nullptr; ///< Callback for coin collecting
-   void (*mMudSpawnCallback)(QVector2D) = nullptr;     ///< Callback for mud spawning
-   void (*mMudCollectedCallback)(QVector2D) = nullptr; ///< Callback for mud collecting
+   void (*mMudSpawnCallback)(QVector2D) = nullptr;      ///< Callback for mud spawning
+   void (*mMudCollectedCallback)(QVector2D) = nullptr;  ///< Callback for mud collecting
    InputController::KeyStatus mKeyStatus;               ///< Keys pressed (interesting for server only)
 
    friend class DelaySimulator;

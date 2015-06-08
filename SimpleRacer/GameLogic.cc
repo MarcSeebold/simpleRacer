@@ -298,15 +298,40 @@ void GameLogic::update(const float &_timestep)
    }
    mMudsToRemove.clear();
 
-   // spawn stuff
-   if (mCoins.size() < 1)
-      spawnCoin();
-   if (mMuds.size() < 1)
-      spawnMud();
-
+   // spawn stuff (1s delayed)
+   {
+      // mCoins will be empty for a while when we use delayed spawning. use these "mutices" to avoid mass-spawning.
+      static _ coinSpawnInProgress = false;
+      static _ mudSpawnInProgress = false;
+      // spawn coin after 1s
+      if (mCoins.empty() && !coinSpawnInProgress)
+      {
+         coinSpawnInProgress = true;
+         mDelayedSpawner.pushDelayedAction(
+             [this]()
+             {
+                spawnCoin();
+                coinSpawnInProgress = false;
+             },
+             1);
+      }
+      // spawn mud after 500ms
+      if (mMuds.empty() && !mudSpawnInProgress)
+      {
+         mudSpawnInProgress = true;
+         mDelayedSpawner.pushDelayedAction(
+             [this]()
+             {
+                spawnMud();
+                mudSpawnInProgress = false;
+             },
+             0.5f);
+      }
+   }
    // 5: Update delayed stuff
    mDelayedLagDisabling.update();
    mDelayedServerCarPosUpdate.update();
+   mDelayedSpawner.update();
    // 0: server-side lag compensation: step old physics world and update present
    if (isServer() && LagSettings::the()->getServerSideLagCompensation())
    {

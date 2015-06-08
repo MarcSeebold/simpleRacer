@@ -28,5 +28,5 @@ private:
    QVector2D mMudPosition;
    WeakGameLogic mGameLogic;
    PlayerID mID;
-   float mDifficulty = 0.5f; ///< Value from 0(easy) to 1(hard)
+   float mDifficulty = 1.f; ///< Value from 0(easy) to 1(hard)
 };
