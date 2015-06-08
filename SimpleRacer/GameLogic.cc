@@ -10,6 +10,7 @@
 #include "ArtificialRacer.hh"
 #include "SimpleRacer.hh"
 #include "LagSettings.hh"
+#include "StatisticsEngine.hh"
 #include <qmath.h>
 
 #include <qdebug.h>
@@ -499,10 +500,7 @@ void GameLogic::spawnMud()
 
 void GameLogic::callbackCarMud(Car *_car, Mud *_mud)
 {
-   criticalSituationOccured();
-   if (!LagSettings::the()->getClientSidePhysics() && !isServer())
-      return; // only server should handle this
-   // TODO: switch variable for handling this client or/and serverside
+   // get owner of car
    PlayerID player;
    if (mCar1.get() == _car)
       player = PlayerID::P1;
@@ -513,21 +511,34 @@ void GameLogic::callbackCarMud(Car *_car, Mud *_mud)
       SR_ASSERT(0 && "Unknown car");
       return;
    }
+   // trigger artificial lag
+   {
+      bool triggered = criticalSituationOccured();
+      if (isServer())
+         StatisticsEngine::the()->tellCollision(PhysicsObject::Type::CAR, PhysicsObject::Type::MUD,
+                                                LagSettings::the()->getLagEnabled(), triggered, player);
+   }
 
-   mMudsToRemove.push_back(_mud);
-   if (mMudCollectedCallback)
-      mMudCollectedCallback(_mud->getCenterPos());
+   // mud logic
+   {
+      if (!LagSettings::the()->getClientSidePhysics() && !isServer())
+         return; // only server should handle this
+      // TODO: switch variable for handling this client or/and serverside
 
-   // hit mud puddle: minus 2 points
-   mScore[(int)player] -= 2;
+      mMudsToRemove.push_back(_mud);
+      if (mMudCollectedCallback)
+         mMudCollectedCallback(_mud->getCenterPos());
+
+      // hit mud puddle: minus 2 points
+      mScore[(int)player] -= 2;
+      _ eventType = (player == PlayerID::P1)? StatisticsEngine::EventType::P1MUD : StatisticsEngine::EventType::P2MUD;
+      StatisticsEngine::the()->tellEvent(eventType);
+   }
 }
 
 void GameLogic::callbackCarCoin(Car *_car, Coin *_coin)
 {
-   criticalSituationOccured();
-   if (!LagSettings::the()->getClientSidePhysics() && !isServer())
-      return; // only server should handle this
-   // TODO: switch variable for handling this client or/and serverside
+   // get owner of car
    PlayerID player;
    if (mCar1.get() == _car)
       player = PlayerID::P1;
@@ -538,34 +549,55 @@ void GameLogic::callbackCarCoin(Car *_car, Coin *_coin)
       SR_ASSERT(0 && "Unknown car");
       return;
    }
+   // trigger artificial lag
+   {
+      bool triggered = criticalSituationOccured();
+      if (isServer())
+         StatisticsEngine::the()->tellCollision(PhysicsObject::Type::CAR, PhysicsObject::Type::COIN,
+                                                LagSettings::the()->getLagEnabled(), triggered, player);
+   }
+   // coin logic
+   {
+      if (!LagSettings::the()->getClientSidePhysics() && !isServer())
+         return; // only server should handle this
+      // TODO: switch variable for handling this client or/and serverside
 
-   mCoinsToRemove.push_back(_coin);
-   if (mCoinCollectedCallback)
-      mCoinCollectedCallback(_coin->getCenterPos());
+      mCoinsToRemove.push_back(_coin);
+      if (mCoinCollectedCallback)
+         mCoinCollectedCallback(_coin->getCenterPos());
 
-   // collected coin: 1 point
-   ++mScore[(int)player];
+      // collected coin: 1 point
+      ++mScore[(int)player];
+      _ eventType = (player == PlayerID::P1)? StatisticsEngine::EventType::P1COIN : StatisticsEngine::EventType::P2COIN;
+      StatisticsEngine::the()->tellEvent(eventType);
+   }
 }
 
 void GameLogic::callbackCarCar(Car *_carA, Car *_carB)
 {
    (void)&_carA;
    (void)&_carB;
-   criticalSituationOccured();
+   bool triggered = criticalSituationOccured();
+   if (isServer())
+      StatisticsEngine::the()->tellCollision(PhysicsObject::Type::CAR, PhysicsObject::Type::CAR,
+                                             LagSettings::the()->getLagEnabled(), triggered);
 }
 
 void GameLogic::callbackCarBoundary(Car *_car, Boundary *_boundary)
 {
    (void)&_car;
    (void)&_boundary;
-   criticalSituationOccured();
+   bool triggered = criticalSituationOccured();
+   if (isServer())
+      StatisticsEngine::the()->tellCollision(PhysicsObject::Type::CAR, PhysicsObject::Type::BOUNDARY,
+                                             LagSettings::the()->getLagEnabled(), triggered);
 }
 
-void GameLogic::criticalSituationOccured()
+bool GameLogic::criticalSituationOccured()
 {
    _ probability = LagSettings::the()->getLagProbability();
-   float random = rand() % 100;
-   if (random <= 100.f * probability)
+   float random = rand() % 100 + 1; // 100 values: [1,100]
+   if (random <= 100.f * probability) // probability: [0,1] * 100 -> [0,100]
    {
       // activate lag for a period of time
       LagSettings::the()->setLagEnabled(true);
@@ -576,7 +608,9 @@ void GameLogic::criticalSituationOccured()
          LagSettings::the()->setLagEnabled(false);
       };
       mDelayedLagDisabling.pushDelayedAction(func, LagSettings::the()->getLagDuration());
+      return true;
    }
+   return false;
 }
 
 void GameLogic::AIInput::reset()

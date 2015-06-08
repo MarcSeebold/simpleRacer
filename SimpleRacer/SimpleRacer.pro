@@ -26,7 +26,8 @@ SOURCES += main.cc\
     SimpleRacer.cc \
     DelaySimulator.cc \
     LagSettings.cc \
-    ContactListener.cc
+    ContactListener.cc \
+    StatisticsEngine.cc
 
 
 HEADERS  += MainWindow.hh \
@@ -41,7 +42,8 @@ HEADERS  += MainWindow.hh \
     SimpleRacer.hh \
     DelaySimulator.hh \
     LagSettings.hh \
-    ContactListener.hh
+    ContactListener.hh \
+    StatisticsEngine.hh
 
 FORMS    += MainWindow.ui
 

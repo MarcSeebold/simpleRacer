@@ -131,7 +131,8 @@ private:
    void callbackCarBoundary(Car *_car, Boundary *_boundary);
 
    /// Called whenever a critical situation occurs
-   void criticalSituationOccured();
+   /// @return True iff artificial latency is triggered by this call
+   bool criticalSituationOccured();
 
 private:
    struct AIInput

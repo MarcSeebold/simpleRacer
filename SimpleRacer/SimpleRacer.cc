@@ -4,6 +4,7 @@
 #include "MainWindow.hh"
 #include "LagSettings.hh"
 #include "DelaySimulator.hh"
+#include "StatisticsEngine.hh"
 
 SimpleRacer *SimpleRacer::sInstance = nullptr;
 
@@ -31,6 +32,7 @@ SimpleRacer *SimpleRacer::the()
 
 void SimpleRacer::startGame()
 {
+   StatisticsEngine::the()->tellNewGameRound();
    mMainWindow->mUI->labelBG->hide();
    mMainWindow->mUI->widget->show();
    mTimeLeft = 60.f; // One minute gameplay
