@@ -108,8 +108,8 @@ void SimpleRacer::update()
    mMainWindow->repaint();
    // Synch Server and Client
    static int counter = 0;
-   if (counter == 5)
-   { // only send network stuff all six frames (at 60Hz that means 10Hz, compareable with a source server)
+   if (counter == 2) // 0,1,2
+   { // only send network stuff all three frames (at 60Hz that means 20Hz, default value for a source server)
       // Client->Server
       mSynch->csSendInput(mInput->getKeyStatus());
       // Server->Client
