@@ -20,8 +20,11 @@ class SimpleRacer : public QObject
    Q_OBJECT
 
 public:
+   /// Singleton create
    static void create(MainWindow *_mainWindow, RenderingWidget *_rendering);
+   /// Singleton destroy
    static void destroy();
+   /// Singleton getter. Make sure to call create() before the() and destory() to free up resources.
    static SimpleRacer *the();
 
 public: // static getter
@@ -35,12 +38,14 @@ public slots:
    void startGame();
    void stopGame();
    void exitGame();
+   /// Main game update function
    void update();
 
 public: // getter
    bool isRunning() const { return mRunning; }
 
 private:
+   // c'tor
    SimpleRacer(MainWindow *_mainWindow, RenderingWidget *_rendering);
 
 private:
@@ -60,4 +65,12 @@ private:
 
 private:
    bool mRunning = false;
+
+private:
+   /// Singleton: no default c'tor
+   SimpleRacer() = delete;
+   /// Singleton: No copy c'tor
+   SimpleRacer(SimpleRacer const&) = delete;
+   /// Singleton: No copy assignment
+   SimpleRacer& operator=(SimpleRacer const&) = delete;
 };

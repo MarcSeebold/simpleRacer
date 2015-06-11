@@ -9,11 +9,19 @@ enum class LagProbability
    CUSTOM
 };
 
+class QJsonObject;
+
 class Settings
 {
 public:
    /// Singelton getter
    static Settings* the();
+
+   /// Writes all settings to JSON
+   void write(QJsonObject &_json);
+
+   /// Read all settings from JSON
+   void read(const QJsonObject &_json);
 
 private: // game logic stuff
    /// Linear damping of cars
@@ -21,7 +29,7 @@ private: // game logic stuff
    /// maximum squared offset before cars are warped instead of smoothly set
    float mMaxOffsetSquared = 10 * 10;
    /// How fast do coins and mud puddles move from right to left?
-   float mCoinMudLinearVelocity = -7.9f;
+   float mCoinMudLinearVelocity = -7.85f;
    /// Amount of time coins need to spawn (in seconds)
    float mCoinSpawnTime = 1.f;
    /// Amount of time mud puddles need to spawn (in seconds)
@@ -99,6 +107,10 @@ public: // Getter, Setter
    GETTER(ServerSideLagCompensation);
    GETTER(ClientSideInterpolationFactor);
    GETTER(LagEnabled);
+   GETTER(LagProbabilityLow);
+   GETTER(LagProbabilityMedium);
+   GETTER(LagProbabilityHigh);
+   GETTER(LagProbabilityCustom);
    float getLagProbability() const;
 
    // Setter
@@ -117,4 +129,12 @@ public: // Getter, Setter
 
    // Properties (Getter AND Setter)
    PROPERTY(LagDuration);
+
+private:
+   /// Singleton: private c'tor
+   Settings() {}
+   /// Singleton: No copy c'tor
+   Settings(Settings const&) = delete;
+   /// Singleton: No copy assignment
+   Settings& operator=(Settings const&) = delete;
 };

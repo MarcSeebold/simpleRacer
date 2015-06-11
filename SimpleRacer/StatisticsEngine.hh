@@ -23,6 +23,7 @@ public:
 private:
    struct GameStat
    {
+      /// Writes this GameStat object to JSON
       void write(QJsonObject &_json);
 
       // player specific
@@ -30,10 +31,12 @@ private:
       int p2Muds = 0;
       int p1Coins = 0;
       int p2Coins = 0;
+
       // critical situations
       struct Collision
       {
          Collision(PhysicsObject::Type _typeA, PhysicsObject::Type _typeB, bool _latencyActive, bool _triggeredLatency, int64_t _timestamp, PlayerID _player);
+         /// Writes this Collision object to JSON
          void write(QJsonObject &_json);
 
          PhysicsObject::Type objAType = PhysicsObject::Type::OTHER;
@@ -55,14 +58,23 @@ public:
    /// A new game round has begun
    void tellNewGameRound();
    /// A collision occured
-   void tellCollision(PhysicsObject::Type _typeA, PhysicsObject::Type _typeB, bool _latencyActive, bool _triggeredLatency, PlayerID _involvedPlayer = PlayerID::P1);
+   void tellCollision(PhysicsObject::Type _typeA,
+                      PhysicsObject::Type _typeB,
+                      bool _latencyActive,
+                      bool _triggeredLatency,
+                      PlayerID _involvedPlayer = PlayerID::P1);
    /// Something happend
    void tellEvent(EventType _type);
    // Save generated stats to disk
    void saveToFile();
 
 private:
+   /// Singleton: private c'tor
    StatisticsEngine();
+   /// Singleton: No copy c'tor
+   StatisticsEngine(StatisticsEngine const&) = delete;
+   /// Singleton: No copy assignment
+   StatisticsEngine& operator=(StatisticsEngine const&) = delete;
 
 private:
    static StatisticsEngine *sInstance;

@@ -1,7 +1,8 @@
 #include "Settings.hh"
-#include <iostream>
-#include <QApplication>
 #include "MainWindow.hh"
+#include <QApplication>
+#include <QJsonObject>
+#include <iostream>
 
 Settings* Settings::instance = nullptr;
 
@@ -10,6 +11,49 @@ Settings* Settings::the()
    if (!instance)
       instance = new Settings;
    return instance;
+}
+
+void Settings::write(QJsonObject& _json)
+{
+   QJsonObject jLat, jLog;
+   // Game logic stuff
+   {
+      jLog["LinearDamping"] = getLinearDamping();
+      jLog["MaxOffsetSquared"] = getMaxOffsetSquared();
+      jLog["CoinMudLinearVelocity"] = getCoinMudLinearVelocity();
+      jLog["CoinSpawnTime"] = getCoinSpawnTime();
+      jLog["MudSpawnTime"] = getMudSpawnTime();
+      jLog["CarAccX"] = getCarAccX();
+      jLog["CarAccY"] = getCarAccY();
+      jLog["ScoreCoin"] = getScoreCoin();
+      jLog["ScoreMud"] = getScoreMud();
+   }
+   // Latency stuff
+   {
+      jLat["LagProbabilityLow"] = getLagProbabilityLow();
+      jLat["LagProbabilityMedium"] = getLagProbabilityMedium();
+      jLat["LagProbabilityHigh"] = getLagProbabilityHigh();
+      jLat["LagProbabilityCustom"] = getLagProbabilityCustom();
+      jLat["LagProbability"] = getLagProbability();
+      jLat["LagDuration"] = getLagDuration();
+      jLat["LagEnabled"] = getLagEnabled();
+      jLat["LatencyServerToClient"] = getLatencyServerToClient();
+      jLat["LatencyClientToServer"] = getLatencyClientToServer();
+      jLat["ClientSidePhysics"] = getClientSidePhysics();
+      jLat["ShortCircuiting"] = getShortCircuiting();
+      jLat["ClientSidePrediction"] = getClientSidePrediction();
+      jLat["ClientSideInterpolation"] = getClientSideInterpolation();
+      jLat["ServerSideLagCompensation"] = getServerSideLagCompensation();
+      jLat["ClientSideInterpolationFactor"] = getClientSideInterpolationFactor();
+   }
+   _json["LatencyStuff"] = jLat;
+   _json["GameLogicStuff"] = jLog;
+}
+
+void Settings::read(const QJsonObject &_json)
+{
+   SR_ASSERT(0&&"Not implemented.");
+   //TODO: implement
 }
 
 void Settings::setClientSideCompensation(bool _val)
@@ -46,12 +90,12 @@ float Settings::getLatencyClientToServer() const
 
 void Settings::setLagEnabled(bool _val)
 {
-    for (_ const & w : qApp->topLevelWidgets())
-    {
-        _ mainWindow = dynamic_cast<MainWindow*>(w);
-        if (mainWindow)
-           mainWindow->setLagStatusLabel(_val);
-    }
+   for (_ const& w : qApp->topLevelWidgets())
+   {
+      _ mainWindow = dynamic_cast<MainWindow*>(w);
+      if (mainWindow)
+         mainWindow->setLagStatusLabel(_val);
+   }
 
    mLagEnabled = _val;
 }
