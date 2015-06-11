@@ -63,7 +63,9 @@ void ArtificialRacer::update()
 
    // Seperate logic for x and y axes
    // Corner case: mud is in same lane as coin
+#if 0
    bool mudSameLaneAsCoin = std::abs(mMudPosition.y() - coinPos.y()) <= GameLogic::sMudSize;
+#endif
    bool coinAboveUs = (coinPos.y() >= mPosition.y());
    bool mudLeftToCar = (mMudPosition.x() < mPosition.x());
    bool mudAboveCar = (mMudPosition.y() > mPosition.y());
