@@ -15,7 +15,29 @@ public:
    /// Singelton getter
    static Settings* the();
 
-private: // member variables
+private: // game logic stuff
+   /// Linear damping of cars
+   float mLinearDamping = 2.f;
+   /// maximum squared offset before cars are warped instead of smoothly set
+   float mMaxOffsetSquared = 10 * 10;
+   /// How fast do coins and mud puddles move from right to left?
+   float mCoinMudLinearVelocity = -7.9f;
+   /// Amount of time coins need to spawn (in seconds)
+   float mCoinSpawnTime = 1.f;
+   /// Amount of time mud puddles need to spawn (in seconds)
+   float mMudSpawnTime = 0.5f;
+   /// Car acceleration for x and y axes
+   /// @{
+   float mCarAccX = 30;
+   float mCarAccY = 12;
+   /// @}
+   /// Points for collecting a coin
+   int mScoreCoin = 1;
+   /// Points for collecting a mud puddle
+   int mScoreMud = -2;
+
+
+private: // latency stuff
    /// Probabilities that a critical game situations activates lag
    /// @{
    float mLagProbabilityLow = 0.1f;
@@ -58,6 +80,28 @@ private: // member variables
    static Settings* instance;
 
 public: // Getter, Setter
+   // Getter
+   float getLatencyServerToClient() const;
+   float getLatencyClientToServer() const;
+   GETTER(ScoreCoin);
+   GETTER(ScoreMud);
+   GETTER(CarAccX);
+   GETTER(CarAccY);
+   GETTER(CoinSpawnTime);
+   GETTER(MudSpawnTime);
+   GETTER(CoinMudLinearVelocity);
+   GETTER(MaxOffsetSquared);
+   GETTER(LinearDamping);
+   GETTER(ClientSidePhysics);
+   GETTER(ShortCircuiting);
+   GETTER(ClientSidePrediction);
+   GETTER(ClientSideInterpolation);
+   GETTER(ServerSideLagCompensation);
+   GETTER(ClientSideInterpolationFactor);
+   GETTER(LagEnabled);
+   float getLagProbability() const;
+
+   // Setter
    /// Enable/Disable artificial lag
    /// @{
    void setClientSideCompensation(bool _val);
@@ -66,19 +110,11 @@ public: // Getter, Setter
 
    /// Set lag probability
    void setLagProbability(LagProbability _probability);
-   float getLatencyServerToClient() const;
-   float getLatencyClientToServer() const;
-   PROPERTY(LagDuration);
    SETTER(LatencyServerToClient);
    SETTER(LagProbabilityCustom);
    SETTER(LatencyClientToServer);
-   GETTER(ClientSidePhysics);
-   GETTER(ShortCircuiting);
-   GETTER(ClientSidePrediction);
-   GETTER(ClientSideInterpolation);
-   GETTER(ServerSideLagCompensation);
-   GETTER(ClientSideInterpolationFactor);
-   GETTER(LagEnabled);
    void setLagEnabled(bool _val);
-   float getLagProbability() const;
+
+   // Properties (Getter AND Setter)
+   PROPERTY(LagDuration);
 };

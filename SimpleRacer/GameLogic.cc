@@ -60,7 +60,7 @@ GameLogic::GameLogic(Type _type)
       // right
       mStreetBoundaries[3] = UniqueBoundary(new Boundary(mPhysicsWorld, 1, sGameHeight, sGameWidth + .5f, sGameHeight / 2));
    }
-   // "old" world
+   // "old" world for lag compensation
    {
       // bottom
       mStreetBoundariesOld[0] = UniqueBoundary(new Boundary(mPhysicsWorldOld, sGameWidth, 1, sGameWidth / 2, -.5f));
@@ -79,6 +79,7 @@ GameLogic::GameLogic(Type _type)
 
 GameLogic::~GameLogic()
 {
+   // free up resources
    mCar1 = nullptr;
    mCar2 = nullptr;
    for (int i = 0; i < 4; ++i)
@@ -94,29 +95,35 @@ GameLogic::~GameLogic()
 
 void GameLogic::reset()
 {
-   mCoins.clear();
-   mMuds.clear();
-   // create cars
-   _ linearDamping = 2.f;
-   // spawn car1 on top left
-   mCar1 = UniqueCar(new Car(mPhysicsWorld, sCarWidth, sCarHeight, sCarWidth / 2, sCarHeight / 2, linearDamping));
-   // spawn car2 on bottom left
-   mCar2 = UniqueCar(new Car(mPhysicsWorld, sCarWidth, sCarHeight, sCarWidth / 2, sGameHeight - sCarHeight / 2, linearDamping));
+   // remove coins and mud
    {
-      // cars for the "past" world
+      mCoins.clear();
+      mMuds.clear();
+   }
+   _ linearDamping = Settings::the()->getLinearDamping();
+   // (re-)create cars
+   {
+      // spawn car1 on top left
+      mCar1 = UniqueCar(new Car(mPhysicsWorld, sCarWidth, sCarHeight, sCarWidth / 2, sCarHeight / 2, linearDamping));
+      // spawn car2 on bottom left
+      mCar2 = UniqueCar(new Car(mPhysicsWorld, sCarWidth, sCarHeight, sCarWidth / 2, sGameHeight - sCarHeight / 2, linearDamping));
+   }
+   // cars for the "past" world
+   {
       // spawn car1 on top left
       mCar1Old = UniqueCar(new Car(mPhysicsWorldOld, sCarWidth, sCarHeight, sCarWidth / 2, sCarHeight / 2, linearDamping));
       // spawn car2 on bottom left
       mCar2Old = UniqueCar(new Car(mPhysicsWorldOld, sCarWidth, sCarHeight, sCarWidth / 2, sGameHeight - sCarHeight / 2, linearDamping));
    }
 
-   // reset other member vars
-   mAIInput = UniqueAIInput(new AIInput);
+   // reset other stuff
+   {
+      mAIInput = UniqueAIInput(new AIInput);
+      mAIInput->reset();
 
-   for (int i : {0, 1})
-      mScore[i] = 0;
-
-   mAIInput->reset();
+      for (int i : {0, 1})
+         mScore[i] = 0;
+   }
 }
 
 void GameLogic::steerUp(PlayerID _id)
@@ -199,7 +206,7 @@ void GameLogic::setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, 
 {
    SR_ASSERT(isClient() && "Client-only function");
 
-   static float maxOffsetSquared = 10 * 10;
+   _ maxOffsetSquared = Settings::the()->getMaxOffsetSquared();
    const UniqueCar &carNew = (_player == PlayerID::P1) ? mCar1 : mCar2;
 
    if (Settings::the()->getClientSidePrediction())
@@ -235,7 +242,7 @@ void GameLogic::setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, 
       }
       else
       { // hard-set
-         std::cerr << "hard-set" << std::endl;
+         //std::cerr << "hard-set" << std::endl;
          carNew->setCenterPos(car->getCenterPos());
          carNew->setLinearVelocity(car->getLinearVelocity());
       }
@@ -264,15 +271,16 @@ void GameLogic::update(const float &_timestep)
    // interpolate coins and mud?
    if (isClient())
    {
+      _ coinMudLinearVelocity = Settings::the()->getCoinMudLinearVelocity();
       if (Settings::the()->getClientSideInterpolation())
       {
          for (_ const &c : mCoins)
          {
-            c->setLinearVelocity(QVector2D(-7.9f, 0));
+            c->setLinearVelocity(QVector2D(coinMudLinearVelocity, 0));
          }
          for (_ const &m : mMuds)
          {
-            m->setLinearVelocity(QVector2D(-7.9f, 0));
+            m->setLinearVelocity(QVector2D(coinMudLinearVelocity, 0));
          }
       }
       else
@@ -344,7 +352,7 @@ void GameLogic::update(const float &_timestep)
                 spawnCoin();
                 coinSpawnInProgress = false;
              },
-             1);
+             Settings::the()->getCoinSpawnTime());
       }
       // spawn mud after 500ms
       if (mMuds.empty() && !mudSpawnInProgress)
@@ -356,7 +364,7 @@ void GameLogic::update(const float &_timestep)
                 spawnMud();
                 mudSpawnInProgress = false;
              },
-             0.5f);
+             Settings::the()->getMudSpawnTime());
       }
    }
    // 5: Update delayed stuff
@@ -396,8 +404,8 @@ void GameLogic::update(const float &_timestep)
             steerUp(PlayerID::P1);
          }
       }
-      float factorX = 30;
-      float factorY = 12;
+      float factorX = Settings::the()->getCarAccX();
+      float factorY = Settings::the()->getCarAccY();
       // player
       int dirX = (mKeyStatus.right ? 1 : 0) + (mKeyStatus.left ? -1 : 0);
       int dirY = (mKeyStatus.up ? 1 : 0) + (mKeyStatus.down ? -1 : 0);
@@ -406,31 +414,13 @@ void GameLogic::update(const float &_timestep)
       // AI
       mCar2->applyForce(QVector2D(mAIInput->deltaX[1] * factorX, 0));
       mCar2->applyForce(QVector2D(0, mAIInput->deltaY[1] * factorY));
-#if 0
-      // do this for "old" game state too
-      if (isServer())
-      {
-         _ func = [this, factorX, factorY, dirX, dirY]()
-         {
-            mCar1Old->applyForce(QVector2D(dirX * factorX, 0));
-            mCar1Old->applyForce(QVector2D(0, dirY * factorY));
-            // Set AI car directly
-            mCar2Old->setCenterPos(mCar2->getCenterPos());
-            mCar2Old->setLinearVelocity(mCar2->getLinearVelocity());
-            mCar2Old->applyForce(QVector2D(mAIInput->deltaX[1] * factorX, 0));
-            mCar2Old->applyForce(QVector2D(0, mAIInput->deltaY[1] * factorY));
-         };
-         // execute it after x seconds
-         mDelayedLagDisabling.pushDelayedAction(func, Settings::the()->getLatencyClientToServer());
-      }
-#endif
    }
    // 2: step simulation
    {
       if (Settings::the()->getClientSidePhysics() || isServer())
       {
-         int32 velocityIterations = 4;
-         int32 positionIterations = 8;
+         const _ velocityIterations = 4;
+         const _ positionIterations = 8;
          mPhysicsWorld->Step(_timestep, velocityIterations, positionIterations);
       }
    }
@@ -485,7 +475,7 @@ void GameLogic::spawnCoin()
    }
    _ coin = UniqueCoin(new Coin(mPhysicsWorld, sCoinSize, sCoinSize, posX, posY));
    // let coins move to the left over time
-   coin->setLinearVelocity(QVector2D(-7.8f, 0));
+   coin->setLinearVelocity(QVector2D(Settings::the()->getCoinMudLinearVelocity(), 0));
    mCoins.push_back(std::move(coin));
    // tell AI
    if (mCoinSpawnCallback)
@@ -521,7 +511,7 @@ void GameLogic::spawnMud()
    }
    _ mud = UniqueMud(new Mud(mPhysicsWorld, sMudSize, sMudSize, posX, posY));
    // let mud puddles move to the left over time
-   mud->setLinearVelocity(QVector2D(-7.8f, 0));
+   mud->setLinearVelocity(QVector2D(Settings::the()->getCoinMudLinearVelocity(), 0));
    mMuds.push_back(std::move(mud));
    // tell AI
    if (mMudSpawnCallback)
@@ -560,7 +550,7 @@ void GameLogic::callbackCarMud(Car *_car, Mud *_mud)
          mMudCollectedCallback(_mud->getCenterPos());
 
       // hit mud puddle: minus 2 points
-      mScore[(int)player] -= 2;
+      mScore[(int)player] += Settings::the()->getScoreMud();
       _ eventType = (player == PlayerID::P1) ? StatisticsEngine::EventType::P1MUD : StatisticsEngine::EventType::P2MUD;
       StatisticsEngine::the()->tellEvent(eventType);
    }
@@ -597,7 +587,7 @@ void GameLogic::callbackCarCoin(Car *_car, Coin *_coin)
          mCoinCollectedCallback(_coin->getCenterPos());
 
       // collected coin: 1 point
-      ++mScore[(int)player];
+      mScore[(int)player] += Settings::the()->getScoreCoin();
       _ eventType = (player == PlayerID::P1) ? StatisticsEngine::EventType::P1COIN : StatisticsEngine::EventType::P2COIN;
       StatisticsEngine::the()->tellEvent(eventType);
    }
