@@ -1,6 +1,6 @@
 #include "MainWindow.hh"
 #include "SimpleRacer.hh"
-#include "LagSettings.hh"
+#include "Settings.hh"
 
 #include <iostream>
 #include <QKeyEvent>

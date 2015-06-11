@@ -9,7 +9,7 @@
 #include "NetworkEngine.hh"
 #include "ArtificialRacer.hh"
 #include "SimpleRacer.hh"
-#include "LagSettings.hh"
+#include "Settings.hh"
 #include "StatisticsEngine.hh"
 #include <qmath.h>
 
@@ -421,7 +421,7 @@ void GameLogic::update(const float &_timestep)
             mCar2Old->applyForce(QVector2D(0, mAIInput->deltaY[1] * factorY));
          };
          // execute it after x seconds
-         mDelayedLagDisabling.pushDelayedAction(func, LagSettings::the()->getLatencyClientToServer());
+         mDelayedLagDisabling.pushDelayedAction(func, Settings::the()->getLatencyClientToServer());
       }
 #endif
    }

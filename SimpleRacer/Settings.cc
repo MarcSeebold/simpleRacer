@@ -1,4 +1,4 @@
-#include "LagSettings.hh"
+#include "Settings.hh"
 #include <iostream>
 #include <QApplication>
 #include "MainWindow.hh"

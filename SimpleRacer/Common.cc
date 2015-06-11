@@ -2,7 +2,7 @@
 #include <cassert>
 #include <iostream>
 #include <QDateTime>
-#include "LagSettings.hh"
+#include "Settings.hh"
 
 void _sr_assert_fail(const char *_expr, const char *_file, int _line, const char *_function)
 {

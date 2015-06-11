@@ -15,31 +15,6 @@ public:
    /// Singelton getter
    static Settings* the();
 
-public: // Getter, Setter
-   /// Enable/Disable artificial lag
-   /// @{
-   void setClientSideCompensation(bool _val);
-   void setServerSideCompensation(bool _val);
-   /// @}
-
-   /// Set lag probability
-   void setLagProbability(LagProbability _probability);
-   float getLatencyServerToClient() const;
-   float getLatencyClientToServer() const;
-   PROPERTY(LagDuration);
-   SETTER(LatencyServerToClient);
-   SETTER(LagProbabilityCustom);
-   SETTER(LatencyClientToServer);
-   GETTER(ClientSidePhysics);
-   GETTER(ShortCircuiting);
-   GETTER(ClientSidePrediction);
-   GETTER(ClientSideInterpolation);
-   GETTER(ServerSideLagCompensation);
-   GETTER(ClientSideInterpolationFactor);
-   GETTER(LagEnabled);
-   void setLagEnabled(bool _val);
-   float getLagProbability() const;
-
 private: // member variables
    /// Probabilities that a critical game situations activates lag
    /// @{
@@ -81,4 +56,29 @@ private: // member variables
 
    /// Singleton instance
    static Settings* instance;
+
+public: // Getter, Setter
+   /// Enable/Disable artificial lag
+   /// @{
+   void setClientSideCompensation(bool _val);
+   void setServerSideCompensation(bool _val);
+   /// @}
+
+   /// Set lag probability
+   void setLagProbability(LagProbability _probability);
+   float getLatencyServerToClient() const;
+   float getLatencyClientToServer() const;
+   PROPERTY(LagDuration);
+   SETTER(LatencyServerToClient);
+   SETTER(LagProbabilityCustom);
+   SETTER(LatencyClientToServer);
+   GETTER(ClientSidePhysics);
+   GETTER(ShortCircuiting);
+   GETTER(ClientSidePrediction);
+   GETTER(ClientSideInterpolation);
+   GETTER(ServerSideLagCompensation);
+   GETTER(ClientSideInterpolationFactor);
+   GETTER(LagEnabled);
+   void setLagEnabled(bool _val);
+   float getLagProbability() const;
 };

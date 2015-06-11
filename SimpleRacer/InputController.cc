@@ -3,7 +3,7 @@
 #include "Common.hh"
 #include <QKeyEvent>
 #include <QTimer>
-#include "LagSettings.hh"
+#include "Settings.hh"
 
 InputController::InputController(SharedGameLogic _client) : mGameLogicClient(std::forward<SharedGameLogic>(_client))
 {

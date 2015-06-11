@@ -1,7 +1,7 @@
 #include "DelaySimulator.hh"
 #include <QTimer>
 #include "GameLogic.hh"
-#include "LagSettings.hh"
+#include "Settings.hh"
 
 DelaySimulator::DelaySimulator(SharedGameLogic _client, SharedGameLogic _server)
   : mGameLogicClient(std::forward<SharedGameLogic>(_client)), mGameLogicServer(std::forward<SharedGameLogic>(_server))

@@ -2,7 +2,7 @@
 #include "Common.hh"
 #include "RenderingWidget.hh"
 #include "MainWindow.hh"
-#include "LagSettings.hh"
+#include "Settings.hh"
 #include "DelaySimulator.hh"
 #include "StatisticsEngine.hh"
 
