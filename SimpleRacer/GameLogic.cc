@@ -202,20 +202,20 @@ void GameLogic::setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, 
    static float maxOffsetSquared = 10 * 10;
    const UniqueCar &carNew = (_player == PlayerID::P1) ? mCar1 : mCar2;
 
-   if (LagSettings::the()->getClientSidePrediction())
+   if (Settings::the()->getClientSidePrediction())
    { // client side prediction
       const UniqueCar &car = (_player == PlayerID::P1) ? mCar1Old : mCar2Old;
       // update past state
       car->setCenterPos(_pos);
       car->setLinearVelocity(_velo);
       // predict current position
-      mPhysicsWorldOld->Step(LagSettings::the()->getLatencyServerToClient(), 4, 8);
+      mPhysicsWorldOld->Step(Settings::the()->getLatencyServerToClient(), 4, 8);
       // update current state
       _ posDiff = car->getCenterPos() - carNew->getCenterPos();
       // server position differs largely from ours
       bool highOffset = (posDiff.lengthSquared() >= maxOffsetSquared / 2);
       // do not interpolate if offset is too high
-      if (LagSettings::the()->getClientSideInterpolation() && !highOffset)
+      if (Settings::the()->getClientSideInterpolation() && !highOffset)
       { // interpolate
          // we use a exponential function for position correction
          // why: small errors are tolerable, but big errors not
@@ -229,7 +229,7 @@ void GameLogic::setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, 
          };
          _ squaredPosDiff = QVector2D(signedPow(posDiff.x()), signedPow(posDiff.y()));
 
-         _ velo = squaredPosDiff * LagSettings::the()->getClientSideInterpolationFactor();
+         _ velo = squaredPosDiff * Settings::the()->getClientSideInterpolationFactor();
          // the current velocity already contains user input
          carNew->setLinearVelocity(car->getLinearVelocity() + velo);
       }
@@ -264,7 +264,7 @@ void GameLogic::update(const float &_timestep)
    // interpolate coins and mud?
    if (isClient())
    {
-      if (LagSettings::the()->getClientSideInterpolation())
+      if (Settings::the()->getClientSideInterpolation())
       {
          for (_ const &c : mCoins)
          {
@@ -364,12 +364,12 @@ void GameLogic::update(const float &_timestep)
    mDelayedServerCarPosUpdate.update();
    mDelayedSpawner.update();
    // 0: server-side lag compensation: step old physics world and update present
-   if (isServer() && LagSettings::the()->getServerSideLagCompensation())
+   if (isServer() && Settings::the()->getServerSideLagCompensation())
    {
       // server-side lag compensation for player 1
       // step old physics world to present
       // it would be more accurate to re-play AI's input. however, this is not so easy.
-      mPhysicsWorldOld->Step(LagSettings::the()->getLatencyClientToServer() * 0.5f - _timestep, 4, 8);
+      mPhysicsWorldOld->Step(Settings::the()->getLatencyClientToServer() * 0.5f - _timestep, 4, 8);
       // store new data (only for P1!, P2 lives on the server)
       mCar1->setCenterPos(mCar1Old->getCenterPos());
       mCar1->setLinearVelocity(mCar1Old->getLinearVelocity());
@@ -427,7 +427,7 @@ void GameLogic::update(const float &_timestep)
    }
    // 2: step simulation
    {
-      if (LagSettings::the()->getClientSidePhysics() || isServer())
+      if (Settings::the()->getClientSidePhysics() || isServer())
       {
          int32 velocityIterations = 4;
          int32 positionIterations = 8;
@@ -450,7 +450,7 @@ void GameLogic::update(const float &_timestep)
          mCar2Old->setLinearVelocity(mCar2->getLinearVelocity());
       };
       // execute it after x seconds
-      mDelayedLagDisabling.pushDelayedAction(func, LagSettings::the()->getLatencyClientToServer());
+      mDelayedLagDisabling.pushDelayedAction(func, Settings::the()->getLatencyClientToServer());
    }
    // reset AI input
    mAIInput->reset();
@@ -546,12 +546,12 @@ void GameLogic::callbackCarMud(Car *_car, Mud *_mud)
       bool triggered = criticalSituationOccured();
       if (isServer())
          StatisticsEngine::the()->tellCollision(PhysicsObject::Type::CAR, PhysicsObject::Type::MUD,
-                                                LagSettings::the()->getLagEnabled(), triggered, player);
+                                                Settings::the()->getLagEnabled(), triggered, player);
    }
 
    // mud logic
    {
-      if (!LagSettings::the()->getClientSidePhysics() && !isServer())
+      if (!Settings::the()->getClientSidePhysics() && !isServer())
          return; // only server should handle this
       // TODO: switch variable for handling this client or/and serverside
 
@@ -584,11 +584,11 @@ void GameLogic::callbackCarCoin(Car *_car, Coin *_coin)
       bool triggered = criticalSituationOccured();
       if (isServer())
          StatisticsEngine::the()->tellCollision(PhysicsObject::Type::CAR, PhysicsObject::Type::COIN,
-                                                LagSettings::the()->getLagEnabled(), triggered, player);
+                                                Settings::the()->getLagEnabled(), triggered, player);
    }
    // coin logic
    {
-      if (!LagSettings::the()->getClientSidePhysics() && !isServer())
+      if (!Settings::the()->getClientSidePhysics() && !isServer())
          return; // only server should handle this
       // TODO: switch variable for handling this client or/and serverside
 
@@ -610,7 +610,7 @@ void GameLogic::callbackCarCar(Car *_carA, Car *_carB)
    bool triggered = criticalSituationOccured();
    if (isServer())
       StatisticsEngine::the()->tellCollision(PhysicsObject::Type::CAR, PhysicsObject::Type::CAR,
-                                             LagSettings::the()->getLagEnabled(), triggered);
+                                             Settings::the()->getLagEnabled(), triggered);
 }
 
 void GameLogic::callbackCarBoundary(Car *_car, Boundary *_boundary)
@@ -620,24 +620,24 @@ void GameLogic::callbackCarBoundary(Car *_car, Boundary *_boundary)
    bool triggered = criticalSituationOccured();
    if (isServer())
       StatisticsEngine::the()->tellCollision(PhysicsObject::Type::CAR, PhysicsObject::Type::BOUNDARY,
-                                             LagSettings::the()->getLagEnabled(), triggered);
+                                             Settings::the()->getLagEnabled(), triggered);
 }
 
 bool GameLogic::criticalSituationOccured()
 {
-   _ probability = LagSettings::the()->getLagProbability();
+   _ probability = Settings::the()->getLagProbability();
    float random = rand() % 100 + 1;   // 100 values: [1,100]
    if (random <= 100.f * probability) // probability: [0,1] * 100 -> [0,100]
    {
       // activate lag for a period of time
-      LagSettings::the()->setLagEnabled(true);
+      Settings::the()->setLagEnabled(true);
 
       mDelayedLagDisabling.clear(); // ensure there is only one delayed task
       _ func = [this]()
       {
-         LagSettings::the()->setLagEnabled(false);
+         Settings::the()->setLagEnabled(false);
       };
-      mDelayedLagDisabling.pushDelayedAction(func, LagSettings::the()->getLagDuration());
+      mDelayedLagDisabling.pushDelayedAction(func, Settings::the()->getLagDuration());
       return true;
    }
    return false;

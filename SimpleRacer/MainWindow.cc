@@ -54,7 +54,7 @@ void MainWindow::setLagStatusLabel(bool _val)
 void MainWindow::on_checkBox_stateChanged(int arg1)
 {
    bool checked = (arg1 == Qt::Checked);
-   LagSettings::the()->setClientSideCompensation(checked);
+   Settings::the()->setClientSideCompensation(checked);
    // set focus on game
    mUI->widget->setFocus();
 }
@@ -62,7 +62,7 @@ void MainWindow::on_checkBox_stateChanged(int arg1)
 void MainWindow::on_checkBox_2_stateChanged(int arg1)
 {
    bool checked = (arg1 == Qt::Checked);
-   LagSettings::the()->setServerSideCompensation(checked);
+   Settings::the()->setServerSideCompensation(checked);
    // set focus on game
    mUI->widget->setFocus();
 }
@@ -77,8 +77,8 @@ void MainWindow::on_pushButton_clicked()
       l /= 2; // latency: server->client + client->server
       if (ok && l >= 0)
       {
-         LagSettings::the()->setLatencyServerToClient(l);
-         LagSettings::the()->setLatencyClientToServer(l);
+         Settings::the()->setLatencyServerToClient(l);
+         Settings::the()->setLatencyClientToServer(l);
       }
       else
          mUI->editLatency->setText("150");
@@ -89,8 +89,8 @@ void MainWindow::on_pushButton_clicked()
       float p = mUI->editProbability->text().toFloat(&ok);
       if (p >= 0 && p <= 1 && ok)
       {
-         LagSettings::the()->setLagProbability(LagProbability::CUSTOM);
-         LagSettings::the()->setLagProbabilityCustom(p);
+         Settings::the()->setLagProbability(LagProbability::CUSTOM);
+         Settings::the()->setLagProbabilityCustom(p);
       }
       else
          mUI->editProbability->setText("0.5");
@@ -101,7 +101,7 @@ void MainWindow::on_pushButton_clicked()
       float d = mUI->editDuration->text().toFloat(&ok);
       if (d >= 0 && ok)
       {
-         LagSettings::the()->setLagDuration(d);
+         Settings::the()->setLagDuration(d);
       }
       else
          mUI->editDuration->setText("1.0");

@@ -53,6 +53,6 @@ void InputController::keyReleaseEvent(QKeyEvent* e)
 
 void InputController::update()
 {
-   if (LagSettings::the()->getShortCircuiting())
+   if (Settings::the()->getShortCircuiting())
       mGameLogicClient->setKeyStatus(mKeyStatus);
 }

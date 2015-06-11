@@ -9,12 +9,13 @@ enum class LagProbability
    CUSTOM
 };
 
-class LagSettings
+class Settings
 {
 public:
    /// Singelton getter
-   static LagSettings* the();
+   static Settings* the();
 
+public: // Getter, Setter
    /// Enable/Disable artificial lag
    /// @{
    void setClientSideCompensation(bool _val);
@@ -23,8 +24,23 @@ public:
 
    /// Set lag probability
    void setLagProbability(LagProbability _probability);
+   float getLatencyServerToClient() const;
+   float getLatencyClientToServer() const;
+   PROPERTY(LagDuration);
+   SETTER(LatencyServerToClient);
+   SETTER(LagProbabilityCustom);
+   SETTER(LatencyClientToServer);
+   GETTER(ClientSidePhysics);
+   GETTER(ShortCircuiting);
+   GETTER(ClientSidePrediction);
+   GETTER(ClientSideInterpolation);
+   GETTER(ServerSideLagCompensation);
+   GETTER(ClientSideInterpolationFactor);
+   GETTER(LagEnabled);
+   void setLagEnabled(bool _val);
+   float getLagProbability() const;
 
-private:
+private: // member variables
    /// Probabilities that a critical game situations activates lag
    /// @{
    float mLagProbabilityLow = 0.1f;
@@ -64,22 +80,5 @@ private:
    float mClientSideInterpolationFactor = 2.3f;
 
    /// Singleton instance
-   static LagSettings* instance;
-
-public: // Getter
-   float getLatencyServerToClient() const;
-   float getLatencyClientToServer() const;
-   SETTER(LatencyServerToClient);
-   SETTER(LatencyClientToServer);
-   GETTER(ClientSidePhysics);
-   GETTER(ShortCircuiting);
-   GETTER(ClientSidePrediction);
-   GETTER(ClientSideInterpolation);
-   GETTER(ServerSideLagCompensation);
-   GETTER(ClientSideInterpolationFactor);
-   PROPERTY(LagDuration);
-   GETTER(LagEnabled);
-   SETTER(LagProbabilityCustom);
-   void setLagEnabled(bool _val);
-   float getLagProbability() const;
+   static Settings* instance;
 };

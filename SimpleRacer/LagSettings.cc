@@ -3,16 +3,16 @@
 #include <QApplication>
 #include "MainWindow.hh"
 
-LagSettings* LagSettings::instance = nullptr;
+Settings* Settings::instance = nullptr;
 
-LagSettings* LagSettings::the()
+Settings* Settings::the()
 {
    if (!instance)
-      instance = new LagSettings;
+      instance = new Settings;
    return instance;
 }
 
-void LagSettings::setClientSideCompensation(bool _val)
+void Settings::setClientSideCompensation(bool _val)
 {
    mClientSidePhysics = _val;
    mShortCircuiting = _val;
@@ -20,31 +20,31 @@ void LagSettings::setClientSideCompensation(bool _val)
    mClientSideInterpolation = _val;
 }
 
-void LagSettings::setServerSideCompensation(bool _val)
+void Settings::setServerSideCompensation(bool _val)
 {
    mServerSideLagCompensation = _val;
 }
 
-void LagSettings::setLagProbability(LagProbability _probability)
+void Settings::setLagProbability(LagProbability _probability)
 {
    mLagProbability = _probability;
 }
 
-float LagSettings::getLatencyServerToClient() const
+float Settings::getLatencyServerToClient() const
 {
    if (!getLagEnabled())
       return 0.f;
    return mLatencyServerToClient;
 }
 
-float LagSettings::getLatencyClientToServer() const
+float Settings::getLatencyClientToServer() const
 {
    if (!getLagEnabled())
       return 0.f;
    return mLatencyClientToServer;
 }
 
-void LagSettings::setLagEnabled(bool _val)
+void Settings::setLagEnabled(bool _val)
 {
     for (_ const & w : qApp->topLevelWidgets())
     {
@@ -56,7 +56,7 @@ void LagSettings::setLagEnabled(bool _val)
    mLagEnabled = _val;
 }
 
-float LagSettings::getLagProbability() const
+float Settings::getLagProbability() const
 {
    switch (mLagProbability)
    {
