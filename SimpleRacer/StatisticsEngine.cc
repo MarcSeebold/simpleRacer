@@ -4,6 +4,7 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
+#include "Settings.hh"
 
 StatisticsEngine *StatisticsEngine::sInstance = nullptr;
 
@@ -18,7 +19,10 @@ void StatisticsEngine::tellNewGameRound()
 {
    ++mCurrGameRound;
    SR_ASSERT(mGameStats.count(mCurrGameRound) == 0 && "GameStats already present");
-   mGameStats[mCurrGameRound] = std::make_shared<GameStat>();
+   const _ & stat = mGameStats[mCurrGameRound] = std::make_shared<GameStat>();
+   // write current game settings to stat obj
+   stat->settings = new QJsonObject;
+   Settings::the()->write(*(stat->settings));
 }
 
 void StatisticsEngine::tellCollision(PhysicsObject::Type _typeA, PhysicsObject::Type _typeB, bool _latencyActive, bool _triggeredLatency, PlayerID _involvedPlayer)
@@ -112,6 +116,12 @@ void StatisticsEngine::GameStat::Collision::write(QJsonObject &_json)
 
 void StatisticsEngine::GameStat::write(QJsonObject &_json)
 {
+   if (!settings)
+   {
+      SR_ASSERT(0 && "Settings not set!");
+      return;
+   }
+   _json["Settings"] = *settings;
    _json["p1Muds"] = p1Muds;
    _json["p2Muds"] = p2Muds;
    _json["p1Coins"] = p1Coins;

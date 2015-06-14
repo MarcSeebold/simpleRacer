@@ -32,6 +32,9 @@ private:
       int p1Coins = 0;
       int p2Coins = 0;
 
+      /// Game Settings for this round
+      QJsonObject *settings=nullptr;
+
       // critical situations
       struct Collision
       {
