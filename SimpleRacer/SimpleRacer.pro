@@ -21,7 +21,6 @@ SOURCES += main.cc\
     PhysicsObject.cc \
     NetworkEngine.cc\
     ArtificialRacer.cc \
-    Testing.cc \
     InputController.cc \
     SimpleRacer.cc \
     DelaySimulator.cc \
@@ -37,7 +36,6 @@ HEADERS  += MainWindow.hh \
     PhysicsObject.hh \
     NetworkEngine.hh\
     ArtificialRacer.hh \
-    Testing.hh \
     InputController.hh \
     SimpleRacer.hh \
     DelaySimulator.hh \
