@@ -13,7 +13,7 @@ Settings* Settings::the()
    return instance;
 }
 
-void Settings::write(QJsonObject& _json)
+void Settings::write(QJsonObject& _json) const
 {
    QJsonObject jLat, jLog;
    // Game logic stuff

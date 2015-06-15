@@ -18,7 +18,7 @@ public:
    static Settings* the();
 
    /// Writes all settings to JSON
-   void write(QJsonObject &_json);
+   void write(QJsonObject &_json) const;
 
    /// Read all settings from JSON
    void read(const QJsonObject &_json);

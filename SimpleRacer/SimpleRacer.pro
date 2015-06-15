@@ -26,7 +26,8 @@ SOURCES += main.cc\
     DelaySimulator.cc \
     ContactListener.cc \
     StatisticsEngine.cc \
-    Settings.cc
+    Settings.cc \
+    Testing.cc
 
 
 HEADERS  += MainWindow.hh \
@@ -41,7 +42,8 @@ HEADERS  += MainWindow.hh \
     DelaySimulator.hh \
     ContactListener.hh \
     StatisticsEngine.hh \
-    Settings.hh
+    Settings.hh \
+    Testing.hh
 
 FORMS    += MainWindow.ui
 
