@@ -1,12 +1,12 @@
 #pragma once
 #include "Common.hh"
 
-enum class LagProbability
+enum class LagProbability : char
 {
-   LOW,
-   MEDIUM,
-   HIGH,
-   CUSTOM
+   LOW = 0,
+   MEDIUM = 1,
+   HIGH = 2,
+   CUSTOM = 3
 };
 
 class QJsonObject;
@@ -43,7 +43,6 @@ private: // game logic stuff
    int mScoreCoin = 1;
    /// Points for collecting a mud puddle
    int mScoreMud = -2;
-
 
 private: // latency stuff
    /// Probabilities that a critical game situations activates lag
