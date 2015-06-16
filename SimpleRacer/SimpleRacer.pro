@@ -26,7 +26,8 @@ SOURCES += main.cc\
     ContactListener.cc \
     StatisticsEngine.cc \
     Settings.cc \
-    Testing.cc
+    Testing.cc \
+    NetworkEngine.cc
 
 
 HEADERS  += MainWindow.hh \
@@ -41,7 +42,8 @@ HEADERS  += MainWindow.hh \
     ContactListener.hh \
     StatisticsEngine.hh \
     Settings.hh \
-    Testing.hh
+    Testing.hh \
+    NetworkEngine.hh
 
 FORMS    += MainWindow.ui
 

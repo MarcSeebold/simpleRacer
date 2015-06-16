@@ -24,6 +24,9 @@ public:
    void read(const QJsonObject &_json);
 
 private: // game logic stuff
+   /// Port the game will listen on for commands
+   int mNetworkPort = 13337;
+
    /// Linear damping of cars
    float mLinearDamping = 2.f;
    /// maximum squared offset before cars are warped instead of smoothly set
@@ -90,6 +93,7 @@ public: // Getter, Setter
    // Getter
    float getLatencyServerToClient() const;
    float getLatencyClientToServer() const;
+   GETTER(NetworkPort);
    GETTER(ScoreCoin);
    GETTER(ScoreMud);
    GETTER(CarAccX);

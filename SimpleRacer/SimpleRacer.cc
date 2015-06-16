@@ -5,6 +5,7 @@
 #include "Settings.hh"
 #include "DelaySimulator.hh"
 #include "StatisticsEngine.hh"
+#include "NetworkEngine.hh"
 #include "Testing.hh"
 
 SimpleRacer *SimpleRacer::sInstance = nullptr;
@@ -20,6 +21,7 @@ void SimpleRacer::create(MainWindow *_mainWindow, RenderingWidget *_rendering)
 #endif
    sInstance = new SimpleRacer(_mainWindow, _rendering);
    _mainWindow->mUI->widget->hide();
+   sInstance->mNetwork->listen();
 }
 
 void SimpleRacer::destroy()
@@ -180,6 +182,7 @@ SimpleRacer::SimpleRacer(MainWindow *_mainWindow, RenderingWidget *_rendering)
     mInput(new InputController(mLogicClient)),
     mAI(new ArtificialRacer(PlayerID::P2, mLogicServer)),
     mSynch(new DelaySimulator(mLogicClient, mLogicServer)),
+    mNetwork(new NetworkEngine),
     mRendering(_rendering),
     mMainWindow(_mainWindow)
 {
