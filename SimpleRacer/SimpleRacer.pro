@@ -19,7 +19,6 @@ SOURCES += main.cc\
     Common.cc \
     RenderingWidget.cc \
     PhysicsObject.cc \
-    NetworkEngine.cc\
     ArtificialRacer.cc \
     InputController.cc \
     SimpleRacer.cc \
@@ -35,7 +34,6 @@ HEADERS  += MainWindow.hh \
     Common.hh \
     RenderingWidget.hh \
     PhysicsObject.hh \
-    NetworkEngine.hh\
     ArtificialRacer.hh \
     InputController.hh \
     SimpleRacer.hh \
