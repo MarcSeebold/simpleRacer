@@ -5,6 +5,7 @@
 #include "Settings.hh"
 #include "DelaySimulator.hh"
 #include "StatisticsEngine.hh"
+#include "Testing.hh"
 
 SimpleRacer *SimpleRacer::sInstance = nullptr;
 
@@ -13,6 +14,10 @@ void SimpleRacer::create(MainWindow *_mainWindow, RenderingWidget *_rendering)
    SR_ASSERT(_rendering && "rendering is null");
    SR_ASSERT(!sInstance && "create() already called.");
    Settings::the();
+#ifdef QT_DEBUG // run tests in debug mode
+   Testing tests;
+   tests.runTestSettingsSaveLoad();
+#endif
    sInstance = new SimpleRacer(_mainWindow, _rendering);
    _mainWindow->mUI->widget->hide();
 }

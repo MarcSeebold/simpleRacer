@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QJsonObject>
 #include <iostream>
+#include <qdebug.h>
 
 Settings* Settings::instance = nullptr;
 
@@ -52,7 +53,7 @@ void Settings::write(QJsonObject& _json) const
 
 #define __SR_SETTINGS_SET_IF_EXIST(jsonObject, key, type) \
    if (jsonObject.contains(#key))                         \
-      m##key = jsonObject[#key].toString().to##type();    \
+      m##key = jsonObject[#key].to##type();    \
    do                                                     \
    {                                                      \
    } while (0)
@@ -70,13 +71,13 @@ void Settings::read(const QJsonObject& _json)
    if (_json.contains("GameLogicStuff"))
    {
       _ jLog = _json.value("GameLogicStuff").toObject();
-      __SR_SETTINGS_SET_IF_EXIST(jLog, LinearDamping, Float);
-      __SR_SETTINGS_SET_IF_EXIST(jLog, MaxOffsetSquared, Float);
-      __SR_SETTINGS_SET_IF_EXIST(jLog, CoinMudLinearVelocity, Float);
-      __SR_SETTINGS_SET_IF_EXIST(jLog, CoinSpawnTime, Float);
-      __SR_SETTINGS_SET_IF_EXIST(jLog, MudSpawnTime, Float);
-      __SR_SETTINGS_SET_IF_EXIST(jLog, CarAccX, Float);
-      __SR_SETTINGS_SET_IF_EXIST(jLog, CarAccY, Float);
+      __SR_SETTINGS_SET_IF_EXIST(jLog, LinearDamping, Double);
+      __SR_SETTINGS_SET_IF_EXIST(jLog, MaxOffsetSquared, Double);
+      __SR_SETTINGS_SET_IF_EXIST(jLog, CoinMudLinearVelocity, Double);
+      __SR_SETTINGS_SET_IF_EXIST(jLog, CoinSpawnTime, Double);
+      __SR_SETTINGS_SET_IF_EXIST(jLog, MudSpawnTime, Double);
+      __SR_SETTINGS_SET_IF_EXIST(jLog, CarAccX, Double);
+      __SR_SETTINGS_SET_IF_EXIST(jLog, CarAccY, Double);
       __SR_SETTINGS_SET_IF_EXIST(jLog, ScoreCoin, Int);
       __SR_SETTINGS_SET_IF_EXIST(jLog, ScoreMud, Int);
    }
@@ -84,25 +85,25 @@ void Settings::read(const QJsonObject& _json)
    if (_json.contains("LatencyStuff"))
    {
       _ jLat = _json.value("LatencyStuff").toObject();
-      __SR_SETTINGS_SET_IF_EXIST(jLat, LagProbabilityLow, Float);
-      __SR_SETTINGS_SET_IF_EXIST(jLat, LagProbabilityMedium, Float);
-      __SR_SETTINGS_SET_IF_EXIST(jLat, LagProbabilityHigh, Float);
-      __SR_SETTINGS_SET_IF_EXIST(jLat, LagProbabilityCustom, Float);
+      __SR_SETTINGS_SET_IF_EXIST(jLat, LagProbabilityLow, Double);
+      __SR_SETTINGS_SET_IF_EXIST(jLat, LagProbabilityMedium, Double);
+      __SR_SETTINGS_SET_IF_EXIST(jLat, LagProbabilityHigh, Double);
+      __SR_SETTINGS_SET_IF_EXIST(jLat, LagProbabilityCustom, Double);
       if (jLat.contains("LagProbability"))
       { // custom case for LagProbability enum
          int v = jLat["LagProbability"].toInt();
          mLagProbability = (LagProbability)v;
       }
-      __SR_SETTINGS_SET_IF_EXIST(jLat, LagDuration, Float);
+      __SR_SETTINGS_SET_IF_EXIST(jLat, LagDuration, Double);
+      __SR_SETTINGS_SET_IF_EXIST(jLat, LatencyServerToClient, Double);
+      __SR_SETTINGS_SET_IF_EXIST(jLat, ClientSideInterpolationFactor, Double);
+      __SR_SETTINGS_SET_IF_EXIST(jLat, LatencyClientToServer, Double);
       __SR_SETTINGS_SET_IF_EXIST_BOOL(jLat, LagEnabled);
-      __SR_SETTINGS_SET_IF_EXIST(jLat, LatencyServerToClient, Float);
-      __SR_SETTINGS_SET_IF_EXIST(jLat, LatencyClientToServer, Float);
       __SR_SETTINGS_SET_IF_EXIST_BOOL(jLat, ClientSidePhysics);
       __SR_SETTINGS_SET_IF_EXIST_BOOL(jLat, ShortCircuiting);
       __SR_SETTINGS_SET_IF_EXIST_BOOL(jLat, ClientSidePrediction);
       __SR_SETTINGS_SET_IF_EXIST_BOOL(jLat, ClientSideInterpolation);
       __SR_SETTINGS_SET_IF_EXIST_BOOL(jLat, ServerSideLagCompensation);
-      __SR_SETTINGS_SET_IF_EXIST_BOOL(jLat, ClientSideInterpolationFactor);
    }
 }
 
