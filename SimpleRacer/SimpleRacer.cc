@@ -20,7 +20,9 @@ void SimpleRacer::create(MainWindow *_mainWindow, RenderingWidget *_rendering)
    tests.runTestSettingsSaveLoad();
 #endif
    sInstance = new SimpleRacer(_mainWindow, _rendering);
-   _mainWindow->mUI->widget->hide();
+   // At first: show webView
+   _mainWindow->mUI->webView->load(QUrl("qrc:/htdocs/start.html"));
+   sInstance->toogleWebView(true);
    sInstance->mNetwork->listen();
 }
 
@@ -38,11 +40,25 @@ SimpleRacer *SimpleRacer::the()
    return sInstance;
 }
 
+void SimpleRacer::toogleWebView(bool _showWebView)
+{
+   if (_showWebView)
+   {
+      mMainWindow->mUI->webView->show();
+      mMainWindow->mUI->widget->hide();
+   }
+   else
+   {
+      mMainWindow->mUI->webView->hide();
+      mMainWindow->mUI->widget->show();
+   }
+}
+
 void SimpleRacer::startGame()
 {
    StatisticsEngine::the()->tellNewGameRound();
    mMainWindow->mUI->labelBG->hide();
-   mMainWindow->mUI->widget->show();
+   toogleWebView(false);
    mTimeLeft = 60.f; // One minute gameplay
    mStartTimer = 3.5f; // 3 Second-countdown before start
    mMainWindow->mUI->widget->setOpacity(1.f);
@@ -56,6 +72,8 @@ void SimpleRacer::stopGame()
    logicClient()->reset();
    logicServer()->reset();
    mRunning = false;
+   // show webview after game is over
+   toogleWebView(true);
 }
 
 void SimpleRacer::exitGame()

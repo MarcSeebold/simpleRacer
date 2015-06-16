@@ -6,12 +6,11 @@
 
 QT       += core gui network
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets webkitwidgets
 
 TARGET = SimpleRacer
 TEMPLATE = app
 CONFIG += c++11
-
 
 SOURCES += main.cc\
         MainWindow.cc \
@@ -48,7 +47,8 @@ HEADERS  += MainWindow.hh \
 FORMS    += MainWindow.ui
 
 RESOURCES += \
-    car.qrc
+    rendering.qrc \
+    htdocs.qrc
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/Box2D/lib/ -lBox2d
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/Box2D/libd/ -lBox2d

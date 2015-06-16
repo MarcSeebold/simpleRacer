@@ -28,6 +28,9 @@ public:
    /// Singleton getter. Make sure to call create() before the() and destory() to free up resources.
    static SimpleRacer *the();
 
+   /// Toggles between webview and game widget
+   void toogleWebView(bool _showWebView);
+
 public: // static getter
    static SharedGameLogic logicServer() { return the()->mLogicServer; }
    static SharedGameLogic logicClient() { return the()->mLogicClient; }
