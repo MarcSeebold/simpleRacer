@@ -108,6 +108,12 @@ void RenderingWidget::paintEvent(QPaintEvent *event)
          painter.drawImage(x, y, mudScaled);
       }
    }
+   // "opacity" by drawing a black rectangle
+   // used for fade-out effect
+   if (getOpacity() != 1.f)
+   {
+      painter.fillRect(event->rect(), QBrush(QColor(0,0,0,int((1-getOpacity()) * 255))));
+   }
 
    painter.end();
 }

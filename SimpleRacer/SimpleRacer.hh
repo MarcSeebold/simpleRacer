@@ -58,6 +58,7 @@ private:
    SharedDelaySimulator mSynch;
    float mTimeLeft = -1;   ///< Game-Timer
    float mStartTimer = -1; ///< Another timer for pre-game start (e.g., 3 seconds countdown before game start)
+   float mFadeOutTimer = -1; ///< Timer for letting the game widget fade out after game over
 
    RenderingWidget *mRendering = nullptr;
    MainWindow *mMainWindow = nullptr;

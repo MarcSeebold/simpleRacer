@@ -38,6 +38,7 @@ void SimpleRacer::startGame()
    mMainWindow->mUI->widget->show();
    mTimeLeft = 60.f; // One minute gameplay
    mStartTimer = 3.5f; // 3 Second-countdown before start
+   mMainWindow->mUI->widget->setOpacity(1.f);
    mGameTimer.start(SR_GAMESTEPTIME);
    mRunning = true;
 }
@@ -60,6 +61,22 @@ void SimpleRacer::exitGame()
 void SimpleRacer::update()
 {
    const float timeStep = SR_GAMESTEPTIME / 1000.f; // ms -> s
+
+   if (mFadeOutTimer > 0)
+   {
+      mFadeOutTimer -= timeStep;
+      if (mFadeOutTimer <= 0)
+      {
+         // fadeout complete: stop the game
+         stopGame();
+         return;
+      }
+      // reduce opacity of render window with decreasing timer value
+      _ opacity = (mFadeOutTimer / 3.5f);
+      mMainWindow->mUI->widget->setOpacity(opacity);
+      mMainWindow->repaint(); // paint
+      return; // game is paused when fading-out
+   }
 
    // Countdown
    if (mStartTimer > 0)
@@ -85,11 +102,9 @@ void SimpleRacer::update()
          mMainWindow->mUI->labelTimer->setText("0");
          int scoreP1 = mLogicServer->getScore(PlayerID::P1);
          int scoreP2 = mLogicServer->getScore(PlayerID::P2);
-         // time's up: game over
-         stopGame();
          // declare winner
          {
-            mMainWindow->mUI->widget->hide();
+            mFadeOutTimer = 3.5f; // Fade-out game widget
             QString gameOverText = "Game Over\n";
             if (scoreP1 > scoreP2)
                gameOverText += "You have won!";

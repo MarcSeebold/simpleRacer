@@ -14,4 +14,10 @@ public:
 
 protected:
    void paintEvent(QPaintEvent *event) override;
+
+private:
+   float mOpacity = 1; ///< 0 = black screen
+
+public:
+   PROPERTY(Opacity);
 };
