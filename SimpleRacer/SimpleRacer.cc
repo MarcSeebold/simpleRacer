@@ -37,6 +37,7 @@ void SimpleRacer::startGame()
    mMainWindow->mUI->labelBG->hide();
    mMainWindow->mUI->widget->show();
    mTimeLeft = 60.f; // One minute gameplay
+   mStartTimer = 3.5f; // 3 Second-countdown before start
    mGameTimer.start(SR_GAMESTEPTIME);
    mRunning = true;
 }
@@ -59,6 +60,23 @@ void SimpleRacer::exitGame()
 void SimpleRacer::update()
 {
    const float timeStep = SR_GAMESTEPTIME / 1000.f; // ms -> s
+
+   // Countdown
+   if (mStartTimer > 0)
+   {
+      mStartTimer -= timeStep;
+      if (mStartTimer <= 0)
+      {
+         mMainWindow->mUI->labelBG->hide();
+         return;
+      }
+      QString text = "Starting in " + QString::number((int)mStartTimer);
+      mMainWindow->mUI->labelBG->setText(text);
+      mMainWindow->mUI->labelBG->show();
+      mMainWindow->repaint(); // rendering
+      return; // Game is paused while countdown
+   }
+
    // Game-Timer
    {
       mTimeLeft -= timeStep;

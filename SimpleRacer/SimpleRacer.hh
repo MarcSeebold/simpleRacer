@@ -56,7 +56,8 @@ private:
    SharedInputController mInput;
    SharedArtificialRacer mAI;
    SharedDelaySimulator mSynch;
-   float mTimeLeft = -1; ///< Game-Timer
+   float mTimeLeft = -1;   ///< Game-Timer
+   float mStartTimer = -1; ///< Another timer for pre-game start (e.g., 3 seconds countdown before game start)
 
    RenderingWidget *mRendering = nullptr;
    MainWindow *mMainWindow = nullptr;
@@ -70,7 +71,7 @@ private:
    /// Singleton: no default c'tor
    SimpleRacer() = delete;
    /// Singleton: No copy c'tor
-   SimpleRacer(SimpleRacer const&) = delete;
+   SimpleRacer(SimpleRacer const &) = delete;
    /// Singleton: No copy assignment
-   SimpleRacer& operator=(SimpleRacer const&) = delete;
+   SimpleRacer &operator=(SimpleRacer const &) = delete;
 };
