@@ -55,6 +55,24 @@ void StatisticsEngine::tellEvent(StatisticsEngine::EventType _type)
    }
 }
 
+void StatisticsEngine::tellInGameSurvey(QByteArray _data)
+{
+   SR_ASSERT(mGameStats.count(mCurrGameRound) == 1 && "No GameStat object. Forgot to call tellNewGameRound?");
+   mGameStats[mCurrGameRound]->surveyResults = _data;
+}
+
+void StatisticsEngine::tellCoreSurvey(QByteArray _data)
+{
+   SR_ASSERT(0 && "TODO");
+   //TODO: implement
+}
+
+void StatisticsEngine::tellPostGameSurvey(QByteArray _data)
+{
+   SR_ASSERT(0 && "TODO");
+   //TODO: implement
+}
+
 void StatisticsEngine::saveToFile()
 {
    QDir dir("./stats/");

@@ -15,6 +15,7 @@ SHARED(class, InputController);
 SHARED(class, ArtificialRacer);
 SHARED(class, DelaySimulator);
 SHARED(class, NetworkEngine);
+SHARED(class, SurveyEngine);
 
 class SimpleRacer : public QObject
 {
@@ -28,15 +29,13 @@ public:
    /// Singleton getter. Make sure to call create() before the() and destory() to free up resources.
    static SimpleRacer *the();
 
-   /// Toggles between webview and game widget
-   void toogleWebView(bool _showWebView);
-
 public: // static getter
    static SharedGameLogic logicServer() { return the()->mLogicServer; }
    static SharedGameLogic logicClient() { return the()->mLogicClient; }
    static SharedInputController inputController() { return the()->mInput; }
    static SharedArtificialRacer ai() { return the()->mAI; }
    static RenderingWidget *rendering() { return the()->mRendering; }
+   static SharedSurveyEngine survey() { return the()->mSurveyEngine; }
 
 public slots:
    void startGame();
@@ -51,6 +50,7 @@ public: // getter
 private:
    // c'tor
    SimpleRacer(MainWindow *_mainWindow, RenderingWidget *_rendering);
+   ~SimpleRacer();
 
 private:
    static SimpleRacer *sInstance;
@@ -61,8 +61,9 @@ private:
    SharedArtificialRacer mAI;
    SharedDelaySimulator mSynch;
    SharedNetworkEngine mNetwork;
-   float mTimeLeft = -1;   ///< Game-Timer
-   float mStartTimer = -1; ///< Another timer for pre-game start (e.g., 3 seconds countdown before game start)
+   SharedSurveyEngine mSurveyEngine;
+   float mTimeLeft = -1;     ///< Game-Timer
+   float mStartTimer = -1;   ///< Another timer for pre-game start (e.g., 3 seconds countdown before game start)
    float mFadeOutTimer = -1; ///< Timer for letting the game widget fade out after game over
 
    RenderingWidget *mRendering = nullptr;

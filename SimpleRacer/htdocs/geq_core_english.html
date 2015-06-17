@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>TheFragebogen - Demo (short)</title>
+        <link rel="stylesheet" type="text/css" href="../css/style.css">
+
+        <script src="TheFragebogen-full.js"></script>
+
+        <script type="text/javascript">
+	        // config
+	        var showProgress = true;
+	        var numberOfQuestions = 33;
+	        // small code snippet for GEQ questions
+	        var currQuestion = 1;
+	        function geqQuestion(text)
+	        {
+	        	if (showProgress)
+	        		text += " ("+currQuestion+"/"+numberOfQuestions+")";
+	        	currQuestion++;
+	        	return new ScreenUIElements(
+	        		// The question
+	            	new QuestionnaireItemDefinedOne(undefined, text, [ "not at all", "slightly", "moderately", "fairly", "extremely"], true),
+	            	//An object that saves the time spent on the screen that it belongs to
+	                new QuestionnaireItemScreenDuration());
+	        }
+        </script>
+
+        <script>
+            //SETUP: use the variable screenController as a new element ScreenController, which will contain all data of the questionnaire
+            var screenController = new ScreenController(
+                    new ScreenUIElements(
+                            new UIElementHTML(undefined, "Welcome!<br><br>This is the Game Experience Questionnaire - Core Module by IJsselsteijn et al. (Version 4.6.2015, English).<br>When you are ready please press 'Next'.")),
+                    new ScreenUIElements(
+                            new UIElementHTML(undefined, "Please indicate how you felt while playing the game for each of the items.<br>When you are ready please press 'Next'.")),
+
+                    // GEQ Core questions
+                    // 1
+                    geqQuestion("I felt content"),
+                    // 2
+                    geqQuestion("I felt skilful"),
+                    // 3
+                    geqQuestion("I was interested in the game's story"),
+                    // 4
+                    geqQuestion("I thought it was fun"),
+                    // 5
+                    geqQuestion("I was fully occupied with the game"),
+                    // 6
+                    geqQuestion("I felt happy"),
+                    // 7
+                    geqQuestion("It gave me a bad mood"),
+                    // 8
+                    geqQuestion("I thought about other things"),
+                    // 9
+                    geqQuestion("I found it tiresome"),
+                    // 10
+                    geqQuestion("I felt competent"),
+                    // 11
+                    geqQuestion("I thought it was hard"),
+                    // 12
+                    geqQuestion("It was aesthetically pleasing"),
+                    // 13
+                    geqQuestion("I forgot everything around me"),
+                    // 14
+                    geqQuestion("I felt good"),
+                    // 15
+                    geqQuestion("I was good at it"),
+                    // 16
+                    geqQuestion("I felt bored"),
+                    // 17
+                    geqQuestion("I felt successful"),
+                    // 18
+                    geqQuestion("I felt imaginative"),
+                    // 19
+                    geqQuestion("I felt that I could explore things"),
+                    // 20
+                    geqQuestion("I enjoyed it"),
+                    // 21
+                    geqQuestion("I was fast at reaching the game's targets"),
+                    // 22
+                    geqQuestion("I felt annoyed"),
+                    // 23
+                    geqQuestion("I felt pressured"),
+                    // 24
+                    geqQuestion("I felt irritable"),
+                    // 25
+                    geqQuestion("I lost track of time"),
+                    // 26
+                    geqQuestion("I felt challenged"),
+                    // 27
+                    geqQuestion("I found it impressive"),
+                    // 28
+                    geqQuestion("I was deeply concentrated in the game"),
+                    // 29
+                    geqQuestion("I felt frustrated"),
+                    // 30
+                    geqQuestion("It felt like a rich experience"),
+                    // 31
+                    geqQuestion("I lost connection with the outside world"),
+                    // 32
+                    geqQuestion("I felt time pressure"),
+                    // 33
+                    geqQuestion("I had to put a lot of effort into it"),
+
+                    // Download data to disk
+                    new ScreenWait(undefined, 0.5),
+                    new ScreenWaitDataDownload()
+                    );
+        </script>
+        <script type="text/javascript">
+            function start() {
+                document.body.innerHTML += "Body loaded.<br />Starting the screenController...<br />";
+                if (typeof screenController === undefined) {
+                    console.log("FATAL ERROR: The program cannot work properly. Please check the configuration file.");
+                    alert("FATAL ERROR: The program cannot work properly. Please check the configuration file.");
+                    return;
+                }
+                screenController.init(document.body);
+                screenController.start();
+            }
+        </script>
+    </head>
+
+    <body onload="start()">
+        TheFragebogen is loading.<br />
+    </body>
+
+</html>

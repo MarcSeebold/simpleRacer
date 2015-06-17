@@ -1,5 +1,9 @@
 <RCC>
     <qresource prefix="/">
-        <file>htdocs/start.html</file>
+        <file>htdocs/wait.html</file>
+        <file>htdocs/geq_core_english.html</file>
+        <file>htdocs/geq_ingame_english.html</file>
+        <file>htdocs/geq_post-game_english.html</file>
+        <file>htdocs/TheFragebogen-full.js</file>
     </qresource>
 </RCC>

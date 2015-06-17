@@ -5,6 +5,7 @@
 #include <QNetworkSession>
 #include <QDebug>
 #include "SimpleRacer.hh"
+#include "SurveyEngine.hh"
 
 NetworkEngine::NetworkEngine()
 {
@@ -42,7 +43,7 @@ void NetworkEngine::newConnection()
 
 void NetworkEngine::onData()
 {
-   while(mClient->bytesAvailable())
+   while (mClient->bytesAvailable())
    {
       _ data = mClient->readAll();
       bool ok = true;
@@ -53,9 +54,25 @@ void NetworkEngine::onData()
          send("NACK");
          return;
       }
-      switch ((NetworkCommand)cmd) {
+      switch ((NetworkCommand)cmd)
+      {
       case NetworkCommand::START_GAME:
          SimpleRacer::the()->startGame();
+         send("ACK");
+         break;
+      case NetworkCommand::OPEN_SURVEY_PREGAME:
+         //TODO: language support
+         SimpleRacer::survey()->makeSurvey(SurveyType::CORE, SurveyLanguage::ENGLISH);
+         send("ACK");
+         break;
+      case NetworkCommand::OPEN_SURVEY_INGAME:
+         //TODO: language support
+         SimpleRacer::survey()->makeSurvey(SurveyType::INGAME, SurveyLanguage::ENGLISH);
+         send("ACK");
+         break;
+      case NetworkCommand::OPEN_SURVEY_POSTGAME:
+         //TODO: language support
+         SimpleRacer::survey()->makeSurvey(SurveyType::POSTGAME, SurveyLanguage::ENGLISH);
          send("ACK");
          break;
       default:

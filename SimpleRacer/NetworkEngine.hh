@@ -11,7 +11,9 @@ enum class NetworkCommand : short
 {
    INVALID = 0,
    START_GAME = 1,
-   OPEN_SMALL_SURVEY = 2,
+   OPEN_SURVEY_PREGAME = 2,
+   OPEN_SURVEY_INGAME = 3,
+   OPEN_SURVEY_POSTGAME = 4,
    SIZE
 };
 

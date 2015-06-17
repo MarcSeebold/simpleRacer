@@ -32,6 +32,9 @@ private:
       int p1Coins = 0;
       int p2Coins = 0;
 
+      // QoE questionnaire results
+      QByteArray surveyResults;
+
       /// Game Settings for this round
       QJsonObject *settings=nullptr;
 
@@ -68,6 +71,12 @@ public:
                       PlayerID _involvedPlayer = PlayerID::P1);
    /// Something happend
    void tellEvent(EventType _type);
+   /// Tell survey results. Will overwrite existing data!
+   void tellInGameSurvey(QByteArray _data);
+   /// Tell the results of the core survey
+   void tellCoreSurvey(QByteArray _data);
+   /// Tell the results of the post-game survey
+   void tellPostGameSurvey(QByteArray _data);
    // Save generated stats to disk
    void saveToFile();
 

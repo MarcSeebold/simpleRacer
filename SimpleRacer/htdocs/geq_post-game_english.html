@@ -1,0 +1,95 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>TheFragebogen - Demo (short)</title>
+        <link rel="stylesheet" type="text/css" href="../css/style.css">
+
+        <script src="TheFragebogen-full.js"></script>
+
+        <script type="text/javascript">
+	        // config
+	        var showProgress = true;
+	        var numberOfQuestions = 17;
+	        // small code snippet for GEQ questions
+	        var currQuestion = 1;
+	        function geqQuestion(text)
+	        {
+	        	if (showProgress)
+	        		text += " ("+currQuestion+"/"+numberOfQuestions+")";
+	        	currQuestion++;
+	        	return new ScreenUIElements(
+	        		// The question
+	            	new QuestionnaireItemDefinedOne(undefined, text, [ "not at all", "slightly", "moderately", "fairly", "extremely"], true),
+	            	//An object that saves the time spent on the screen that it belongs to
+	                new QuestionnaireItemScreenDuration());
+	        }
+        </script>
+
+        <script>
+            //SETUP: use the variable screenController as a new element ScreenController, which will contain all data of the questionnaire
+            var screenController = new ScreenController(
+                    new ScreenUIElements(
+                            new UIElementHTML(undefined, "Welcome!<br><br>This is the Game Experience Questionnaire - post-game Module by IJsselsteijn et al. (Version 4.6.2015, English).<br>When you are ready please press 'Next'.")),
+                    new ScreenUIElements(
+                            new UIElementHTML(undefined, "Please indicate how you felt while playing the game for each of the items.<br>When you are ready please press 'Next'.")),
+
+                    // GEQ In-game questions
+                    // 1
+                    geqQuestion("I felt revived"),
+                    // 2
+                    geqQuestion("I felt bad"),
+                    // 3
+                    geqQuestion("I found it hard to get back to reality"),
+                    // 4
+                    geqQuestion("I felt guilty"),
+                    // 5
+                    geqQuestion("It felt like a victory"),
+                    // 6
+                    geqQuestion("I found it a waste of time"),
+                    // 7
+                    geqQuestion("I felt energised"),
+                    // 8
+                    geqQuestion("I felt satisfied"),
+                    // 9
+                    geqQuestion("I felt disoriented"),
+                    // 10
+                    geqQuestion("I felt exhausted"),
+                    // 11
+                    geqQuestion("I felt that I could have done more useful things"),
+                    // 12
+                    geqQuestion("I felt powerful"),
+                    // 13
+                    geqQuestion("I felt weary"),
+                    // 14
+                    geqQuestion("I felt regret"),
+                    // 15
+                    geqQuestion("I felt ashamed"),
+                    // 16
+                    geqQuestion("I felt proud"),
+                    // 17
+                    geqQuestion("I had a sense that I had returned from a journey"),
+
+                    // Download data to disk
+                    new ScreenWait(undefined, 0.5),
+                    new ScreenWaitDataDownload()
+                    );
+        </script>
+        <script type="text/javascript">
+            function start() {
+                document.body.innerHTML += "Body loaded.<br />Starting the screenController...<br />";
+                if (typeof screenController === undefined) {
+                    console.log("FATAL ERROR: The program cannot work properly. Please check the configuration file.");
+                    alert("FATAL ERROR: The program cannot work properly. Please check the configuration file.");
+                    return;
+                }
+                screenController.init(document.body);
+                screenController.start();
+            }
+        </script>
+    </head>
+
+    <body onload="start()">
+        TheFragebogen is loading.<br />
+    </body>
+
+</html>

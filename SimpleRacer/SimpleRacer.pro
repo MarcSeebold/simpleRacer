@@ -26,7 +26,8 @@ SOURCES += main.cc\
     StatisticsEngine.cc \
     Settings.cc \
     Testing.cc \
-    NetworkEngine.cc
+    NetworkEngine.cc \
+    SurveyEngine.cc
 
 
 HEADERS  += MainWindow.hh \
@@ -42,7 +43,8 @@ HEADERS  += MainWindow.hh \
     StatisticsEngine.hh \
     Settings.hh \
     Testing.hh \
-    NetworkEngine.hh
+    NetworkEngine.hh \
+    SurveyEngine.hh
 
 FORMS    += MainWindow.ui
 

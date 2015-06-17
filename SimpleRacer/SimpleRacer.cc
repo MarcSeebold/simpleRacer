@@ -7,8 +7,27 @@
 #include "StatisticsEngine.hh"
 #include "NetworkEngine.hh"
 #include "Testing.hh"
+#include "SurveyEngine.hh"
 
 SimpleRacer *SimpleRacer::sInstance = nullptr;
+
+SimpleRacer::SimpleRacer(MainWindow *_mainWindow, RenderingWidget *_rendering)
+  : mLogicServer(new GameLogic(GameLogic::Type::SERVER)),
+    mLogicClient(new GameLogic(GameLogic::Type::CLIENT)),
+    mInput(new InputController(mLogicClient)),
+    mAI(new ArtificialRacer(PlayerID::P2, mLogicServer)),
+    mSynch(new DelaySimulator(mLogicClient, mLogicServer)),
+    mNetwork(new NetworkEngine),
+    mSurveyEngine(new SurveyEngine(_mainWindow->mUI->webView, _rendering)),
+    mRendering(_rendering),
+    mMainWindow(_mainWindow)
+{
+   connect(&mGameTimer, &QTimer::timeout, this, &SimpleRacer::update);
+}
+
+SimpleRacer::~SimpleRacer()
+{
+}
 
 void SimpleRacer::create(MainWindow *_mainWindow, RenderingWidget *_rendering)
 {
@@ -20,9 +39,9 @@ void SimpleRacer::create(MainWindow *_mainWindow, RenderingWidget *_rendering)
    tests.runTestSettingsSaveLoad();
 #endif
    sInstance = new SimpleRacer(_mainWindow, _rendering);
-   // At first: show webView
-   _mainWindow->mUI->webView->load(QUrl("qrc:/htdocs/start.html"));
-   sInstance->toogleWebView(true);
+   // At first: show a waiting screen
+   sInstance->mSurveyEngine->toogleSurveyWindow(true);
+   sInstance->mSurveyEngine->showWaitingScreen();
    sInstance->mNetwork->listen();
 }
 
@@ -40,26 +59,13 @@ SimpleRacer *SimpleRacer::the()
    return sInstance;
 }
 
-void SimpleRacer::toogleWebView(bool _showWebView)
-{
-   if (_showWebView)
-   {
-      mMainWindow->mUI->webView->show();
-      mMainWindow->mUI->widget->hide();
-   }
-   else
-   {
-      mMainWindow->mUI->webView->hide();
-      mMainWindow->mUI->widget->show();
-   }
-}
-
 void SimpleRacer::startGame()
 {
    StatisticsEngine::the()->tellNewGameRound();
    mMainWindow->mUI->labelBG->hide();
-   toogleWebView(false);
-   mTimeLeft = 60.f; // One minute gameplay
+   // hide survey, show game
+   mSurveyEngine->toogleSurveyWindow(false);
+   mTimeLeft = 60.f;   // One minute gameplay
    mStartTimer = 3.5f; // 3 Second-countdown before start
    mMainWindow->mUI->widget->setOpacity(1.f);
    mGameTimer.start(SR_GAMESTEPTIME);
@@ -72,8 +78,8 @@ void SimpleRacer::stopGame()
    logicClient()->reset();
    logicServer()->reset();
    mRunning = false;
-   // show webview after game is over
-   toogleWebView(true);
+   // show survey, hide game
+   mSurveyEngine->toogleSurveyWindow(true);
 }
 
 void SimpleRacer::exitGame()
@@ -100,7 +106,7 @@ void SimpleRacer::update()
       _ opacity = (mFadeOutTimer / 3.5f);
       mMainWindow->mUI->widget->setOpacity(opacity);
       mMainWindow->repaint(); // paint
-      return; // game is paused when fading-out
+      return;                 // game is paused when fading-out
    }
 
    // Countdown
@@ -116,7 +122,7 @@ void SimpleRacer::update()
       mMainWindow->mUI->labelBG->setText(text);
       mMainWindow->mUI->labelBG->show();
       mMainWindow->repaint(); // rendering
-      return; // Game is paused while countdown
+      return;                 // Game is paused while countdown
    }
 
    // Game-Timer
@@ -153,8 +159,8 @@ void SimpleRacer::update()
    mAI->tellOwnPosition(mLogicServer->getCarCenterPosition(PlayerID::P2));
    const _ coins = mLogicServer->getCoins();
    const _ muds = mLogicServer->getMuds();
-   QVector2D cPos(-1,-1);
-   QVector2D mPos(-1,-1);
+   QVector2D cPos(-1, -1);
+   QVector2D mPos(-1, -1);
    if (!coins.empty())
       cPos = coins[0];
    if (!muds.empty())
@@ -192,17 +198,4 @@ void SimpleRacer::update()
       mMainWindow->mUI->labelP1Points->setText(QString::number(mLogicClient->getScore(PlayerID::P1)));
       mMainWindow->mUI->labelP2Points->setText(QString::number(mLogicClient->getScore(PlayerID::P2)));
    }
-}
-
-SimpleRacer::SimpleRacer(MainWindow *_mainWindow, RenderingWidget *_rendering)
-  : mLogicServer(new GameLogic(GameLogic::Type::SERVER)),
-    mLogicClient(new GameLogic(GameLogic::Type::CLIENT)),
-    mInput(new InputController(mLogicClient)),
-    mAI(new ArtificialRacer(PlayerID::P2, mLogicServer)),
-    mSynch(new DelaySimulator(mLogicClient, mLogicServer)),
-    mNetwork(new NetworkEngine),
-    mRendering(_rendering),
-    mMainWindow(_mainWindow)
-{
-   connect(&mGameTimer, &QTimer::timeout, this, &SimpleRacer::update);
 }
