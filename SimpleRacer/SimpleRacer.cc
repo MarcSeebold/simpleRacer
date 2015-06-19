@@ -157,6 +157,7 @@ void SimpleRacer::update()
    mLogicServer->update(timeStep);
    // AI
    mAI->tellOwnPosition(mLogicServer->getCarCenterPosition(PlayerID::P2));
+   mAI->tellEnemyPosition(mLogicServer->getCarCenterPosition(PlayerID::P1));
    const _ coins = mLogicServer->getCoins();
    const _ muds = mLogicServer->getMuds();
    QVector2D cPos(-1, -1);

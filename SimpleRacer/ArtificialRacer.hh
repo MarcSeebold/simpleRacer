@@ -19,6 +19,8 @@ public:
    void tellMudPosition(const QVector2D &_pos);
    /// Tells AI its own position
    void tellOwnPosition(const QVector2D &_pos);
+   /// Tells AI its enemy's position
+   void tellEnemyPosition(const QVector2D &_pos);
 
    void update();
 
@@ -26,6 +28,9 @@ private:
    QVector2D mPosition;
    QVector2D mCoinPosition;
    QVector2D mMudPosition;
+   QVector2D mEnemyPosition;
+   float mDistToCoin = 0;
+   int mEnemyMockingUs = 0;
    WeakGameLogic mGameLogic;
    PlayerID mID;
    float mDifficulty = 1.f; ///< Value from 0(easy) to 1(hard)

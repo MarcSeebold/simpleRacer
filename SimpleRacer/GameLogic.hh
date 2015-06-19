@@ -63,6 +63,10 @@ public:
    bool isServer() const { return mType == Type::SERVER; }
    bool isClient() const { return mType == Type::CLIENT; }
 
+   /// Enable/Disable cheats for AI.
+   /// This allows the AI to drive faster than the human player.
+   void setAICheating(bool _val);
+
    /// accelerates the player by one px/sec
    void accelerate(PlayerID _id);
    /// decelerate the player by one px/sec
@@ -144,10 +148,11 @@ private:
    SHARED(struct, AIInput);
 
 private:
-   Type mType;                     ///< Server or Client?
-   UniqueAIInput mAIInput;         ///< actions applied to next game state
-   Sharedb2World mPhysicsWorld;    ///< Box2D World
-   Sharedb2World mPhysicsWorldOld; ///< Box2D World. This is mPhysicsWorld, but x seconds in the past. x = latency.
+   bool mAICheatingEnabled = false; ///< AI is allowed to cheat?
+   Type mType;                      ///< Server or Client?
+   UniqueAIInput mAIInput;          ///< actions applied to next game state
+   Sharedb2World mPhysicsWorld;     ///< Box2D World
+   Sharedb2World mPhysicsWorldOld;  ///< Box2D World. This is mPhysicsWorld, but x seconds in the past. x = latency.
 
    UniqueCar mCar1;    ///< Physics object for car 1
    UniqueCar mCar2;    ///< Physics object for car 2

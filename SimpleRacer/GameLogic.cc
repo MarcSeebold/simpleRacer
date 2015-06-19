@@ -126,6 +126,11 @@ void GameLogic::reset()
    }
 }
 
+void GameLogic::setAICheating(bool _val)
+{
+   mAICheatingEnabled = _val;
+}
+
 void GameLogic::steerUp(PlayerID _id)
 {
    _ id = (int)_id;
@@ -242,7 +247,7 @@ void GameLogic::setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, 
       }
       else
       { // hard-set
-         //std::cerr << "hard-set" << std::endl;
+         // std::cerr << "hard-set" << std::endl;
          carNew->setCenterPos(car->getCenterPos());
          carNew->setLinearVelocity(car->getLinearVelocity());
       }
@@ -412,8 +417,9 @@ void GameLogic::update(const float &_timestep)
       mCar1->applyForce(QVector2D(dirX * factorX, 0));
       mCar1->applyForce(QVector2D(0, dirY * factorY));
       // AI
-      mCar2->applyForce(QVector2D(mAIInput->deltaX[1] * factorX, 0));
-      mCar2->applyForce(QVector2D(0, mAIInput->deltaY[1] * factorY));
+      float cheatingFactor = (mAICheatingEnabled? 2.f: 1.f);
+      mCar2->applyForce(QVector2D(mAIInput->deltaX[1] * factorX * cheatingFactor, 0));
+      mCar2->applyForce(QVector2D(0, mAIInput->deltaY[1] * factorY * cheatingFactor));
    }
    // 2: step simulation
    {
