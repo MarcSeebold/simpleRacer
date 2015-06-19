@@ -16,6 +16,12 @@ public:
       OTHER
    };
 
+   enum class Shape : char
+   {
+      BOX,
+      CIRCLE
+   };
+
 public:
    PhysicsObject(const Sharedb2World &_world,
                  float _width,
@@ -24,7 +30,8 @@ public:
                  float _y,
                  Type _type = Type::OTHER,
                  float _linearDamping = 0.f,
-                 bool _static = false);
+                 bool _static = false,
+                 Shape _shape = Shape::BOX);
    virtual ~PhysicsObject();
 
    // Getter
@@ -40,7 +47,8 @@ public:
 
 protected:
    b2Body *mBody = nullptr;
-   b2PolygonShape mShape;
+   b2PolygonShape mPolyShape;
+   b2CircleShape mCircleShape;
    b2BodyDef mDef;
    b2FixtureDef mFixDef;
    Sharedb2World mWorld;
