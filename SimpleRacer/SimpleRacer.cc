@@ -169,7 +169,7 @@ void SimpleRacer::update()
    mAI->tellMudPosition(mPos);
    mAI->update();
    // Rendering
-   mMainWindow->repaint();
+   mMainWindow->update();
    // Synch Server and Client
    static int counter = 0;
    if (counter == 2) // 0,1,2

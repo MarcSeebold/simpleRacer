@@ -8,9 +8,13 @@
 
 #include <qdebug.h>
 
-RenderingWidget::RenderingWidget(QWidget *parent) : QWidget(parent)
+RenderingWidget::RenderingWidget(QWidget *parent) : QOpenGLWidget(parent)
 {
    setFixedSize(800, 300);
+   // vsynch
+   QSurfaceFormat format;
+   format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
+   setFormat(format);
 }
 
 void RenderingWidget::paintEvent(QPaintEvent *event)

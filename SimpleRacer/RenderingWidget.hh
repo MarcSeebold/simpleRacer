@@ -1,12 +1,12 @@
 #pragma once
 
-#include <QWidget>
+#include <QOpenGLWidget>
 #include "Common.hh"
 
 SHARED(class, GameLogic);
 struct GameState;
 
-class RenderingWidget : public QWidget
+class RenderingWidget : public QOpenGLWidget
 {
    Q_OBJECT
 public:
