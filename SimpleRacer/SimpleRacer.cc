@@ -9,6 +9,9 @@
 #include "Testing.hh"
 #include "SurveyEngine.hh"
 
+#include <QJsonObject>
+#include <QDebug>
+
 SimpleRacer *SimpleRacer::sInstance = nullptr;
 
 SimpleRacer::SimpleRacer(MainWindow *_mainWindow, RenderingWidget *_rendering)
@@ -23,6 +26,16 @@ SimpleRacer::SimpleRacer(MainWindow *_mainWindow, RenderingWidget *_rendering)
     mMainWindow(_mainWindow)
 {
    connect(&mGameTimer, &QTimer::timeout, this, &SimpleRacer::update);
+
+
+   QString test(R"("Screen index","Type of question","Question","Answer options","Answer"
+                    "2","QuestionnaireItemDefinedOne","Test1","not at all,slightly,moderately,fairly,extremely","extremely"
+                    "2","QuestionnaireItemScreenDuration","Screen Duration","undefined","11097"
+                    "3","QuestionnaireItemDefinedOne","Test2","not at all,slightly,moderately,fairly,extremely","not at all"
+                    "3","QuestionnaireItemScreenDuration","Screen Duration","undefined","1869")");
+         QJsonObject json;
+         common::csvToJSON(json, test);
+         qDebug() << json;
 }
 
 SimpleRacer::~SimpleRacer()

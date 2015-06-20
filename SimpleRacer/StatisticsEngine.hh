@@ -92,4 +92,6 @@ private:
    static StatisticsEngine *sInstance;
    std::map<gameRound, SharedGameStat> mGameStats;
    gameRound mCurrGameRound = 0;
+   QByteArray mPreGameSurveyResults;
+   QByteArray mPostGameSurveyResults;
 };

@@ -63,14 +63,12 @@ void StatisticsEngine::tellInGameSurvey(QByteArray _data)
 
 void StatisticsEngine::tellCoreSurvey(QByteArray _data)
 {
-   SR_ASSERT(0 && "TODO");
-   //TODO: implement
+   mPreGameSurveyResults = _data;
 }
 
 void StatisticsEngine::tellPostGameSurvey(QByteArray _data)
 {
-   SR_ASSERT(0 && "TODO");
-   //TODO: implement
+   mPostGameSurveyResults = _data;
 }
 
 void StatisticsEngine::saveToFile()
