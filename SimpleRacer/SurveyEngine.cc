@@ -2,7 +2,7 @@
 #include <QWebView>
 #include "Common.hh"
 #include "RenderingWidget.hh"
-#include <StatisticsEngine.hh>
+#include "StatisticsEngine.hh"
 #include <QNetworkRequest>
 
 SurveyEngine::SurveyEngine(QWebView *_webView, RenderingWidget *_renderWidget)
@@ -85,7 +85,8 @@ void SurveyEngine::showWaitingScreen()
 void SurveyEngine::onDownloadRequested(const QNetworkRequest &_request)
 {
    // magic!
-   _ data = QByteArray::fromBase64(_request.url().toEncoded().split(',').at(1));
+   // Abuse QByteArray since it can convert base64
+   _ data = QString(QByteArray::fromBase64(_request.url().toEncoded().split(',').at(1)));
    // store results in statistics engine
    switch (mCurrSurvey.type)
    {

@@ -33,7 +33,7 @@ private:
       int p2Coins = 0;
 
       // QoE questionnaire results
-      QByteArray surveyResults;
+      QString surveyResults;
 
       /// Game Settings for this round
       QJsonObject *settings=nullptr;
@@ -72,11 +72,11 @@ public:
    /// Something happend
    void tellEvent(EventType _type);
    /// Tell survey results. Will overwrite existing data!
-   void tellInGameSurvey(QByteArray _data);
+   void tellInGameSurvey(QString _data);
    /// Tell the results of the core survey
-   void tellCoreSurvey(QByteArray _data);
+   void tellCoreSurvey(QString _data);
    /// Tell the results of the post-game survey
-   void tellPostGameSurvey(QByteArray _data);
+   void tellPostGameSurvey(QString _data);
    // Save generated stats to disk
    void saveToFile();
 
@@ -92,6 +92,6 @@ private:
    static StatisticsEngine *sInstance;
    std::map<gameRound, SharedGameStat> mGameStats;
    gameRound mCurrGameRound = 0;
-   QByteArray mPreGameSurveyResults;
-   QByteArray mPostGameSurveyResults;
+   QString mPreGameSurveyResults;
+   QString mPostGameSurveyResults;
 };

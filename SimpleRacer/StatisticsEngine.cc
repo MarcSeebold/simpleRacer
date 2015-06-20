@@ -55,18 +55,18 @@ void StatisticsEngine::tellEvent(StatisticsEngine::EventType _type)
    }
 }
 
-void StatisticsEngine::tellInGameSurvey(QByteArray _data)
+void StatisticsEngine::tellInGameSurvey(QString _data)
 {
    SR_ASSERT(mGameStats.count(mCurrGameRound) == 1 && "No GameStat object. Forgot to call tellNewGameRound?");
    mGameStats[mCurrGameRound]->surveyResults = _data;
 }
 
-void StatisticsEngine::tellCoreSurvey(QByteArray _data)
+void StatisticsEngine::tellCoreSurvey(QString _data)
 {
    mPreGameSurveyResults = _data;
 }
 
-void StatisticsEngine::tellPostGameSurvey(QByteArray _data)
+void StatisticsEngine::tellPostGameSurvey(QString _data)
 {
    mPostGameSurveyResults = _data;
 }
@@ -79,6 +79,7 @@ void StatisticsEngine::saveToFile()
    QFile h("./stats/" + QString::number(common::getCurrentTimestamp()));
    _ ok = h.open(QIODevice::ReadWrite | QIODevice::Text);
    SR_ASSERT(ok && "failed to open file");
+   QJsonObject jObj;
    QJsonArray jStats;
    // use json for saving stats
    for (_ const &s : mGameStats)
@@ -88,7 +89,13 @@ void StatisticsEngine::saveToFile()
       s.second->write(jStat);
       jStats.append(jStat);
    }
-   QJsonDocument jDoc(jStats);
+   jObj["GameStats"] = jStats;
+   // pre- and post-game surveys
+   {
+      common::csvToJSON(jObj, mPreGameSurveyResults, "PreGameSurvey");
+      common::csvToJSON(jObj, mPostGameSurveyResults, "PostGameSurvey");
+   }
+   QJsonDocument jDoc(jObj);
    h.write(jDoc.toJson());
    h.close();
 }
@@ -142,6 +149,7 @@ void StatisticsEngine::GameStat::write(QJsonObject &_json)
    _json["p2Muds"] = p2Muds;
    _json["p1Coins"] = p1Coins;
    _json["p2Coins"] = p2Coins;
+   common::csvToJSON(_json, surveyResults, "SurveyResults");
    QJsonArray jCollisions;
    for (_ const &c : collisions)
    {

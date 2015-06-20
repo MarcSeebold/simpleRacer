@@ -16,7 +16,7 @@ namespace common
 /// Returns the current system time in nanoseconds
 int64_t getCurrentTimestamp();
 /// convert CSV data in _csv to JSON and store it in _json
-void csvToJSON(QJsonObject &_json, const QString &_csv);
+void csvToJSON(QJsonObject &_json, const QString &_csv, const QString _jsonKey);
 }
 
 class QTimer;
