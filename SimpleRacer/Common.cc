@@ -101,7 +101,7 @@ QStringList csvRowSplit(const QString &_csvRow)
          currItem = "";
          continue;
       }
-      if (c == "\"")
+      if (c == '\"')
       { // quote-chars start and end entries
          insideEntry = !insideEntry;
          continue;
