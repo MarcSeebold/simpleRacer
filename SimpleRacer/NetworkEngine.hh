@@ -24,6 +24,7 @@ enum class NetworkCommand : short
    LOAD_CONDITION_8 = 12,
    LOAD_CONDITION_9 = 13,
    LOAD_CONDITION_10 = 14,
+   NOP = 15,
    SIZE
 };
 

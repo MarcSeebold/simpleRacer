@@ -115,6 +115,9 @@ void NetworkEngine::onData()
          Settings::the()->loadCondition(10);
          send("ACK");
          break;
+      case NetworkCommand::NOP:
+         send("ACK");
+         break;
       default:
          send("NACK");
          break;
