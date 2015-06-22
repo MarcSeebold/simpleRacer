@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>conditions/1.json</file>
+        <file>conditions/2.json</file>
+        <file>conditions/3.json</file>
+        <file>conditions/4.json</file>
+        <file>conditions/5.json</file>
+        <file>conditions/6.json</file>
+        <file>conditions/7.json</file>
+        <file>conditions/8.json</file>
+        <file>conditions/9.json</file>
+        <file>conditions/10.json</file>
+    </qresource>
+</RCC>

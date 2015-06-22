@@ -50,7 +50,8 @@ FORMS    += MainWindow.ui
 
 RESOURCES += \
     rendering.qrc \
-    htdocs.qrc
+    htdocs.qrc \
+    conditions.qrc
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/Box2D/lib/ -lBox2d
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/Box2D/libd/ -lBox2d

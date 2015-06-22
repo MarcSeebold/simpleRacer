@@ -3,7 +3,8 @@
 #include <QApplication>
 #include <QJsonObject>
 #include <iostream>
-#include <qdebug.h>
+#include <QJsonDocument>
+#include <QFile>
 
 Settings* Settings::instance = nullptr;
 
@@ -107,6 +108,38 @@ void Settings::read(const QJsonObject& _json)
       __SR_SETTINGS_SET_IF_EXIST_BOOL(jLat, ClientSideInterpolation);
       __SR_SETTINGS_SET_IF_EXIST_BOOL(jLat, ServerSideLagCompensation);
    }
+}
+
+void Settings::loadCondition(unsigned int _num)
+{
+   QByteArray json;
+   // read json from resource
+   {
+      QString path = ":/conditions/";
+      if (_num < 1 || _num > 10)
+      {
+         SR_ASSERT(0 && "Invalid input parameter");
+         return;
+      }
+      path += QString::number(_num) + ".json";
+      QFile fh(path);
+      if (!fh.open(QFile::ReadOnly))
+      {
+         SR_ASSERT(0 && "Failed to read json file");
+         return;
+      }
+      json = fh.readAll();
+      fh.close();
+   }
+   _ jDoc = QJsonDocument::fromJson(json);
+   _ jRoot = jDoc.object();
+   if (!jRoot.contains("LatencyStuff"))
+   {
+      qDebug() << jRoot;
+      SR_ASSERT(0 && "Malformed json conditions file");
+      return;
+   }
+   read(jRoot);
 }
 
 void Settings::setClientSideCompensation(bool _val)

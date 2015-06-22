@@ -61,18 +61,58 @@ void NetworkEngine::onData()
          send("ACK");
          break;
       case NetworkCommand::OPEN_SURVEY_PREGAME:
-         //TODO: language support
+         // TODO: language support
          SimpleRacer::survey()->makeSurvey(SurveyType::CORE, SurveyLanguage::ENGLISH);
          send("ACK");
          break;
       case NetworkCommand::OPEN_SURVEY_INGAME:
-         //TODO: language support
+         // TODO: language support
          SimpleRacer::survey()->makeSurvey(SurveyType::INGAME, SurveyLanguage::ENGLISH);
          send("ACK");
          break;
       case NetworkCommand::OPEN_SURVEY_POSTGAME:
-         //TODO: language support
+         // TODO: language support
          SimpleRacer::survey()->makeSurvey(SurveyType::POSTGAME, SurveyLanguage::ENGLISH);
+         send("ACK");
+         break;
+      case NetworkCommand::LOAD_CONDITION_1:
+         Settings::the()->loadCondition(1);
+         send("ACK");
+         break;
+      case NetworkCommand::LOAD_CONDITION_2:
+         Settings::the()->loadCondition(2);
+         send("ACK");
+         break;
+      case NetworkCommand::LOAD_CONDITION_3:
+         Settings::the()->loadCondition(3);
+         send("ACK");
+         break;
+      case NetworkCommand::LOAD_CONDITION_4:
+         Settings::the()->loadCondition(4);
+         send("ACK");
+         break;
+      case NetworkCommand::LOAD_CONDITION_5:
+         Settings::the()->loadCondition(5);
+         send("ACK");
+         break;
+      case NetworkCommand::LOAD_CONDITION_6:
+         Settings::the()->loadCondition(6);
+         send("ACK");
+         break;
+      case NetworkCommand::LOAD_CONDITION_7:
+         Settings::the()->loadCondition(7);
+         send("ACK");
+         break;
+      case NetworkCommand::LOAD_CONDITION_8:
+         Settings::the()->loadCondition(8);
+         send("ACK");
+         break;
+      case NetworkCommand::LOAD_CONDITION_9:
+         Settings::the()->loadCondition(9);
+         send("ACK");
+         break;
+      case NetworkCommand::LOAD_CONDITION_10:
+         Settings::the()->loadCondition(10);
          send("ACK");
          break;
       default:

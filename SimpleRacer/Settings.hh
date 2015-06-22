@@ -23,6 +23,10 @@ public:
    /// Read all settings from JSON
    void read(const QJsonObject &_json);
 
+   /// Loads a pre-defined condition (1 to 10)
+   /// See qrc:/conditions/*.json
+   void loadCondition(unsigned int _num);
+
 private: // game logic stuff
    /// Port the game will listen on for commands
    int mNetworkPort = 13337;
@@ -50,9 +54,9 @@ private: // game logic stuff
 private: // latency stuff
    /// Probabilities that a critical game situations activates lag
    /// @{
-   float mLagProbabilityLow = 0.1f;
-   float mLagProbabilityMedium = 0.5f;
-   float mLagProbabilityHigh = 0.9f;
+   float mLagProbabilityLow = 0.02f;
+   float mLagProbabilityMedium = 0.05f;
+   float mLagProbabilityHigh = 1.f;
    float mLagProbabilityCustom = 0.5f;
    /// @}
    /// Current selected probability

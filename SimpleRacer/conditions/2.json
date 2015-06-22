@@ -1,0 +1,14 @@
+{
+        "LatencyStuff": {
+            "ClientSideInterpolation": false,
+            "ClientSidePhysics": false,
+            "ClientSidePrediction": false,
+            "LagDuration": 1,
+            "LagProbability": 3,
+            "LagProbabilityCustom": 0,
+            "LatencyClientToServer": 0,
+            "LatencyServerToClient": 0,
+            "ServerSideLagCompensation": false,
+            "ShortCircuiting": false
+        }
+}
