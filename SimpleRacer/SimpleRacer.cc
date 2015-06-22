@@ -137,12 +137,17 @@ void SimpleRacer::update()
          {
             mFadeOutTimer = 3.5f; // Fade-out game widget
             QString gameOverText = "Game Over\n";
+#if 0
             if (scoreP1 > scoreP2)
                gameOverText += "You have won!";
             else if (scoreP1 < scoreP2)
                gameOverText += "You have lost!";
             else
                gameOverText += "Draw!";
+#else
+            (void)&scoreP2;
+            gameOverText += "You achived " + QString::number(scoreP1) + " points!";
+#endif
             mMainWindow->mUI->labelBG->setText(gameOverText);
             mMainWindow->mUI->labelBG->show();
          }
