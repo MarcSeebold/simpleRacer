@@ -13,6 +13,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mUI(new Ui::MainW
    connect(mUI->actionExit, &QAction::triggered, SimpleRacer::the(), &SimpleRacer::exitGame);
    // set focus on game
    mUI->widget->setFocus();
+#ifndef QT_DEBUG
+   // Hide Debug-Stuff
+   mUI->latencySettings_2->hide();
+   mUI->compensationSettings_2->hide();
+   mUI->menuBar->hide();
+#endif
 }
 
 MainWindow::~MainWindow()
