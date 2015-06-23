@@ -30,6 +30,7 @@ void Settings::write(QJsonObject& _json) const
       jLog["ScoreCoin"] = getScoreCoin();
       jLog["ScoreMud"] = getScoreMud();
       jLog["NetworkPort"] = getNetworkPort();
+      jLog["TestPlay"] = getTestPlay();
       jLog["NetworkUpdateRate"] = (int)getNetworkUpdateRate();
    }
    // Latency stuff
@@ -85,6 +86,7 @@ void Settings::read(const QJsonObject& _json)
       __SR_SETTINGS_SET_IF_EXIST(jLog, ScoreMud, Int);
       __SR_SETTINGS_SET_IF_EXIST(jLog, NetworkPort, Int);
       __SR_SETTINGS_SET_IF_EXIST(jLog, NetworkUpdateRate, Int);
+      __SR_SETTINGS_SET_IF_EXIST_BOOL(jLog, TestPlay);
    }
    // Latency stuff
    if (_json.contains("LatencyStuff"))
@@ -118,7 +120,7 @@ void Settings::loadCondition(unsigned int _num)
    // read json from resource
    {
       QString path = ":/conditions/";
-      if (_num < 1 || _num > 10)
+      if (_num > 10)
       {
          SR_ASSERT(0 && "Invalid input parameter");
          return;
@@ -142,6 +144,14 @@ void Settings::loadCondition(unsigned int _num)
       return;
    }
    read(jRoot);
+}
+
+void Settings::setTestPlay(bool _val)
+{
+   mTestPlay = _val;
+   if (_val)
+      loadCondition(0);
+   emit testPlayStateChange(_val);
 }
 
 void Settings::setClientSideCompensation(bool _val)

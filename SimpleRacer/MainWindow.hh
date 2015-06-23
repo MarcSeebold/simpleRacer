@@ -27,6 +27,10 @@ public slots:
 
    void setLagStatusLabel(bool _val);
 
+   void onTestPlayStateChanged(bool _val);
+
+   void onStartNewTestGame();
+
 private slots:
    void on_checkBox_stateChanged(int arg1);
 
@@ -35,6 +39,8 @@ private slots:
    void on_pushButton_clicked();
 
    void on_actionStart_Singleplayer_triggered();
+
+   void populateJSWO();
 
 private:
    Ui::MainWindow *mUI = nullptr;

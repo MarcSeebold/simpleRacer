@@ -118,6 +118,14 @@ void NetworkEngine::onData()
       case NetworkCommand::NOP:
          send("ACK");
          break;
+      case NetworkCommand::START_TESTPLAY:
+         Settings::the()->setTestPlay(true);
+         send("ACK");
+         break;
+      case NetworkCommand::STOP_TESTPLAY:
+         Settings::the()->setTestPlay(false);
+         send("ACK");
+         break;
       default:
          send("NACK");
          break;

@@ -22,6 +22,7 @@ bool Testing::runTestSettingsSaveLoad()
    _ scoreCoin = s->getScoreCoin();
    _ scoreMud = s->getScoreMud();
    _ networkPort = s->getNetworkPort();
+   _ testPlay = s->getTestPlay();
    _ networkUpdateRate = s->getNetworkUpdateRate();
    // latency stuff
    _ lagProbabilityLow = s->getLagProbabilityLow();
@@ -69,6 +70,8 @@ bool Testing::runTestSettingsSaveLoad()
       ok &= networkPort == s->getNetworkPort();
       SR_ASSERT(ok && "Test: Value missmatch");
       ok &= networkUpdateRate == s->getNetworkUpdateRate();
+      SR_ASSERT(ok && "Test: Value missmatch");
+      ok &= testPlay == s->getTestPlay();
       SR_ASSERT(ok && "Test: Value missmatch");
       // latency stuff
       ok &= lagProbabilityLow == s->getLagProbabilityLow();

@@ -5,5 +5,7 @@
         <file>htdocs/geq_ingame_english.html</file>
         <file>htdocs/geq_post-game_english.html</file>
         <file>htdocs/TheFragebogen-full.js</file>
+        <file>htdocs/testPlay.html</file>
+        <file>htdocs/style.css</file>
     </qresource>
 </RCC>

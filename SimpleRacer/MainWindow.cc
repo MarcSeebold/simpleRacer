@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <QKeyEvent>
+#include <QWebFrame>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mUI(new Ui::MainWindow)
 {
@@ -11,6 +12,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mUI(new Ui::MainW
    SimpleRacer::create(this, mUI->widget);
 
    connect(mUI->actionExit, &QAction::triggered, SimpleRacer::the(), &SimpleRacer::exitGame);
+   connect(Settings::the(), &Settings::testPlayStateChange, this, &MainWindow::onTestPlayStateChanged);
+   connect(mUI->webView->page()->mainFrame(), &QWebFrame::javaScriptWindowObjectCleared, this, &MainWindow::populateJSWO);
    // set focus on game
    mUI->widget->setFocus();
 #ifndef QT_DEBUG
@@ -19,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mUI(new Ui::MainW
    mUI->compensationSettings_2->hide();
    mUI->menuBar->hide();
 #endif
+   mUI->webView->settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
 }
 
 MainWindow::~MainWindow()
@@ -55,6 +59,22 @@ void MainWindow::clearStatusbarText()
 void MainWindow::setLagStatusLabel(bool _val)
 {
    mUI->labelLagStatus->setText((_val? "on":"off"));
+}
+
+void MainWindow::onTestPlayStateChanged(bool _val)
+{
+   // Show Button for starting a new game
+   if (_val)
+      mUI->webView->load(QUrl("qrc:/htdocs/testPlay.html"));
+   else
+      mUI->webView->load(QUrl("qrc:/htdocs/wait.html"));
+}
+
+void MainWindow::onStartNewTestGame()
+{
+   SimpleRacer::the()->startGame();
+   // set focus on game
+   mUI->widget->setFocus();
 }
 
 void MainWindow::on_checkBox_stateChanged(int arg1)
@@ -121,4 +141,10 @@ void MainWindow::on_actionStart_Singleplayer_triggered()
    SimpleRacer::the()->startGame();
    // set focus on game
    mUI->widget->setFocus();
+}
+
+void MainWindow::populateJSWO()
+{
+   // register this class in javascript
+   mUI->webView->page()->mainFrame()->addToJavaScriptWindowObject("simpleRacer", this);
 }

@@ -1,0 +1,63 @@
+body {
+    margin: 5em 0px 5% 0px;
+    font-family: "Times New Roman";
+    text-align: center;
+    -webkit-user-select: none;
+}
+
+/* Disable user selection everywhere. */
+body {
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.screenContainer {
+    width:45em;
+    margin: 0px auto;
+}
+
+.screenContainer > div {
+    margin-top: 2em;
+    padding: 0 0 0.2em 0;
+    /*	background-color: #E6E6E6;*/
+}
+
+.screenContainer > div > div{
+    margin-bottom: 1.2em;
+}
+
+.screenContainer > div > div > div{
+    margin-bottom: 0.3em;
+}
+
+.QuestionnaireItemQuality7ptSVG > svg{
+    cursor:crosshair;
+    max-height: 30em;
+    max-width: 50em;
+}
+
+.QuestionnaireItemWrite {
+    border: 1px solid #000;
+    padding: 0px;
+    cursor: none;
+}
+
+.QuestionnaireItemDefinedOne {
+    table-layout: fixed;
+    margin: 0 auto 0 auto;
+    padding: 0.4em;
+    border: 2px ridge;
+}
+.QuestionnaireItemDefinedOne > tbody > tr > td {
+    text-align:center;
+    width: 5em;
+}
+
+.UIElementInteractiveRequired {
+    outline: none;
+    border-color: red;
+    box-shadow: 0 0 1em red;
+}

@@ -10,5 +10,6 @@
         <file>conditions/8.json</file>
         <file>conditions/9.json</file>
         <file>conditions/10.json</file>
+        <file>conditions/0.json</file>
     </qresource>
 </RCC>

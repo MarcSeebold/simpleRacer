@@ -25,6 +25,9 @@ enum class NetworkCommand : short
    LOAD_CONDITION_9 = 13,
    LOAD_CONDITION_10 = 14,
    NOP = 15,
+   START_TESTPLAY = 16,
+   STOP_TESTPLAY = 17,
+   WAITING = 18,
    SIZE
 };
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "Common.hh"
+#include <QObject>
 
 enum class LagProbability : char
 {
@@ -11,8 +12,10 @@ enum class LagProbability : char
 
 class QJsonObject;
 
-class Settings
+class Settings : public QObject
 {
+   Q_OBJECT
+
 public:
    /// Singelton getter
    static Settings* the();
@@ -24,13 +27,24 @@ public:
    void read(const QJsonObject &_json);
 
    /// Loads a pre-defined condition (1 to 10)
+   /// 0 = Testplay
    /// See qrc:/conditions/*.json
    void loadCondition(unsigned int _num);
+
+   /// Enable/Disable Testplay
+   void setTestPlay(bool _val);
+
+signals:
+   /// Emitted whenever the testPlay value changes
+   void testPlayStateChange(bool);
 
 private: // game logic stuff
    /// Port the game will listen on for commands
    int mNetworkPort = 13337;
 
+   /// When Test-Play is enabled, users can start a new game at their own.
+   /// Also, no latency is present (a preset config is loaded)
+   bool mTestPlay = false;
 
    /// Rate at which network updates are sent
    unsigned int mNetworkUpdateRate = 5;
@@ -102,6 +116,7 @@ public: // Getter, Setter
    float getLatencyServerToClient() const;
    float getLatencyClientToServer() const;
    GETTER(NetworkUpdateRate);
+   GETTER(TestPlay);
    GETTER(NetworkPort);
    GETTER(ScoreCoin);
    GETTER(ScoreMud);
