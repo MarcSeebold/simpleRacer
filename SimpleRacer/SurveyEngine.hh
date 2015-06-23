@@ -30,8 +30,8 @@ public:
 
    /// Starts a survey
    void makeSurvey(SurveyType _type, SurveyLanguage _language);
-   /// Toogle survey and game window
-   void toogleSurveyWindow(bool _showSurveyHideGame);
+   /// Toogle web and game window
+   void toogleWebWindow(bool _showWebviewHideGame);
    /// Show waiting screen
    void showWaitingScreen();
 

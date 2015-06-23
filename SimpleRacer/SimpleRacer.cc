@@ -40,7 +40,7 @@ void SimpleRacer::create(MainWindow *_mainWindow, RenderingWidget *_rendering)
 #endif
    sInstance = new SimpleRacer(_mainWindow, _rendering);
    // At first: show a waiting screen
-   sInstance->mSurveyEngine->toogleSurveyWindow(true);
+   sInstance->mSurveyEngine->toogleWebWindow(true);
    sInstance->mSurveyEngine->showWaitingScreen();
    sInstance->mNetwork->listen();
 }
@@ -64,12 +64,13 @@ void SimpleRacer::startGame()
    StatisticsEngine::the()->tellNewGameRound();
    mMainWindow->mUI->labelBG->hide();
    // hide survey, show game
-   mSurveyEngine->toogleSurveyWindow(false);
+   mSurveyEngine->toogleWebWindow(false);
    mTimeLeft = 60.f;   // One minute gameplay
    mStartTimer = 3.5f; // 3 Second-countdown before start
    mMainWindow->mUI->widget->setOpacity(1.f);
    mGameTimer.start(SR_GAMESTEPTIME);
    mRunning = true;
+   setGameState(GameState::PLAYING);
 }
 
 void SimpleRacer::stopGame()
@@ -79,7 +80,8 @@ void SimpleRacer::stopGame()
    logicServer()->reset();
    mRunning = false;
    // show survey, hide game
-   mSurveyEngine->toogleSurveyWindow(true);
+   mSurveyEngine->toogleWebWindow(true);
+   setGameState(GameState::WAITING);
 }
 
 void SimpleRacer::exitGame()

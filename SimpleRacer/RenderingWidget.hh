@@ -4,7 +4,6 @@
 #include "Common.hh"
 
 SHARED(class, GameLogic);
-struct GameState;
 
 class RenderingWidget : public QOpenGLWidget
 {

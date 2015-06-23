@@ -17,6 +17,14 @@ SHARED(class, DelaySimulator);
 SHARED(class, NetworkEngine);
 SHARED(class, SurveyEngine);
 
+enum class GameState : char
+{
+   INVALID = 0,
+   PLAYING,
+   SURVEY,
+   WAITING
+};
+
 class SimpleRacer : public QObject
 {
    Q_OBJECT
@@ -73,6 +81,10 @@ private:
 
 private:
    bool mRunning = false;
+   GameState mGameState = GameState::INVALID;
+
+public:
+   PROPERTY(GameState);
 
 private:
    /// Singleton: no default c'tor

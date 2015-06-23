@@ -126,6 +126,28 @@ void NetworkEngine::onData()
          Settings::the()->setTestPlay(false);
          send("ACK");
          break;
+      case NetworkCommand::GET_STATE:
+      {
+         _ state = SimpleRacer::the()->getGameState();
+         _ res = NetworkCommand::INVALID;
+         switch (state)
+         {
+         case GameState::PLAYING:
+            res = NetworkCommand::STATE_PLAYING;
+            break;
+         case GameState::SURVEY:
+            res = NetworkCommand::STATE_SURVEY;
+            break;
+         case GameState::WAITING:
+            res = NetworkCommand::STATE_WAITING;
+            break;
+         default:
+            SR_ASSERT(0 && "Unhandled case.");
+            break;
+         }
+         send(QByteArray::number((int)res));
+      }
+      break;
       default:
          send("NACK");
          break;

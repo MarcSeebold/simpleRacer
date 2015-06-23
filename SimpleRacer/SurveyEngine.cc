@@ -4,6 +4,7 @@
 #include "RenderingWidget.hh"
 #include "StatisticsEngine.hh"
 #include <QNetworkRequest>
+#include "SimpleRacer.hh"
 
 SurveyEngine::SurveyEngine(QWebView *_webView, RenderingWidget *_renderWidget)
   : mWebView(_webView), mRendering(_renderWidget)
@@ -22,7 +23,7 @@ SurveyEngine::~SurveyEngine()
 void SurveyEngine::makeSurvey(SurveyType _type, SurveyLanguage _language)
 {
    // show webView, hide game
-   toogleSurveyWindow(true);
+   toogleWebWindow(true);
    // assemble url
    QString url = "qrc:/htdocs/geq_";
    // Survey-Type
@@ -61,11 +62,13 @@ void SurveyEngine::makeSurvey(SurveyType _type, SurveyLanguage _language)
    // Store configuration
    mCurrSurvey.lang = _language;
    mCurrSurvey.type = _type;
+   // Set state
+   SimpleRacer::the()->setGameState(GameState::SURVEY);
 }
 
-void SurveyEngine::toogleSurveyWindow(bool _showSurveyHideGame)
+void SurveyEngine::toogleWebWindow(bool _showWebviewHideGame)
 {
-   if (_showSurveyHideGame)
+   if (_showWebviewHideGame)
    {
       mWebView->show();
       mRendering->hide();
@@ -107,4 +110,6 @@ void SurveyEngine::onDownloadRequested(const QNetworkRequest &_request)
    showWaitingScreen();
    // reset state
    mCurrSurvey = CurrentSurvey{SurveyType::INVALID, SurveyLanguage::INVALID};
+   // state
+   SimpleRacer::the()->setGameState(GameState::WAITING);
 }
