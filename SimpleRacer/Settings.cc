@@ -30,6 +30,7 @@ void Settings::write(QJsonObject& _json) const
       jLog["ScoreCoin"] = getScoreCoin();
       jLog["ScoreMud"] = getScoreMud();
       jLog["NetworkPort"] = getNetworkPort();
+      jLog["NetworkUpdateRate"] = (int)getNetworkUpdateRate();
    }
    // Latency stuff
    {
@@ -83,6 +84,7 @@ void Settings::read(const QJsonObject& _json)
       __SR_SETTINGS_SET_IF_EXIST(jLog, ScoreCoin, Int);
       __SR_SETTINGS_SET_IF_EXIST(jLog, ScoreMud, Int);
       __SR_SETTINGS_SET_IF_EXIST(jLog, NetworkPort, Int);
+      __SR_SETTINGS_SET_IF_EXIST(jLog, NetworkUpdateRate, Int);
    }
    // Latency stuff
    if (_json.contains("LatencyStuff"))

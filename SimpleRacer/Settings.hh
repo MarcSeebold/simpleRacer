@@ -31,6 +31,10 @@ private: // game logic stuff
    /// Port the game will listen on for commands
    int mNetworkPort = 13337;
 
+
+   /// Rate at which network updates are sent
+   unsigned int mNetworkUpdateRate = 5;
+
    /// Linear damping of cars
    float mLinearDamping = 2.f;
    /// maximum squared offset before cars are warped instead of smoothly set
@@ -97,6 +101,7 @@ public: // Getter, Setter
    // Getter
    float getLatencyServerToClient() const;
    float getLatencyClientToServer() const;
+   GETTER(NetworkUpdateRate);
    GETTER(NetworkPort);
    GETTER(ScoreCoin);
    GETTER(ScoreMud);

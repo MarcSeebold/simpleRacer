@@ -178,8 +178,10 @@ void SimpleRacer::update()
    mMainWindow->update();
    // Synch Server and Client
    static int counter = 0;
-   if (counter == 2) // 0,1,2
-   { // only send network stuff all three frames (at 60Hz that means 20Hz, default value for a source server)
+   // 60/UpdateRateInHz = Number of updates per second; -1 because we count from 0 on
+   int everyXFrames = int((60.f / Settings::the()->getNetworkUpdateRate())) - 1;
+   if (counter == everyXFrames)
+   {
       // Client->Server
       mSynch->csSendInput(mInput->getKeyStatus());
       // Server->Client
