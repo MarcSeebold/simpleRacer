@@ -81,13 +81,13 @@ private: // latency stuff
    float mLagProbabilityLow = 0.02f;
    float mLagProbabilityMedium = 0.05f;
    float mLagProbabilityHigh = 1.f;
-   float mLagProbabilityCustom = 0.5f;
+   float mLagProbabilityCustom = 0.1f;
    /// @}
    /// Current selected probability
    LagProbability mLagProbability = LagProbability::CUSTOM;
 
    /// How long is the lag activated after triggered (seconds)
-   float mLagDuration = 999.0f;
+   float mLagDuration = 1.0f;
 
    /// Is lag enabled?
    bool mLagEnabled = false;
@@ -107,6 +107,9 @@ private: // latency stuff
    bool mClientSideInterpolation = true;
    /// @}
 
+   /// should the client ignore server coin/mud updates and rely on its own simulation?
+   bool mHandleCoinMudCollisionsOnlyClientside = true;
+
    // Server
    /// Server-side lag settings
    bool mServerSideLagCompensation = true;
@@ -123,6 +126,7 @@ public: // Getter, Setter
    float getCurrentLatencyServerToClient() const;
    /// Will return 0 if lag is not enabled!!!
    float getCurrentLatencyClientToServer() const;
+   GETTER(HandleCoinMudCollisionsOnlyClientside);
    GETTER(LatencyServerToClient);
    GETTER(LatencyClientToServer);
    GETTER(NetworkUpdateRate);

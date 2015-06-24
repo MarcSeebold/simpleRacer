@@ -27,6 +27,8 @@ public:
    void scSendCoins(std::vector<QVector2D> _coins);
    void scSendMuds(std::vector<QVector2D> _muds);
    void scSendScore(PlayerID _player, int _score);
+   void scSpawnCoin(const QVector2D &_pos);
+   void scSpawnMud(const QVector2D &_pos);
 
 private:
    SharedGameLogic mGameLogicClient;

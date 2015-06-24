@@ -64,5 +64,25 @@ void DelaySimulator::scSendScore(PlayerID _player, int _score)
        {
           mGameLogicClient->mScore[int(_player)] = _score;
        },
-       DelayedActions::DelayedActionType::SERVER_TO_CLIENT);
+   DelayedActions::DelayedActionType::SERVER_TO_CLIENT);
+}
+
+void DelaySimulator::scSpawnCoin(const QVector2D &_pos)
+{
+   mDelayManager.pushDelayedAction(
+       [this, _pos]()
+       {
+          mGameLogicClient->clientSpawnCoin(_pos);
+       },
+   DelayedActions::DelayedActionType::SERVER_TO_CLIENT);
+}
+
+void DelaySimulator::scSpawnMud(const QVector2D &_pos)
+{
+   mDelayManager.pushDelayedAction(
+       [this, _pos]()
+       {
+          mGameLogicClient->clientSpawnMud(_pos);
+       },
+   DelayedActions::DelayedActionType::SERVER_TO_CLIENT);
 }

@@ -32,6 +32,7 @@ void Settings::write(QJsonObject& _json) const
       jLog["ScoreCoin"] = getScoreCoin();
       jLog["ScoreMud"] = getScoreMud();
       jLog["NetworkPort"] = getNetworkPort();
+      jLog["HandleCoinMudCollisionsOnlyClientside"] = getHandleCoinMudCollisionsOnlyClientside();
       jLog["TestPlay"] = getTestPlay();
       jLog["NetworkUpdateRate"] = (int)getNetworkUpdateRate();
    }
@@ -59,7 +60,7 @@ void Settings::write(QJsonObject& _json) const
 
 #define __SR_SETTINGS_SET_IF_EXIST(jsonObject, key, type) \
    if (jsonObject.contains(#key))                         \
-      m##key = jsonObject[#key].to##type();    \
+      m##key = jsonObject[#key].to##type();               \
    do                                                     \
    {                                                      \
    } while (0)
@@ -89,6 +90,7 @@ void Settings::read(const QJsonObject& _json)
       __SR_SETTINGS_SET_IF_EXIST(jLog, ScoreCoin, Int);
       __SR_SETTINGS_SET_IF_EXIST(jLog, ScoreMud, Int);
       __SR_SETTINGS_SET_IF_EXIST(jLog, NetworkPort, Int);
+      __SR_SETTINGS_SET_IF_EXIST_BOOL(jLog, HandleCoinMudCollisionsOnlyClientside);
       __SR_SETTINGS_SET_IF_EXIST(jLog, NetworkUpdateRate, Int);
       __SR_SETTINGS_SET_IF_EXIST_BOOL(jLog, TestPlay);
    }

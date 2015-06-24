@@ -110,6 +110,12 @@ public slots:
    void update(const float &_timestep);
 
 private:
+   /// Spawn new coin (client only)
+   void clientSpawnCoin(const QVector2D &_pos);
+
+   /// Spawn new mud puddle (client only)
+   void clientSpawnMud(const QVector2D &_pos);
+
    /// Replace all coins by _coins
    void setCoins(const std::vector<QVector2D> &_coins);
 

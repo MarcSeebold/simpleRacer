@@ -12,6 +12,7 @@
 #include "Settings.hh"
 #include "StatisticsEngine.hh"
 #include <qmath.h>
+#include "DelaySimulator.hh"
 
 #include <qdebug.h>
 
@@ -189,6 +190,9 @@ int GameLogic::getScore(PlayerID _id)
 
 void GameLogic::setCoins(const std::vector<QVector2D> &_coins)
 {
+   if (Settings::the()->getHandleCoinMudCollisionsOnlyClientside())
+      return; // clientside only: only process spawn commands
+
    mCoins.clear();
    for (_ const &c : _coins)
    {
@@ -199,6 +203,9 @@ void GameLogic::setCoins(const std::vector<QVector2D> &_coins)
 
 void GameLogic::setMuds(const std::vector<QVector2D> &_muds)
 {
+   if (Settings::the()->getHandleCoinMudCollisionsOnlyClientside())
+      return; // clientside only: only process spawn commands
+
    mMuds.clear();
    for (_ const &m : _muds)
    {
@@ -429,7 +436,6 @@ void GameLogic::update(const float &_timestep)
       const _ correctVelo = [&x, &y](Car *car)
       {
          const _ cv = car->getLinearVelocity();
-         qDebug() << cv;
          QVector2D newVelo = cv;
          if (std::abs(cv.x()) > x)
             newVelo.setX(x * (cv.x() < 0? -1 : 1));
@@ -467,6 +473,18 @@ void GameLogic::update(const float &_timestep)
    mAIInput->reset();
 }
 
+void GameLogic::clientSpawnCoin(const QVector2D &_pos)
+{
+   _ coin = UniqueCoin(new Coin(mPhysicsWorld, sCoinSize, sCoinSize, _pos.x(), _pos.y()));
+   mCoins.push_back(std::move(coin));
+}
+
+void GameLogic::clientSpawnMud(const QVector2D &_pos)
+{
+   _ mud = UniqueMud(new Mud(mPhysicsWorld, sMudSize, sMudSize, _pos.x(), _pos.y()));
+   mMuds.push_back(std::move(mud));
+}
+
 void GameLogic::spawnCoin()
 {
    // only server must create new coins
@@ -501,6 +519,8 @@ void GameLogic::spawnCoin()
    // tell AI
    if (mCoinSpawnCallback)
       mCoinSpawnCallback(QVector2D(posX, posY));
+   // send packet to client
+   SimpleRacer::delaySimulator()->scSpawnCoin(QVector2D(posX, posY));
 }
 
 void GameLogic::spawnMud()
@@ -537,6 +557,8 @@ void GameLogic::spawnMud()
    // tell AI
    if (mMudSpawnCallback)
       mMudSpawnCallback(QVector2D(posX, posY));
+   // send packet to client
+   SimpleRacer::delaySimulator()->scSpawnMud(QVector2D(posX, posY));
 }
 
 void GameLogic::callbackCarMud(Car *_car, Mud *_mud)

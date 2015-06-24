@@ -44,6 +44,7 @@ public: // static getter
    static SharedArtificialRacer ai() { return the()->mAI; }
    static RenderingWidget *rendering() { return the()->mRendering; }
    static SharedSurveyEngine survey() { return the()->mSurveyEngine; }
+   static SharedDelaySimulator delaySimulator() { return the()->mSynch; }
 
 public slots:
    void startGame();
