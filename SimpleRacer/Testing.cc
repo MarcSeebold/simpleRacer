@@ -19,6 +19,8 @@ bool Testing::runTestSettingsSaveLoad()
    _ mudSpawnTime = s->getMudSpawnTime();
    _ carAccX = s->getCarAccX();
    _ carAccY = s->getCarAccY();
+   _ carVeloX = s->getCarVeloX();
+   _ carVeloY = s->getCarVeloY();
    _ scoreCoin = s->getScoreCoin();
    _ scoreMud = s->getScoreMud();
    _ networkPort = s->getNetworkPort();
@@ -62,6 +64,10 @@ bool Testing::runTestSettingsSaveLoad()
       ok &= carAccX == s->getCarAccX();
       SR_ASSERT(ok && "Test: Value missmatch");
       ok &= carAccY == s->getCarAccY();
+      SR_ASSERT(ok && "Test: Value missmatch");
+      ok &= carVeloX == s->getCarVeloX();
+      SR_ASSERT(ok && "Test: Value missmatch");
+      ok &= carVeloY == s->getCarVeloY();
       SR_ASSERT(ok && "Test: Value missmatch");
       ok &= scoreCoin == s->getScoreCoin();
       SR_ASSERT(ok && "Test: Value missmatch");

@@ -221,7 +221,7 @@ void GameLogic::setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, 
       car->setCenterPos(_pos);
       car->setLinearVelocity(_velo);
       // predict current position
-      mPhysicsWorldOld->Step(Settings::the()->getLatencyServerToClient(), 4, 8);
+      mPhysicsWorldOld->Step(Settings::the()->getCurrentLatencyServerToClient(), 4, 8);
       // update current state
       _ posDiff = car->getCenterPos() - carNew->getCenterPos();
       // server position differs largely from ours
@@ -273,7 +273,7 @@ void GameLogic::decelerate(PlayerID _id)
 
 void GameLogic::update(const float &_timestep)
 {
-   // interpolate coins and mud?
+   // 1: interpolate coins and mud?
    if (isClient())
    {
       _ coinMudLinearVelocity = Settings::the()->getCoinMudLinearVelocity();
@@ -301,7 +301,7 @@ void GameLogic::update(const float &_timestep)
       }
    }
 
-   // find coins and mud puddles that left the play-field
+   // 2: find coins and mud puddles that left the play-field
    {
       for (_ const &c : mCoins)
       {
@@ -315,7 +315,7 @@ void GameLogic::update(const float &_timestep)
       }
    }
 
-   // Remove coins
+   // 3: Remove coins
    for (Coin *coin : mCoinsToRemove)
    {
       mCoins.erase(std::remove_if(mCoins.begin(), mCoins.end(),
@@ -328,7 +328,7 @@ void GameLogic::update(const float &_timestep)
                    mCoins.end());
    }
    mCoinsToRemove.clear();
-   // Remove mud puddles
+   // 4: Remove mud puddles
    for (Mud *mud : mMudsToRemove)
    {
       mMuds.erase(std::remove_if(mMuds.begin(), mMuds.end(),
@@ -342,7 +342,7 @@ void GameLogic::update(const float &_timestep)
    }
    mMudsToRemove.clear();
 
-   // spawn stuff
+   // 5: spawn stuff
    {
       // mCoins will be empty for a while when we use delayed spawning. use these "mutices" to avoid mass-spawning.
       static _ coinSpawnInProgress = false;
@@ -372,22 +372,22 @@ void GameLogic::update(const float &_timestep)
              Settings::the()->getMudSpawnTime());
       }
    }
-   // 5: Update delayed stuff
+   // 6: Update delayed stuff
    mDelayedLagDisabling.update();
    mDelayedServerCarPosUpdate.update();
    mDelayedSpawner.update();
-   // 0: server-side lag compensation: step old physics world and update present
+   // 7: server-side lag compensation: step old physics world and update present
    if (isServer() && Settings::the()->getServerSideLagCompensation())
    {
       // server-side lag compensation for player 1
       // step old physics world to present
       // it would be more accurate to re-play AI's input. however, this is not so easy.
-      mPhysicsWorldOld->Step(Settings::the()->getLatencyClientToServer() * 0.5f - _timestep, 4, 8);
+      mPhysicsWorldOld->Step(Settings::the()->getCurrentLatencyClientToServer() * 0.5f - _timestep, 4, 8);
       // store new data (only for P1!, P2 lives on the server)
       mCar1->setCenterPos(mCar1Old->getCenterPos());
       mCar1->setLinearVelocity(mCar1Old->getLinearVelocity());
    }
-   // 1: apply input
+   // 8: apply input
    {
       // Server: Client input
       if (isServer())
@@ -409,19 +409,38 @@ void GameLogic::update(const float &_timestep)
             steerUp(PlayerID::P1);
          }
       }
-      float factorX = Settings::the()->getCarAccX();
-      float factorY = Settings::the()->getCarAccY();
+      _ factorX = Settings::the()->getCarAccX();
+      _ factorY = Settings::the()->getCarAccY();
       // player
       int dirX = (mKeyStatus.right ? 1 : 0) + (mKeyStatus.left ? -1 : 0);
       int dirY = (mKeyStatus.up ? 1 : 0) + (mKeyStatus.down ? -1 : 0);
       mCar1->applyForce(QVector2D(dirX * factorX, 0));
       mCar1->applyForce(QVector2D(0, dirY * factorY));
       // AI
-      float cheatingFactor = (mAICheatingEnabled? 2.f: 1.f);
+      float cheatingFactor = (mAICheatingEnabled ? 2.f : 1.f);
       mCar2->applyForce(QVector2D(mAIInput->deltaX[1] * factorX * cheatingFactor, 0));
       mCar2->applyForce(QVector2D(0, mAIInput->deltaY[1] * factorY * cheatingFactor));
    }
-   // 2: step simulation
+   // 9: Limit velocity of cars
+   if (isServer() || (isClient() && !Settings::the()->getClientSideInterpolation()))
+   { // disable when we are client and interpolation is active (we interpolate using velocity...)
+      const _ x = Settings::the()->getCarVeloX();
+      const _ y = Settings::the()->getCarVeloY();
+      const _ correctVelo = [&x, &y](Car *car)
+      {
+         const _ cv = car->getLinearVelocity();
+         qDebug() << cv;
+         QVector2D newVelo = cv;
+         if (std::abs(cv.x()) > x)
+            newVelo.setX(x * (cv.x() < 0? -1 : 1));
+         if (std::abs(cv.y()) > y)
+            newVelo.setY(y * (cv.y() < 0? -1 : 1));
+         car->setLinearVelocity(newVelo);
+      };
+      correctVelo(mCar1.get());
+      correctVelo(mCar2.get());
+   }
+   // 10: step simulation
    {
       if (Settings::the()->getClientSidePhysics() || isServer())
       {
@@ -430,11 +449,7 @@ void GameLogic::update(const float &_timestep)
          mPhysicsWorld->Step(_timestep, velocityIterations, positionIterations);
       }
    }
-   // 3: collect coins/rocks
-   {
-      // Done via collision-callback: coinCallback(...)
-   }
-   // 4: Keep a copy of the world state for X seconds (for server-side lag compensation)
+   // 11: Keep a copy of the world state for X seconds (for server-side lag compensation)
    if (isServer())
    {
       _ func = [this]()
@@ -446,7 +461,7 @@ void GameLogic::update(const float &_timestep)
          mCar2Old->setLinearVelocity(mCar2->getLinearVelocity());
       };
       // execute it after x seconds
-      mDelayedLagDisabling.pushDelayedAction(func, Settings::the()->getLatencyClientToServer());
+      mDelayedLagDisabling.pushDelayedAction(func, Settings::the()->getCurrentLatencyClientToServer());
    }
    // reset AI input
    mAIInput->reset();

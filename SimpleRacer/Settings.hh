@@ -47,7 +47,7 @@ private: // game logic stuff
    bool mTestPlay = false;
 
    /// Rate at which network updates are sent
-   unsigned int mNetworkUpdateRate = 5;
+   unsigned int mNetworkUpdateRate = 20;
 
    /// Linear damping of cars
    float mLinearDamping = 2.f;
@@ -61,9 +61,15 @@ private: // game logic stuff
    float mMudSpawnTime = 0.5f;
    /// Car acceleration for x and y axes
    /// @{
-   float mCarAccX = 30;
-   float mCarAccY = 12;
+   float mCarAccX = 70;
+   float mCarAccY = 70;
    /// @}
+   /// Max car velocity for x and y axes
+   /// @{
+   float mCarVeloX = 15;
+   float mCarVeloY = 11;
+   /// @}
+
    /// Points for collecting a coin
    int mScoreCoin = 1;
    /// Points for collecting a mud puddle
@@ -81,15 +87,15 @@ private: // latency stuff
    LagProbability mLagProbability = LagProbability::CUSTOM;
 
    /// How long is the lag activated after triggered (seconds)
-   float mLagDuration = 1.0f;
+   float mLagDuration = 999.0f;
 
    /// Is lag enabled?
    bool mLagEnabled = false;
 
    /// Latencies in seconds
    /// @{
-   float mLatencyServerToClient = 200 /*ms*/ / 1000.f;
-   float mLatencyClientToServer = 200 /*ms*/ / 1000.f;
+   float mLatencyServerToClient = 100 /*ms*/ / 1000.f;
+   float mLatencyClientToServer = 100 /*ms*/ / 1000.f;
    /// @}
 
    // Client
@@ -106,15 +112,19 @@ private: // latency stuff
    bool mServerSideLagCompensation = true;
    // Other
    /// Factor for applying prediction
-   float mClientSideInterpolationFactor = 2.3f;
+   float mClientSideInterpolationFactor = 1.3f;
 
    /// Singleton instance
    static Settings* instance;
 
 public: // Getter, Setter
    // Getter
-   float getLatencyServerToClient() const;
-   float getLatencyClientToServer() const;
+   /// Will return 0 if lag is not enabled!!!
+   float getCurrentLatencyServerToClient() const;
+   /// Will return 0 if lag is not enabled!!!
+   float getCurrentLatencyClientToServer() const;
+   GETTER(LatencyServerToClient);
+   GETTER(LatencyClientToServer);
    GETTER(NetworkUpdateRate);
    GETTER(TestPlay);
    GETTER(NetworkPort);
@@ -122,6 +132,8 @@ public: // Getter, Setter
    GETTER(ScoreMud);
    GETTER(CarAccX);
    GETTER(CarAccY);
+   GETTER(CarVeloX);
+   GETTER(CarVeloY);
    GETTER(CoinSpawnTime);
    GETTER(MudSpawnTime);
    GETTER(CoinMudLinearVelocity);

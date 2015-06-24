@@ -27,6 +27,8 @@ void Settings::write(QJsonObject& _json) const
       jLog["MudSpawnTime"] = getMudSpawnTime();
       jLog["CarAccX"] = getCarAccX();
       jLog["CarAccY"] = getCarAccY();
+      jLog["CarVeloX"] = getCarVeloX();
+      jLog["CarVeloY"] = getCarVeloY();
       jLog["ScoreCoin"] = getScoreCoin();
       jLog["ScoreMud"] = getScoreMud();
       jLog["NetworkPort"] = getNetworkPort();
@@ -82,6 +84,8 @@ void Settings::read(const QJsonObject& _json)
       __SR_SETTINGS_SET_IF_EXIST(jLog, MudSpawnTime, Double);
       __SR_SETTINGS_SET_IF_EXIST(jLog, CarAccX, Double);
       __SR_SETTINGS_SET_IF_EXIST(jLog, CarAccY, Double);
+      __SR_SETTINGS_SET_IF_EXIST(jLog, CarVeloX, Double);
+      __SR_SETTINGS_SET_IF_EXIST(jLog, CarVeloY, Double);
       __SR_SETTINGS_SET_IF_EXIST(jLog, ScoreCoin, Int);
       __SR_SETTINGS_SET_IF_EXIST(jLog, ScoreMud, Int);
       __SR_SETTINGS_SET_IF_EXIST(jLog, NetworkPort, Int);
@@ -172,14 +176,14 @@ void Settings::setLagProbability(LagProbability _probability)
    mLagProbability = _probability;
 }
 
-float Settings::getLatencyServerToClient() const
+float Settings::getCurrentLatencyServerToClient() const
 {
    if (!getLagEnabled())
       return 0.f;
    return mLatencyServerToClient;
 }
 
-float Settings::getLatencyClientToServer() const
+float Settings::getCurrentLatencyClientToServer() const
 {
    if (!getLagEnabled())
       return 0.f;

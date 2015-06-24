@@ -25,8 +25,8 @@ int64_t common::getCurrentTimestamp()
 
 void DelayedActions::pushDelayedAction(std::function<void()> _function, DelayedActionType _type)
 {
-   float delay = (_type == DelayedActionType::CLIENT_TO_SERVER) ? Settings::the()->getLatencyClientToServer()
-                                                                : Settings::the()->getLatencyServerToClient();
+   float delay = (_type == DelayedActionType::CLIENT_TO_SERVER) ? Settings::the()->getCurrentLatencyClientToServer()
+                                                                : Settings::the()->getCurrentLatencyServerToClient();
    if (delay == 0)
       _function();
    else
