@@ -5,6 +5,9 @@
 #include <iostream>
 #include <QKeyEvent>
 #include <QWebFrame>
+#include <QMessageBox>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mUI(new Ui::MainWindow)
 {
@@ -23,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mUI(new Ui::MainW
    mUI->menuBar->hide();
 #endif
    mUI->webView->settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
+
+   refreshDebugUI();
 }
 
 MainWindow::~MainWindow()
@@ -58,7 +63,7 @@ void MainWindow::clearStatusbarText()
 
 void MainWindow::setLagStatusLabel(bool _val)
 {
-   mUI->labelLagStatus->setText((_val? "on":"off"));
+   mUI->labelLagStatus->setText((_val ? "on" : "off"));
 }
 
 void MainWindow::onTestPlayStateChanged(bool _val)
@@ -100,14 +105,15 @@ void MainWindow::on_pushButton_clicked()
       bool ok = true;
       float l = mUI->editLatency->text().toInt(&ok);
       l /= 1000; // ms to s
-      l /= 2; // latency: server->client + client->server
+      l /= 2;    // latency: server->client + client->server
       if (ok && l >= 0)
       {
          Settings::the()->setLatencyServerToClient(l);
          Settings::the()->setLatencyClientToServer(l);
       }
       else
-         mUI->editLatency->setText("150");
+         mUI->editLatency->setText(QString::number(
+             int((Settings::the()->getLatencyClientToServer() + Settings::the()->getLatencyServerToClient()) * 1000.f)));
    }
    // lag probability
    {
@@ -119,7 +125,7 @@ void MainWindow::on_pushButton_clicked()
          Settings::the()->setLagProbabilityCustom(p);
       }
       else
-         mUI->editProbability->setText("0.5");
+         mUI->editProbability->setText(QString::number(Settings::the()->getLagProbabilityCustom()));
    }
    // lag duration
    {
@@ -130,7 +136,7 @@ void MainWindow::on_pushButton_clicked()
          Settings::the()->setLagDuration(d);
       }
       else
-         mUI->editDuration->setText("1.0");
+         mUI->editDuration->setText(QString::number(Settings::the()->getLagDuration()));
    }
    // set focus on game
    mUI->widget->setFocus();
@@ -147,4 +153,65 @@ void MainWindow::populateJSWO()
 {
    // register this class in javascript
    mUI->webView->page()->mainFrame()->addToJavaScriptWindowObject("simpleRacer", this);
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+   // save config
+   QFile h("./settings.json");
+   _ ok = h.open(QIODevice::ReadWrite | QIODevice::Text);
+   SR_ASSERT(ok && "failed to open file");
+
+   QJsonObject jObj;
+   Settings::the()->write(jObj);
+   QJsonDocument jDoc(jObj);
+   h.write(jDoc.toJson());
+   h.close();
+   QMessageBox::information(this, tr("Info: Settings written"), tr("Settings saved as \"settings.json\"."), QMessageBox::Ok);
+}
+
+void MainWindow::on_pushButton_3_clicked()
+{
+   // load config
+   QFile h("./settings.json");
+   _ ok = h.open(QIODevice::ReadOnly | QIODevice::Text);
+   if (!ok) // no config to load
+   {
+      QMessageBox::warning(this, tr("Error: No settings file"),
+                           tr("Could not load settings: No settings.json file found."), QMessageBox::Ok);
+      return;
+   }
+   _ data = h.readAll();
+   h.close();
+   _ json = QJsonDocument::fromJson(data);
+   Settings::the()->read(json.object());
+   refreshDebugUI();
+   QMessageBox::information(this, tr("Info: Settings loaded"), tr("Settings loaded from \"settings.json\"."), QMessageBox::Ok);
+}
+
+void MainWindow::refreshDebugUI()
+{
+   mUI->editLatency->setText(QString::number(
+       int((Settings::the()->getLatencyClientToServer() + Settings::the()->getLatencyServerToClient()) * 1000.f)));
+   mUI->editProbability->setText(QString::number(Settings::the()->getLagProbabilityCustom()));
+   mUI->editDuration->setText(QString::number(Settings::the()->getLagDuration()));
+   { // checkboxes
+      Qt::CheckState c, s;
+      _ c1 = Settings::the()->getClientSideInterpolation();
+      _ c2 = Settings::the()->getClientSidePhysics();
+      _ c3 = Settings::the()->getClientSidePrediction();
+      if (c1 == c2 && c2 == c3)
+         c = (c1 ? Qt::Checked : Qt::Unchecked);
+      else
+         c = Qt::PartiallyChecked;
+
+      _ s1 = Settings::the()->getServerSideLagCompensation();
+      s = (s1 ? Qt::Checked : Qt::Unchecked);
+      mUI->checkBox->blockSignals(true);
+      mUI->checkBox_2->blockSignals(true);
+      mUI->checkBox->setCheckState(c);
+      mUI->checkBox_2->setCheckState(s);
+      mUI->checkBox->blockSignals(false);
+      mUI->checkBox_2->blockSignals(false);
+   }
 }
