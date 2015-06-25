@@ -190,7 +190,7 @@ int GameLogic::getScore(PlayerID _id)
 
 void GameLogic::setCoins(const std::vector<QVector2D> &_coins)
 {
-   if (Settings::the()->getHandleCoinMudCollisionsOnlyClientside())
+   if (Settings::the()->getHandleCoinMudCollisionsOnlyClientside() && Settings::the()->getClientSideInterpolation())
       return; // clientside only: only process spawn commands
 
    mCoins.clear();
@@ -203,7 +203,7 @@ void GameLogic::setCoins(const std::vector<QVector2D> &_coins)
 
 void GameLogic::setMuds(const std::vector<QVector2D> &_muds)
 {
-   if (Settings::the()->getHandleCoinMudCollisionsOnlyClientside())
+   if (Settings::the()->getHandleCoinMudCollisionsOnlyClientside() && Settings::the()->getClientSideInterpolation())
       return; // clientside only: only process spawn commands
 
    mMuds.clear();
