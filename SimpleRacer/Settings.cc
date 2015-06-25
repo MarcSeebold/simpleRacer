@@ -150,6 +150,7 @@ void Settings::loadCondition(unsigned int _num)
       return;
    }
    read(jRoot);
+   qDebug() << "loaded condition " << _num;
 }
 
 void Settings::setTestPlay(bool _val)

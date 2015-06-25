@@ -41,6 +41,7 @@ void SimpleRacer::create(MainWindow *_mainWindow, RenderingWidget *_rendering)
    sInstance = new SimpleRacer(_mainWindow, _rendering);
    // At first: show a waiting screen
    sInstance->mSurveyEngine->toogleWebWindow(true);
+   sInstance->setGameState(GameState::WAITING);
    sInstance->mSurveyEngine->showWaitingScreen();
    sInstance->mNetwork->listen();
 }
