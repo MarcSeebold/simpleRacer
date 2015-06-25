@@ -123,7 +123,7 @@ void ArtificialRacer::update()
       if (mEnemyMockingUs > 0)
          mEnemyMockingUs--;
    }
-   bool mudIsNear = (distToMud.length() < GameLogic::sMudSize * 1.5f);
+   bool mudIsNear = (distToMud.length() < GameLogic::sMudSize * 1.2f);
    mDistToCoin = distToCoin;
 
    // enable cheating
