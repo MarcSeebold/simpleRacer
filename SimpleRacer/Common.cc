@@ -132,6 +132,8 @@ void common::csvToJSON(QJsonObject &_json, const QString &_csv, const QString _j
    bool first = true;
    for (const _ &curr : lines)
    {
+      if (curr == "")
+         continue;  // skip empty lines
       if (first)
       { // skip first entry (i.e., row names)
          first = false;
