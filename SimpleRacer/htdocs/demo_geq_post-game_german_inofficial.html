@@ -1,0 +1,95 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>TheFragebogen - GEQ post-game German (inofficial translation)</title>
+        <link rel="stylesheet" type="text/css" href="../css/style.css">
+
+        <script src="../build/TheFragebogen-full.js"></script>
+
+        <script type="text/javascript">
+            // config
+            var showProgress = true;
+            var numberOfQuestions = 33;
+            // small code snippet for GEQ questions
+            var currQuestion = 1;
+            function geqQuestion(text)
+            {
+                if (showProgress)
+                    text += " ("+currQuestion+"/"+numberOfQuestions+")";
+                currQuestion++;
+                return new ScreenUIElements(
+                    // The question
+                    new QuestionnaireItemDefinedOne(undefined, text, [ "not at all", "slightly", "moderately", "fairly", "extremely"], true),
+                    //An object that saves the time spent on the screen that it belongs to
+                    new QuestionnaireItemScreenDuration());
+            }
+        </script>
+
+        <script>
+            //SETUP: use the variable screenController as a new element ScreenController, which will contain all data of the questionnaire
+            var screenController = new ScreenController(
+                    new ScreenUIElements(
+                            new UIElementHTML(undefined, "Willkommen!<br><br>Dies ist der Game Experience Questionnaire - post-game Modul von IJsselsteijn et al., übersetzt ins Deutsche von Marc.Seebold@rwth-aachen.de (Version 4.6.2015, Deutsch).<br>Wenn Sie bereit sind, drücken Sie bitte auf 'Next'.")),
+                    new ScreenUIElements(
+                            new UIElementHTML(undefined, "Bitte geben Sie an, wie Sie sich gefühlt haben, während Sie das Spiel spielten, indem Sie die folgenden Fragen beantworten. Wenn Sie bereit sind, drücken Sie bitte auf 'Next'.")),
+
+                    // GEQ In-game questions
+                    // 1
+                    geqQuestion("Ich fühlte mich erhohlt"),
+                    // 2
+                    geqQuestion("Ich fühlte mich schlecht"),
+                    // 3
+                    geqQuestion("Ich fand es schwierig in die Realität zurückzukehren"),
+                    // 4
+                    geqQuestion("Ich fühlte mich schuldig"),
+                    // 5
+                    geqQuestion("Es fühlte sich wie ein Sieg an"),
+                    // 6
+                    geqQuestion("Ich fand, es war eine Zeitverschwendung"),
+                    // 7
+                    geqQuestion("Ich fühlte mich energiegeladen"),
+                    // 8
+                    geqQuestion("Ich fühlte mich zufrieden"),
+                    // 9
+                    geqQuestion("Ich fühlte mich desorientiert"),
+                    // 10
+                    geqQuestion("Ich fühlte mich erschöpft"),
+                    // 11
+                    geqQuestion("Ich fühlte, dass ich nützlichere Dinge hätte machen können"),
+                    // 12
+                    geqQuestion("Ich fühlte mich kraftvoll"),
+                    // 13
+                    geqQuestion("Ich fühlte mich ermüdet"),
+                    // 14
+                    geqQuestion("Ich fühlte Reue"),
+                    // 15
+                    geqQuestion("Ich fühlte mich beschämt"),
+                    // 16
+                    geqQuestion("Ich fühlte mich stolz"),
+                    // 17
+                    geqQuestion("Ich hatte das Gefühl, ich würde von einer Reise wiederkommen"),
+
+                    // Download data to disk
+                    new ScreenWait(undefined, 0.5),
+                    new ScreenWaitDataDownload()
+                    );
+        </script>
+        <script type="text/javascript">
+            function start() {
+                document.body.innerHTML += "Body loaded.<br />Starting the screenController...<br />";
+                if (typeof screenController === undefined) {
+                    console.log("FATAL ERROR: The program cannot work properly. Please check the configuration file.");
+                    alert("FATAL ERROR: The program cannot work properly. Please check the configuration file.");
+                    return;
+                }
+                screenController.init(document.body);
+                screenController.start();
+            }
+        </script>
+    </head>
+
+    <body onload="start()">
+        TheFragebogen is loading.<br />
+    </body>
+
+</html>

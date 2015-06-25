@@ -7,5 +7,8 @@
         <file>htdocs/TheFragebogen-full.js</file>
         <file>htdocs/testPlay.html</file>
         <file>htdocs/style.css</file>
+        <file>htdocs/demo_geq_core_german_inofficial.html</file>
+        <file>htdocs/demo_geq_ingame_german_inofficial.html</file>
+        <file>htdocs/demo_geq_post-game_german_inofficial.html</file>
     </qresource>
 </RCC>

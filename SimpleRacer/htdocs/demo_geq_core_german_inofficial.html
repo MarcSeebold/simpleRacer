@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>TheFragebogen - GEQ Core German (inofficial translation)</title>
+        <link rel="stylesheet" type="text/css" href="../css/style.css">
+
+        <script src="../build/TheFragebogen-full.js"></script>
+
+        <script type="text/javascript">
+	        // config
+	        var showProgress = true;
+	        var numberOfQuestions = 33;
+	        // small code snippet for GEQ questions
+	        var currQuestion = 1;
+	        function geqQuestion(text)
+	        {
+	        	if (showProgress)
+	        		text += " ("+currQuestion+"/"+numberOfQuestions+")";
+	        	currQuestion++;
+	        	return new ScreenUIElements(
+	        		// The question
+	            	new QuestionnaireItemDefinedOne(undefined, text, [ "not at all", "slightly", "moderately", "fairly", "extremely"], true),
+	            	//An object that saves the time spent on the screen that it belongs to
+	                new QuestionnaireItemScreenDuration());
+	        }
+        </script>
+
+        <script>
+            //SETUP: use the variable screenController as a new element ScreenController, which will contain all data of the questionnaire
+            var screenController = new ScreenController(
+                    new ScreenUIElements(
+                            new UIElementHTML(undefined, "Willkommen!<br><br>Dies ist der Game Experience Questionnaire - Kern Modul von IJsselsteijn et al., übersetzt ins Deutsche von by Dorotheé Hefner und Christoph Klimmt (Version 4.6.2015, Deutsch).<br>Wenn Sie bereit sind, drücken Sie bitte auf 'Next'.")),
+                    new ScreenUIElements(
+                            new UIElementHTML(undefined, "Bitte geben Sie an, wie Sie sich gefühlt haben, während Sie das Spiel spielten, indem Sie die folgenden Fragen beantworten. Wenn Sie bereit sind, drücken Sie bitte auf 'Next'.")),
+
+                    // GEQ Core questions
+                    // 1
+                    geqQuestion("Ich fühlte mich zufrieden"),
+                    // 2
+                    geqQuestion("Ich habe mich geschickt gefühlt"),
+                    // 3
+                    geqQuestion("Ich interessierte mich für die Handlung des Spiels"),
+                    // 4
+                    geqQuestion("Ich konnte über Sachen im Spiel lachen"),
+                    // 5
+                    geqQuestion("Ich war völlig gefesselt"),
+                    // 6
+                    geqQuestion("Ich habe mich glücklich gefühlt"),
+                    // 7
+                    geqQuestion("Es hat mich in eine schlechte Stimmung gebracht"),
+                    // 8
+                    geqQuestion("Ich habe an andere Dinge gedacht"),
+                    // 9
+                    geqQuestion("Ich fand es ermüdend"),
+                    // 10
+                    geqQuestion("Ich habe mich kompetent gefühlt"),
+                    // 11
+                    geqQuestion("Ich fand es schwierig"),
+                    // 12
+                    geqQuestion("Das Spiel war ästhetisch ansprechend"),
+                    // 13
+                    geqQuestion("Ich habe alles um mich herum vergessen"),
+                    // 14
+                    geqQuestion("Ich habe mich gut gefühlt"),
+                    // 15
+                    geqQuestion("Ich war gut"),
+                    // 16
+                    geqQuestion("Ich habe mich gelangweilt"),
+                    // 17
+                    geqQuestion("Ich habe mich erfolgreich gefühlt"),
+                    // 18
+                    geqQuestion("Ich kam mir einfallsreich vor"),
+                    // 19
+                    geqQuestion("Ich hatte das Gefühl Dinge erforschen zu können"),
+                    // 20
+                    geqQuestion("Ich hatte Spaß"),
+                    // 21
+                    geqQuestion("Ich habe die Spielziele schnell erreicht"),
+                    // 22
+                    geqQuestion("Ich habe mich verärgert gefühlt"),
+                    // 23
+                    geqQuestion("Ich habe mich unter Druck gefühlt"),
+                    // 24
+                    geqQuestion("Ich war reizbar"),
+                    // 25
+                    geqQuestion("Ich habe mein Zeitgefühl verloren"),
+                    // 26
+                    geqQuestion("Ich fühlte mich herausgefordert"),
+                    // 27
+                    geqQuestion("Ich fand es beeindruckend"),
+                    // 28
+                    geqQuestion("Ich habe mich sehr auf das Spiel konzentriert"),
+                    // 29
+                    geqQuestion("Ich fühlte mich frustriert"),
+                    // 30
+                    geqQuestion("Das Spiel bot eine reichhaltige Erfahrung"),
+                    // 31
+                    geqQuestion("Ich habe die Verbindung zur Außenwelt verloren"),
+                    // 32
+                    geqQuestion("Ich habe Zeitdruck verspürt"),
+                    // 33
+                    geqQuestion("Ich musste mich beim Spielen sehr anstrengen"),
+
+                    // Download data to disk
+                    new ScreenWait(undefined, 0.5),
+                    new ScreenWaitDataDownload()
+                    );
+        </script>
+        <script type="text/javascript">
+            function start() {
+                document.body.innerHTML += "Body loaded.<br />Starting the screenController...<br />";
+                if (typeof screenController === undefined) {
+                    console.log("FATAL ERROR: The program cannot work properly. Please check the configuration file.");
+                    alert("FATAL ERROR: The program cannot work properly. Please check the configuration file.");
+                    return;
+                }
+                screenController.init(document.body);
+                screenController.start();
+            }
+        </script>
+    </head>
+
+    <body onload="start()">
+        TheFragebogen is loading.<br />
+    </body>
+
+</html>
