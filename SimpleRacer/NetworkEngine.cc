@@ -64,21 +64,21 @@ void NetworkEngine::onData()
          // TODO: language support
          if (SimpleRacer::the()->isRunning())
             SimpleRacer::the()->stopGame();
-         SimpleRacer::survey()->makeSurvey(SurveyType::CORE, SurveyLanguage::ENGLISH);
+         SimpleRacer::survey()->makeSurvey(SurveyType::CORE);
          send("ACK");
          break;
       case NetworkCommand::OPEN_SURVEY_INGAME:
          // TODO: language support
          if (SimpleRacer::the()->isRunning())
             SimpleRacer::the()->stopGame();
-         SimpleRacer::survey()->makeSurvey(SurveyType::INGAME, SurveyLanguage::ENGLISH);
+         SimpleRacer::survey()->makeSurvey(SurveyType::INGAME);
          send("ACK");
          break;
       case NetworkCommand::OPEN_SURVEY_POSTGAME:
          // TODO: language support
          if (SimpleRacer::the()->isRunning())
             SimpleRacer::the()->stopGame();
-         SimpleRacer::survey()->makeSurvey(SurveyType::POSTGAME, SurveyLanguage::ENGLISH);
+         SimpleRacer::survey()->makeSurvey(SurveyType::POSTGAME);
          send("ACK");
          break;
       case NetworkCommand::LOAD_CONDITION_1:
@@ -151,6 +151,12 @@ void NetworkEngine::onData()
          send(QByteArray::number((int)res));
       }
       break;
+      case NetworkCommand::SET_SURVEY_LANG_ENG:
+         SimpleRacer::survey()->setLanguage(SurveyLanguage::ENGLISH);
+         break;
+      case NetworkCommand::SET_SURVEY_LANG_GER:
+         SimpleRacer::survey()->setLanguage(SurveyLanguage::GERMAN);
+         break;
       default:
          send("NACK");
          break;

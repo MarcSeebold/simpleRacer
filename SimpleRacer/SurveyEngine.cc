@@ -20,7 +20,7 @@ SurveyEngine::~SurveyEngine()
    mRendering = nullptr;
 }
 
-void SurveyEngine::makeSurvey(SurveyType _type, SurveyLanguage _language)
+void SurveyEngine::makeSurvey(SurveyType _type)
 {
    // show webView, hide game
    toogleWebWindow(true);
@@ -44,7 +44,7 @@ void SurveyEngine::makeSurvey(SurveyType _type, SurveyLanguage _language)
    }
    url += "_";
    // Survey-Language
-   switch (_language)
+   switch (mLanguage)
    {
    case SurveyLanguage::ENGLISH:
       url += "english";
@@ -60,7 +60,7 @@ void SurveyEngine::makeSurvey(SurveyType _type, SurveyLanguage _language)
    // Load url in webview
    mWebView->load(QUrl(url));
    // Store configuration
-   mCurrSurvey.lang = _language;
+   mCurrSurvey.lang = mLanguage;
    mCurrSurvey.type = _type;
    // Set state
    SimpleRacer::the()->setGameState(GameState::SURVEY);

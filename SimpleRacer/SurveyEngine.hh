@@ -1,5 +1,6 @@
 #pragma once
 #include <QObject>
+#include "Common.hh"
 
 class QWebView;
 class RenderingWidget;
@@ -29,7 +30,7 @@ public:
    ~SurveyEngine();
 
    /// Starts a survey
-   void makeSurvey(SurveyType _type, SurveyLanguage _language);
+   void makeSurvey(SurveyType _type);
    /// Toogle web and game window
    void toogleWebWindow(bool _showWebviewHideGame);
    /// Show waiting screen
@@ -44,7 +45,11 @@ private:
       SurveyType type;
       SurveyLanguage lang;
    };
-   CurrentSurvey mCurrSurvey;             ///< Which survey is currently in progess?
-   QWebView *mWebView = nullptr;          ///< Owned by Qt
-   RenderingWidget *mRendering = nullptr; ///< Owned by SimpleRacer-class
+   CurrentSurvey mCurrSurvey;                         ///< Which survey is currently in progess?
+   QWebView *mWebView = nullptr;                      ///< Owned by Qt
+   RenderingWidget *mRendering = nullptr;             ///< Owned by SimpleRacer-class
+   SurveyLanguage mLanguage = SurveyLanguage::GERMAN; ///< Language of the survey
+
+public:
+   SETTER(Language);
 };
