@@ -13,7 +13,7 @@ RenderingWidget::RenderingWidget(QWidget *parent) : QOpenGLWidget(parent)
    setFixedSize(800, 300);
    // vsynch
    QSurfaceFormat format;
-   format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
+   format.setSwapBehavior(QSurfaceFormat::TripleBuffer);
    setFormat(format);
 }
 
