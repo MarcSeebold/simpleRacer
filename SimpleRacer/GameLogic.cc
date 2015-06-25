@@ -433,18 +433,19 @@ void GameLogic::update(const float &_timestep)
    { // disable when we are client and interpolation is active (we interpolate using velocity...)
       const _ x = Settings::the()->getCarVeloX();
       const _ y = Settings::the()->getCarVeloY();
-      const _ correctVelo = [&x, &y](Car *car)
+      const _ correctVelo = [&x, &y](Car *car, bool cheats = false)
       {
+         float cheatFactor = cheats ? 1.5f : 1.f;
          const _ cv = car->getLinearVelocity();
          QVector2D newVelo = cv;
-         if (std::abs(cv.x()) > x)
-            newVelo.setX(x * (cv.x() < 0? -1 : 1));
-         if (std::abs(cv.y()) > y)
-            newVelo.setY(y * (cv.y() < 0? -1 : 1));
+         if (std::abs(cv.x()) > x * cheatFactor)
+            newVelo.setX(x * (cv.x() < 0 ? -1 : 1));
+         if (std::abs(cv.y()) > y * cheatFactor)
+            newVelo.setY(y * (cv.y() < 0 ? -1 : 1));
          car->setLinearVelocity(newVelo);
       };
       correctVelo(mCar1.get());
-      correctVelo(mCar2.get());
+      correctVelo(mCar2.get(), mAICheatingEnabled);
    }
    // 10: step simulation
    {

@@ -39,7 +39,7 @@ PhysicsObject::PhysicsObject(const Sharedb2World &_world, float _width, float _h
    }
 
    mFixDef.density = 1.0f;
-   mFixDef.friction = 0.1f;
+   mFixDef.friction = 0.3f;
    mFixDef.restitution = 0.3f;
    mBody->CreateFixture(&mFixDef);
 

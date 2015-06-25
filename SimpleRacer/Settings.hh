@@ -62,12 +62,12 @@ private: // game logic stuff
    /// Car acceleration for x and y axes
    /// @{
    float mCarAccX = 70;
-   float mCarAccY = 70;
+   float mCarAccY = 40;
    /// @}
    /// Max car velocity for x and y axes
    /// @{
    float mCarVeloX = 15;
-   float mCarVeloY = 11;
+   float mCarVeloY = 10;
    /// @}
 
    /// Points for collecting a coin

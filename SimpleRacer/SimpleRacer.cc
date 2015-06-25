@@ -149,7 +149,7 @@ void SimpleRacer::update()
                gameOverText += "Draw!";
 #else
             (void)&scoreP2;
-            gameOverText += "You achived " + QString::number(scoreP1) + " points!";
+            gameOverText += "You achieved " + QString::number(scoreP1) + " points!";
 #endif
             mMainWindow->mUI->labelBG->setText(gameOverText);
             mMainWindow->mUI->labelBG->show();
