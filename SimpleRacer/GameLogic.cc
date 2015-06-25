@@ -587,7 +587,6 @@ void GameLogic::callbackCarMud(Car *_car, Mud *_mud)
    {
       if (!Settings::the()->getClientSidePhysics() && !isServer())
          return; // only server should handle this
-      // TODO: switch variable for handling this client or/and serverside
 
       mMudsToRemove.push_back(_mud);
       if (mMudCollectedCallback)
@@ -624,7 +623,6 @@ void GameLogic::callbackCarCoin(Car *_car, Coin *_coin)
    {
       if (!Settings::the()->getClientSidePhysics() && !isServer())
          return; // only server should handle this
-      // TODO: switch variable for handling this client or/and serverside
 
       mCoinsToRemove.push_back(_coin);
       if (mCoinCollectedCallback)

@@ -6,10 +6,6 @@
 
 SHARED(class, GameLogic);
 
-/**
- * @todo Server-Side Lag-Kompensation
- *       "Pakete" zwischen Server und Client peridisch senden (zB 20Hz)
- */
 class DelaySimulator
 {
 public:
