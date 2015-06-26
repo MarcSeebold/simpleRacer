@@ -49,7 +49,9 @@ private:
    QWebView *mWebView = nullptr;                      ///< Owned by Qt
    RenderingWidget *mRendering = nullptr;             ///< Owned by SimpleRacer-class
    SurveyLanguage mLanguage = SurveyLanguage::GERMAN; ///< Language of the survey
+   int mLastLoadedCondition = -1;                     ///< Last loaded condition
 
 public:
    SETTER(Language);
+   PROPERTY(LastLoadedCondition);
 };

@@ -35,6 +35,10 @@ private:
       // QoE questionnaire results
       QString surveyResults;
 
+      /// Condition loaded for this game
+      /// -1 = No condition loaded / testplay
+      int condition = -1;
+
       /// Game Settings for this round
       QJsonObject *settings=nullptr;
 

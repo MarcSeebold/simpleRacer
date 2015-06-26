@@ -5,6 +5,8 @@
 #include <iostream>
 #include <QJsonDocument>
 #include <QFile>
+#include "SimpleRacer.hh"
+#include "SurveyEngine.hh"
 
 Settings* Settings::instance = nullptr;
 
@@ -150,6 +152,7 @@ void Settings::loadCondition(unsigned int _num)
       return;
    }
    read(jRoot);
+   SimpleRacer::survey()->setLastLoadedCondition(_num);
    qDebug() << "loaded condition " << _num;
 }
 

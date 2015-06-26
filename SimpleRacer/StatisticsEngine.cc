@@ -5,6 +5,8 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include "Settings.hh"
+#include "SurveyEngine.hh"
+#include "SimpleRacer.hh"
 
 StatisticsEngine *StatisticsEngine::sInstance = nullptr;
 
@@ -19,10 +21,12 @@ void StatisticsEngine::tellNewGameRound()
 {
    ++mCurrGameRound;
    SR_ASSERT(mGameStats.count(mCurrGameRound) == 0 && "GameStats already present");
-   const _ & stat = mGameStats[mCurrGameRound] = std::make_shared<GameStat>();
+   const _ &stat = mGameStats[mCurrGameRound] = std::make_shared<GameStat>();
    // write current game settings to stat obj
    stat->settings = new QJsonObject;
    Settings::the()->write(*(stat->settings));
+   bool testPlay = Settings::the()->getTestPlay();
+   stat->condition = (testPlay ? -1 : SimpleRacer::survey()->getLastLoadedCondition());
 }
 
 void StatisticsEngine::tellCollision(PhysicsObject::Type _typeA, PhysicsObject::Type _typeB, bool _latencyActive, bool _triggeredLatency, PlayerID _involvedPlayer)
@@ -149,6 +153,7 @@ void StatisticsEngine::GameStat::write(QJsonObject &_json)
    _json["p2Muds"] = p2Muds;
    _json["p1Coins"] = p1Coins;
    _json["p2Coins"] = p2Coins;
+   _json["Condition"] = condition;
    common::csvToJSON(_json, surveyResults, "SurveyResults");
    QJsonArray jCollisions;
    for (_ const &c : collisions)
