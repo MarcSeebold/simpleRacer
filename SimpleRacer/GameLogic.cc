@@ -425,8 +425,12 @@ void GameLogic::update(const float &_timestep)
       mCar1->applyForce(QVector2D(0, dirY * factorY));
       // AI
       float cheatingFactor = (mAICheatingEnabled ? 2.f : 1.f);
-      mCar2->applyForce(QVector2D(mAIInput->deltaX[1] * factorX * cheatingFactor, 0));
-      mCar2->applyForce(QVector2D(0, mAIInput->deltaY[1] * factorY * cheatingFactor));
+      float delay = (Settings::the()->getAILag()? Settings::the()->getLatencyClientToServer() : 0);
+      mDelayedAIInput.pushDelayedAction([this, cheatingFactor, factorX, factorY](){
+         mCar2->applyForce(QVector2D(mAIInput->deltaX[1] * factorX * cheatingFactor, 0));
+         mCar2->applyForce(QVector2D(0, mAIInput->deltaY[1] * factorY * cheatingFactor));
+      }, delay);
+      mDelayedAIInput.update();
    }
    // 9: Limit velocity of cars
    if (isServer() || (isClient() && !Settings::the()->getClientSideInterpolation()))

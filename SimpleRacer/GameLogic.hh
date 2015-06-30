@@ -174,6 +174,7 @@ private:
    DelayedActions mDelayedLagDisabling;                 ///< Helper for delayed stuff
    DelayedActions mDelayedServerCarPosUpdate;           ///< Helper for synchronizing server lag compensation
    DelayedActions mDelayedSpawner;                      ///< Helper for spawning coins and mud puddles
+   DelayedActions mDelayedAIInput;                      ///< Helper for delayed AI input
    std::vector<UniqueCoin> mCoins;                      ///< Coins in the world
    std::vector<UniqueMud> mMuds;                        ///< Mud puddles in the world
    std::vector<Coin *> mCoinsToRemove;                  ///< Coins that should be deleted
