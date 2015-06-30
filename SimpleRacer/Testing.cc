@@ -43,6 +43,7 @@ bool Testing::runTestSettingsSaveLoad()
    _ clientSideInterpolation = s->getClientSideInterpolation();
    _ serverSideLagCompensation = s->getServerSideLagCompensation();
    _ clientSideInterpolationFactor = s->getClientSideInterpolationFactor();
+   _ aiLag = s->getAILag();
    // store as json
    QJsonObject json;
    s->write(json);
@@ -65,6 +66,8 @@ bool Testing::runTestSettingsSaveLoad()
       ok &= carAccX == s->getCarAccX();
       SR_ASSERT(ok && "Test: Value missmatch");
       ok &= carAccY == s->getCarAccY();
+      SR_ASSERT(ok && "Test: Value missmatch");
+      ok &= aiLag == s->getAILag();
       SR_ASSERT(ok && "Test: Value missmatch");
       ok &= carVeloX == s->getCarVeloX();
       SR_ASSERT(ok && "Test: Value missmatch");

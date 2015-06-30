@@ -29,8 +29,8 @@ void Settings::write(QJsonObject& _json) const
       jLog["MudSpawnTime"] = getMudSpawnTime();
       jLog["CarAccX"] = getCarAccX();
       jLog["CarAccY"] = getCarAccY();
-      jLog["CarVeloX"] = getCarVeloX();
       jLog["CarVeloY"] = getCarVeloY();
+      jLog["AILag"] = getAILag();
       jLog["ScoreCoin"] = getScoreCoin();
       jLog["ScoreMud"] = getScoreMud();
       jLog["NetworkPort"] = getNetworkPort();
@@ -40,6 +40,7 @@ void Settings::write(QJsonObject& _json) const
    }
    // Latency stuff
    {
+      jLat["CarVeloX"] = getCarVeloX();
       jLat["LagProbabilityLow"] = getLagProbabilityLow();
       jLat["LagProbabilityMedium"] = getLagProbabilityMedium();
       jLat["LagProbabilityHigh"] = getLagProbabilityHigh();
@@ -101,6 +102,7 @@ void Settings::read(const QJsonObject& _json)
    {
       _ jLat = _json.value("LatencyStuff").toObject();
       __SR_SETTINGS_SET_IF_EXIST(jLat, LagProbabilityLow, Double);
+      __SR_SETTINGS_SET_IF_EXIST_BOOL(jLat, AILag);
       __SR_SETTINGS_SET_IF_EXIST(jLat, LagProbabilityMedium, Double);
       __SR_SETTINGS_SET_IF_EXIST(jLat, LagProbabilityHigh, Double);
       __SR_SETTINGS_SET_IF_EXIST(jLat, LagProbabilityCustom, Double);

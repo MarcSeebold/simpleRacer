@@ -89,6 +89,9 @@ private: // latency stuff
    /// How long is the lag activated after triggered (seconds)
    float mLagDuration = 1.0f;
 
+   /// Does the AI have
+   bool mAILag = true;
+
    /// Is lag enabled?
    bool mLagEnabled = false;
 
@@ -126,6 +129,7 @@ public: // Getter, Setter
    float getCurrentLatencyServerToClient() const;
    /// Will return 0 if lag is not enabled!!!
    float getCurrentLatencyClientToServer() const;
+   GETTER(AILag);
    GETTER(HandleCoinMudCollisionsOnlyClientside);
    GETTER(LatencyServerToClient);
    GETTER(LatencyClientToServer);
