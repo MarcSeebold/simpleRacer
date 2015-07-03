@@ -17,7 +17,9 @@ public:
       P1MUD,
       P2MUD,
       P1COIN,
-      P2COIN
+      P2COIN,
+      HARD_SET,
+      PROVOKATED_CAR_SWITCH
    };
 
 private:
@@ -40,7 +42,7 @@ private:
       int condition = -1;
 
       /// Game Settings for this round
-      QJsonObject *settings=nullptr;
+      QJsonObject *settings = nullptr;
 
       // critical situations
       struct Collision
@@ -58,6 +60,19 @@ private:
       };
       SHARED(struct, Collision);
       std::vector<SharedCollision> collisions;
+
+      // special events
+      struct SpecialEvent
+      {
+         SpecialEvent(EventType _type, int64_t _timestamp);
+         /// Writes this Collision object to JSON
+         void write(QJsonObject &_json);
+
+         EventType type;
+         int64_t timestamp;
+      };
+      SHARED(struct, SpecialEvent);
+      std::vector<SharedSpecialEvent> specialEvents;
    };
    SHARED(struct, GameStat);
 
@@ -81,6 +96,11 @@ public:
    void tellCoreSurvey(QString _data);
    /// Tell the results of the post-game survey
    void tellPostGameSurvey(QString _data);
+   /// Tell that a hard-set was performed
+   void tellHardSet();
+   /// Tell that a car switch happend
+   void tellCarSwitch();
+
    // Save generated stats to disk
    void saveToFile();
 
@@ -88,9 +108,9 @@ private:
    /// Singleton: private c'tor
    StatisticsEngine();
    /// Singleton: No copy c'tor
-   StatisticsEngine(StatisticsEngine const&) = delete;
+   StatisticsEngine(StatisticsEngine const &) = delete;
    /// Singleton: No copy assignment
-   StatisticsEngine& operator=(StatisticsEngine const&) = delete;
+   StatisticsEngine &operator=(StatisticsEngine const &) = delete;
 
 private:
    static StatisticsEngine *sInstance;

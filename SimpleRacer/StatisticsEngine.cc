@@ -75,6 +75,20 @@ void StatisticsEngine::tellPostGameSurvey(QString _data)
    mPostGameSurveyResults = _data;
 }
 
+void StatisticsEngine::tellHardSet()
+{
+   SR_ASSERT(mGameStats.count(mCurrGameRound) == 1 && "No GameStat object. Forgot to call tellNewGameRound?");
+   _ specialEvent = std::make_shared<GameStat::SpecialEvent>(EventType::HARD_SET, common::getCurrentTimestamp());
+   mGameStats[mCurrGameRound]->specialEvents.push_back(std::move(specialEvent));
+}
+
+void StatisticsEngine::tellCarSwitch()
+{
+   SR_ASSERT(mGameStats.count(mCurrGameRound) == 1 && "No GameStat object. Forgot to call tellNewGameRound?");
+   _ specialEvent = std::make_shared<GameStat::SpecialEvent>(EventType::PROVOKATED_CAR_SWITCH, common::getCurrentTimestamp());
+   mGameStats[mCurrGameRound]->specialEvents.push_back(std::move(specialEvent));
+}
+
 void StatisticsEngine::saveToFile()
 {
    QDir dir("./stats/");
@@ -155,6 +169,7 @@ void StatisticsEngine::GameStat::write(QJsonObject &_json)
    _json["p2Coins"] = p2Coins;
    _json["Condition"] = condition;
    common::csvToJSON(_json, surveyResults, "SurveyResults");
+   // Collisions
    QJsonArray jCollisions;
    for (_ const &c : collisions)
    {
@@ -163,6 +178,15 @@ void StatisticsEngine::GameStat::write(QJsonObject &_json)
       jCollisions.append(jObj);
    }
    _json["collision"] = jCollisions;
+   // Special events
+   QJsonArray jSpecialEvents;
+   for (_ const &e : specialEvents)
+   {
+      QJsonObject jObj;
+      e->write(jObj);
+      jSpecialEvents.append(jObj);
+   }
+   _json["specialEvents"] = jSpecialEvents;
 }
 
 StatisticsEngine::StatisticsEngine()
@@ -178,4 +202,33 @@ StatisticsEngine::GameStat::Collision::Collision(
     timestamp(_timestamp),
     involvedPlayer(_player)
 {
+}
+
+
+StatisticsEngine::GameStat::SpecialEvent::SpecialEvent(StatisticsEngine::EventType _type, int64_t _timestamp)
+  : type(_type), timestamp(_timestamp)
+{
+}
+
+void StatisticsEngine::GameStat::SpecialEvent::write(QJsonObject &_json)
+{
+   // helper function for enum stringification
+   _ eventTypeToString = [](EventType _type) -> QString
+   {
+      switch (_type)
+      {
+      case EventType::HARD_SET:
+         return "HARD_SET";
+         break;
+      case EventType::PROVOKATED_CAR_SWITCH:
+         return "PROVOKATED_CAR_SWITCH";
+         break;
+      default:
+         SR_ASSERT(0 && "unhandled case");
+         return "INVALID";
+      }
+   };
+   _json["eventType"] = eventTypeToString(type);
+   _json["timestamp"] = QString::number(timestamp);
+   ;
 }

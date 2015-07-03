@@ -255,7 +255,7 @@ void GameLogic::setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, 
       else
       { // hard-set
          // std::cerr << "hard-set" << std::endl;
-         // TODO: tell stats engine
+         StatisticsEngine::the()->tellHardSet();
          carNew->setCenterPos(car->getCenterPos());
          carNew->setLinearVelocity(car->getLinearVelocity());
       }
@@ -708,7 +708,7 @@ void GameLogic::carsAboveEachOther()
       // Do a switch!
       switchCarPositions();
       timeOfLastSwitch = common::getCurrentTimestamp();
-      //TODO: tell stats engine
+      StatisticsEngine::the()->tellCarSwitch();
    }
 }
 
