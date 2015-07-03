@@ -38,7 +38,7 @@ void DelayedActions::pushDelayedAction(std::function<void()> _function, DelayedA
 
 void DelayedActions::pushDelayedAction(std::function<void()> _function, float _delay)
 {
-   if (_delay == 0)
+   if (_delay == 0.f)
       _function();
    else
    {

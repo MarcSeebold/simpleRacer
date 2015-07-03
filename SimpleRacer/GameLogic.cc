@@ -255,6 +255,7 @@ void GameLogic::setCarPositionVelocity(PlayerID _player, const QVector2D &_pos, 
       else
       { // hard-set
          // std::cerr << "hard-set" << std::endl;
+         // TODO: tell stats engine
          carNew->setCenterPos(car->getCenterPos());
          carNew->setLinearVelocity(car->getLinearVelocity());
       }
@@ -425,11 +426,14 @@ void GameLogic::update(const float &_timestep)
       mCar1->applyForce(QVector2D(0, dirY * factorY));
       // AI
       float cheatingFactor = (mAICheatingEnabled ? 2.f : 1.f);
-      float delay = (Settings::the()->getAILag()? Settings::the()->getLatencyClientToServer() : 0);
-      mDelayedAIInput.pushDelayedAction([this, cheatingFactor, factorX, factorY](){
-         mCar2->applyForce(QVector2D(mAIInput->deltaX[1] * factorX * cheatingFactor, 0));
-         mCar2->applyForce(QVector2D(0, mAIInput->deltaY[1] * factorY * cheatingFactor));
-      }, delay);
+      float delay = (Settings::the()->getAILag() ? Settings::the()->getLatencyClientToServer() : 0);
+      mDelayedAIInput.pushDelayedAction(
+          [this, cheatingFactor, factorX, factorY]()
+          {
+             mCar2->applyForce(QVector2D(mAIInput->deltaX[1] * factorX * cheatingFactor, 0));
+             mCar2->applyForce(QVector2D(0, mAIInput->deltaY[1] * factorY * cheatingFactor));
+          },
+          delay);
       mDelayedAIInput.update();
    }
    // 9: Limit velocity of cars
@@ -451,7 +455,16 @@ void GameLogic::update(const float &_timestep)
       correctVelo(mCar1.get());
       correctVelo(mCar2.get(), mAICheatingEnabled);
    }
-   // 10: step simulation
+   // 10: Switch car positions?
+   if (mSwitchCarPositions)
+   {
+      mSwitchCarPositions = false;
+      const _ car1Pos = mCar1->getCenterPos();
+      const _ car2Pos = mCar2->getCenterPos();
+      mCar1->setCenterPos(car2Pos);
+      mCar2->setCenterPos(car1Pos);
+   }
+   // 11: step simulation
    {
       if (Settings::the()->getClientSidePhysics() || isServer())
       {
@@ -460,7 +473,7 @@ void GameLogic::update(const float &_timestep)
          mPhysicsWorld->Step(_timestep, velocityIterations, positionIterations);
       }
    }
-   // 11: Keep a copy of the world state for X seconds (for server-side lag compensation)
+   // 12: Keep a copy of the world state for X seconds (for server-side lag compensation)
    if (isServer())
    {
       _ func = [this]()
@@ -647,6 +660,11 @@ void GameLogic::callbackCarCar(Car *_carA, Car *_carB)
    if (isServer())
       StatisticsEngine::the()->tellCollision(PhysicsObject::Type::CAR, PhysicsObject::Type::CAR,
                                              Settings::the()->getLagEnabled(), triggered);
+   // are cars above each other?
+   _ pos1 = mCar1->getCenterPos();
+   _ pos2 = mCar2->getCenterPos();
+   if (std::abs(pos1.x() - pos2.x()) < sCarWidth / 2.f)
+      carsAboveEachOther();
 }
 
 void GameLogic::callbackCarBoundary(Car *_car, Boundary *_boundary)
@@ -677,6 +695,29 @@ bool GameLogic::criticalSituationOccured()
       return true;
    }
    return false;
+}
+
+void GameLogic::carsAboveEachOther()
+{
+   if (!Settings::the()->getEnableCarPosSwitching() || !isServer())
+      return;
+
+   static int64_t timeOfLastSwitch = 0;
+   if (timeOfLastSwitch + int64_t(Settings::the()->getMinTimeBetweenCarPosJumps() * 1000) < common::getCurrentTimestamp())
+   {
+      // Do a switch!
+      switchCarPositions();
+      timeOfLastSwitch = common::getCurrentTimestamp();
+      //TODO: tell stats engine
+   }
+}
+
+void GameLogic::switchCarPositions()
+{
+   mSwitchCarPositions = true;
+   // let client also switch positions
+   if (isServer())
+      SimpleRacer::delaySimulator()->scSendSwitchCarPositions();
 }
 
 void GameLogic::AIInput::reset()

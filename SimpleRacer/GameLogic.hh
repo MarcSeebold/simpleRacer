@@ -144,6 +144,12 @@ private:
    /// @return True iff artificial latency is triggered by this call
    bool criticalSituationOccured();
 
+   /// Called whenever the cars are above each other and very close to each other
+   void carsAboveEachOther();
+
+   /// Switches positions of both cars
+   void switchCarPositions();
+
 private:
    struct AIInput
    {
@@ -170,6 +176,7 @@ private:
        mStreetBoundariesOld[4]; ///< Physics objects for end of the street, but x seconds in the past. x = latency.
 
    UniqueContactListener mContactListener; ///< Box2D contact listener
+   bool mSwitchCarPositions = false;       ///< Should we switch the positions of both cars next update?
 
    DelayedActions mDelayedLagDisabling;                 ///< Helper for delayed stuff
    DelayedActions mDelayedServerCarPosUpdate;           ///< Helper for synchronizing server lag compensation

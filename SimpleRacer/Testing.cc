@@ -24,6 +24,8 @@ bool Testing::runTestSettingsSaveLoad()
    _ scoreCoin = s->getScoreCoin();
    _ scoreMud = s->getScoreMud();
    _ networkPort = s->getNetworkPort();
+   _ minTimeBetweenCarPosJumps = s->getMinTimeBetweenCarPosJumps();
+   _ enableCarPosSwitching = s->getEnableCarPosSwitching();
    _ handleCoinMudCollisionsOnlyClientside = s->getHandleCoinMudCollisionsOnlyClientside();
    _ testPlay = s->getTestPlay();
    _ networkUpdateRate = s->getNetworkUpdateRate();
@@ -77,7 +79,11 @@ bool Testing::runTestSettingsSaveLoad()
       SR_ASSERT(ok && "Test: Value missmatch");
       ok &= scoreMud == s->getScoreMud();
       SR_ASSERT(ok && "Test: Value missmatch");
+      ok &= minTimeBetweenCarPosJumps == s->getMinTimeBetweenCarPosJumps();
+      SR_ASSERT(ok && "Test: Value missmatch");
       ok &= networkPort == s->getNetworkPort();
+      SR_ASSERT(ok && "Test: Value missmatch");
+      ok &= enableCarPosSwitching == s->getEnableCarPosSwitching();
       SR_ASSERT(ok && "Test: Value missmatch");
       ok &= handleCoinMudCollisionsOnlyClientside == s->getHandleCoinMudCollisionsOnlyClientside();
       SR_ASSERT(ok && "Test: Value missmatch");

@@ -25,6 +25,7 @@ public:
    void scSendScore(PlayerID _player, int _score);
    void scSpawnCoin(const QVector2D &_pos);
    void scSpawnMud(const QVector2D &_pos);
+   void scSendSwitchCarPositions();
 
 private:
    SharedGameLogic mGameLogicClient;

@@ -86,3 +86,13 @@ void DelaySimulator::scSpawnMud(const QVector2D &_pos)
        },
    DelayedActions::DelayedActionType::SERVER_TO_CLIENT);
 }
+
+void DelaySimulator::scSendSwitchCarPositions()
+{
+   mDelayManager.pushDelayedAction(
+       [this]()
+       {
+          mGameLogicClient->switchCarPositions();
+       },
+   DelayedActions::DelayedActionType::SERVER_TO_CLIENT);
+}

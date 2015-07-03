@@ -75,6 +75,12 @@ private: // game logic stuff
    /// Points for collecting a mud puddle
    int mScoreMud = -2;
 
+   /// Let cars switch their position when they are near to each other
+   bool mEnableCarPosSwitching = true;
+
+   /// Minimum amount of time cars should switch positions
+   float mMinTimeBetweenCarPosJumps = 5.f;
+
 private: // latency stuff
    /// Probabilities that a critical game situations activates lag
    /// @{
@@ -129,6 +135,8 @@ public: // Getter, Setter
    float getCurrentLatencyServerToClient() const;
    /// Will return 0 if lag is not enabled!!!
    float getCurrentLatencyClientToServer() const;
+   GETTER(EnableCarPosSwitching);
+   GETTER(MinTimeBetweenCarPosJumps);
    GETTER(AILag);
    GETTER(HandleCoinMudCollisionsOnlyClientside);
    GETTER(LatencyServerToClient);
