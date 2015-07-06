@@ -30,6 +30,7 @@ bool Testing::runTestSettingsSaveLoad()
    _ testPlay = s->getTestPlay();
    _ networkUpdateRate = s->getNetworkUpdateRate();
    // latency stuff
+   _ lagType = s->getLagType();
    _ lagProbabilityLow = s->getLagProbabilityLow();
    _ lagProbabilityMedium = s->getLagProbabilityMedium();
    _ lagProbabilityHigh = s->getLagProbabilityHigh();
@@ -82,6 +83,8 @@ bool Testing::runTestSettingsSaveLoad()
       ok &= minTimeBetweenCarPosJumps == s->getMinTimeBetweenCarPosJumps();
       SR_ASSERT(ok && "Test: Value missmatch");
       ok &= networkPort == s->getNetworkPort();
+      SR_ASSERT(ok && "Test: Value missmatch");
+      ok &= lagType == s->getLagType();
       SR_ASSERT(ok && "Test: Value missmatch");
       ok &= enableCarPosSwitching == s->getEnableCarPosSwitching();
       SR_ASSERT(ok && "Test: Value missmatch");

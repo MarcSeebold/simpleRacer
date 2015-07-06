@@ -10,6 +10,13 @@ enum class LagProbability : char
    CUSTOM = 3
 };
 
+enum class LagType : char
+{
+   INVALID = 0,
+   CONSTANT,
+   TRIGGERABLE
+};
+
 class QJsonObject;
 
 class Settings : public QObject
@@ -82,6 +89,9 @@ private: // game logic stuff
    float mMinTimeBetweenCarPosJumps = 5.f;
 
 private: // latency stuff
+   /// Is lag triggered by collisions or constant for a game?
+   LagType mLagType = LagType::TRIGGERABLE;
+
    /// Probabilities that a critical game situations activates lag
    /// @{
    float mLagProbabilityLow = 0.02f;
@@ -135,6 +145,7 @@ public: // Getter, Setter
    float getCurrentLatencyServerToClient() const;
    /// Will return 0 if lag is not enabled!!!
    float getCurrentLatencyClientToServer() const;
+   GETTER(LagType);
    GETTER(EnableCarPosSwitching);
    GETTER(MinTimeBetweenCarPosJumps);
    GETTER(AILag);
@@ -161,12 +172,14 @@ public: // Getter, Setter
    GETTER(ClientSideInterpolation);
    GETTER(ServerSideLagCompensation);
    GETTER(ClientSideInterpolationFactor);
-   GETTER(LagEnabled);
    GETTER(LagProbabilityLow);
    GETTER(LagProbabilityMedium);
    GETTER(LagProbabilityHigh);
    GETTER(LagProbabilityCustom);
    float getLagProbability() const;
+
+   /// Returns true if lag is enabled. Always returns true if getLagType is constant!
+   bool getLagEnabled() const;
 
    // Setter
    /// Enable/Disable artificial lag

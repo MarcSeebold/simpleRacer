@@ -42,6 +42,7 @@ void Settings::write(QJsonObject& _json) const
    }
    // Latency stuff
    {
+      jLat["LagType"] = (int)getLagType();
       jLat["CarVeloX"] = getCarVeloX();
       jLat["LagProbabilityLow"] = getLagProbabilityLow();
       jLat["LagProbabilityMedium"] = getLagProbabilityMedium();
@@ -114,6 +115,11 @@ void Settings::read(const QJsonObject& _json)
       { // custom case for LagProbability enum
          int v = jLat["LagProbability"].toInt();
          mLagProbability = (LagProbability)v;
+      }
+      if (jLat.contains("LagType"))
+      { // custom case for LagType enum
+         int v = jLat["LagType"].toInt();
+         mLagType = (LagType)v;
       }
       __SR_SETTINGS_SET_IF_EXIST(jLat, LagDuration, Double);
       __SR_SETTINGS_SET_IF_EXIST(jLat, LatencyServerToClient, Double);
@@ -230,4 +236,12 @@ float Settings::getLagProbability() const
       SR_ASSERT("Unknown lag probability value");
    }
    return -1.f;
+}
+
+bool Settings::getLagEnabled() const
+{
+   // constant lag = always enabled
+   if (getLagType() == LagType::CONSTANT)
+      return true;
+   return mLagEnabled;
 }
