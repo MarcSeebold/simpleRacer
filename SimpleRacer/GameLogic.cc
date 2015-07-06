@@ -491,6 +491,15 @@ void GameLogic::update(const float &_timestep)
    mAIInput->reset();
 }
 
+bool GameLogic::randomBoolFromLagProbability() const
+{
+   _ probability = Settings::the()->getLagProbability();
+   float random = rand() % 100 + 1;   // 100 values: [1,100]
+   if (random <= 100.f * probability) // probability: [0,1] * 100 -> [0,100]
+      return true;
+   return false;
+}
+
 void GameLogic::clientSpawnCoin(const QVector2D &_pos)
 {
    _ coin = UniqueCoin(new Coin(mPhysicsWorld, sCoinSize, sCoinSize, _pos.x(), _pos.y()));
@@ -679,27 +688,29 @@ void GameLogic::callbackCarBoundary(Car *_car, Boundary *_boundary)
 
 bool GameLogic::criticalSituationOccured()
 {
-   _ probability = Settings::the()->getLagProbability();
-   float random = rand() % 100 + 1;   // 100 values: [1,100]
-   if (random <= 100.f * probability) // probability: [0,1] * 100 -> [0,100]
-   {
-      // activate lag for a period of time
-      Settings::the()->setLagEnabled(true);
+   // probability for lag triggering
+   if (!randomBoolFromLagProbability())
+      return false;
 
-      mDelayedLagDisabling.clear(); // ensure there is only one delayed task
-      _ func = [this]()
-      {
-         Settings::the()->setLagEnabled(false);
-      };
-      mDelayedLagDisabling.pushDelayedAction(func, Settings::the()->getLagDuration());
-      return true;
-   }
-   return false;
+   // activate lag for a period of time
+   Settings::the()->setLagEnabled(true);
+
+   mDelayedLagDisabling.clear(); // ensure there is only one delayed task
+   _ func = [this]()
+   {
+      Settings::the()->setLagEnabled(false);
+   };
+   mDelayedLagDisabling.pushDelayedAction(func, Settings::the()->getLagDuration());
+   return true;
 }
 
 void GameLogic::carsAboveEachOther()
 {
    if (!Settings::the()->getEnableCarPosSwitching() || !isServer())
+      return;
+
+   // probability for car switching: lag-trigger probability
+   if (!randomBoolFromLagProbability())
       return;
 
    static int64_t timeOfLastSwitch = 0;

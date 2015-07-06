@@ -110,6 +110,9 @@ public slots:
    void update(const float &_timestep);
 
 private:
+   /// Returns true with probability Settings::the()->getLagProbability();
+   bool randomBoolFromLagProbability() const;
+
    /// Spawn new coin (client only)
    void clientSpawnCoin(const QVector2D &_pos);
 
