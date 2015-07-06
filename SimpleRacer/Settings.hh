@@ -33,7 +33,7 @@ public:
    /// Read all settings from JSON
    void read(const QJsonObject &_json);
 
-   /// Loads a pre-defined condition (1 to 10)
+   /// Loads a pre-defined condition (1 to 14)
    /// 0 = Testplay
    /// See qrc:/conditions/*.json
    void loadCondition(unsigned int _num);

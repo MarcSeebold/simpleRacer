@@ -6,6 +6,7 @@
 #include "QTimer"
 #include "ArtificialRacer.hh"
 
+// TODO: Move to settings
 #define SR_GAMESTEPTIME (1 / 60.f * 1000.f) // every 16,666... ms = 1/60s * 1000s/ms = 60Hz
 
 class MainWindow;

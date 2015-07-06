@@ -140,7 +140,7 @@ void Settings::loadCondition(unsigned int _num)
    // read json from resource
    {
       QString path = ":/conditions/";
-      if (_num > 10)
+      if (_num > 14)
       {
          SR_ASSERT(0 && "Invalid input parameter");
          return;
