@@ -62,11 +62,16 @@ SimpleRacer *SimpleRacer::the()
 
 void SimpleRacer::startGame()
 {
+   // stop game if already running
+   if (isRunning())
+      stopGame();
    StatisticsEngine::the()->tellNewGameRound();
    mMainWindow->mUI->labelBG->hide();
    // hide survey, show game
    mSurveyEngine->toogleWebWindow(false);
+   // TODO: Move to settings
    mTimeLeft = 60.f;   // One minute gameplay
+   // TODO: Move to settings
    mStartTimer = 3.5f; // 3 Second-countdown before start
    mMainWindow->mUI->widget->setOpacity(1.f);
    mGameTimer.start(SR_GAMESTEPTIME);
@@ -106,6 +111,7 @@ void SimpleRacer::update()
          return;
       }
       // reduce opacity of render window with decreasing timer value
+      // TODO: Move to settings
       _ opacity = (mFadeOutTimer / 3.5f);
       mMainWindow->mUI->widget->setOpacity(opacity);
       mMainWindow->repaint(); // paint
@@ -138,6 +144,7 @@ void SimpleRacer::update()
          int scoreP2 = mLogicServer->getScore(PlayerID::P2);
          // declare winner
          {
+            // TODO: Move to settings
             mFadeOutTimer = 3.5f; // Fade-out game widget
             QString gameOverText = "Game Over\n";
 #if 0
