@@ -1,14 +1,22 @@
 {
-        "LatencyStuff": {
-            "ClientSideInterpolation": false,
-            "ClientSidePhysics": false,
-            "ClientSidePrediction": false,
-            "LagDuration": 1,
-            "LagProbability": 3,
-            "LagProbabilityCustom": 1,
-            "LatencyClientToServer": 200,
-            "LatencyServerToClient": 200,
-            "ServerSideLagCompensation": false,
-            "ShortCircuiting": false
-        }
+    "GameLogicStuff": {
+        "EnableCarPosSwitching": false,
+        "HandleCoinMudCollisionsOnlyClientside": false,
+        "MinTimeBetweenCarPosJumps": 5,
+        "NetworkUpdateRate": 20,
+        "TestPlay": false
+    },
+    "LatencyStuff": {
+        "ClientSideInterpolation": false,
+        "ClientSidePhysics": false,
+        "ClientSidePrediction": false,
+        "LagDuration": 1,
+        "LagProbability": 3,
+        "LagProbabilityCustom": 0,
+        "ServerSideLagCompensation": false,
+        "ShortCircuiting": false,
+        "LagType": 1,
+        "LatencyClientToServer": 0.2,
+        "LatencyServerToClient": 0.2
+    }
 }
