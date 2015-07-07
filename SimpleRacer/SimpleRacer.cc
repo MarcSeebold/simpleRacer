@@ -8,6 +8,7 @@
 #include "NetworkEngine.hh"
 #include "Testing.hh"
 #include "SurveyEngine.hh"
+#include "ScreenRecorder.hh"
 
 SimpleRacer *SimpleRacer::sInstance = nullptr;
 
@@ -19,6 +20,7 @@ SimpleRacer::SimpleRacer(MainWindow *_mainWindow, RenderingWidget *_rendering)
     mSynch(new DelaySimulator(mLogicClient, mLogicServer)),
     mNetwork(new NetworkEngine),
     mSurveyEngine(new SurveyEngine(_mainWindow->mUI->webView, _rendering)),
+    mScreenRecorder(new ScreenRecorder(this)),
     mRendering(_rendering),
     mMainWindow(_mainWindow)
 {

@@ -27,7 +27,8 @@ SOURCES += main.cc\
     Settings.cc \
     Testing.cc \
     NetworkEngine.cc \
-    SurveyEngine.cc
+    SurveyEngine.cc \
+    ScreenRecorder.cc
 
 
 HEADERS  += MainWindow.hh \
@@ -44,7 +45,8 @@ HEADERS  += MainWindow.hh \
     Settings.hh \
     Testing.hh \
     NetworkEngine.hh \
-    SurveyEngine.hh
+    SurveyEngine.hh \
+    ScreenRecorder.hh
 
 FORMS    += MainWindow.ui
 

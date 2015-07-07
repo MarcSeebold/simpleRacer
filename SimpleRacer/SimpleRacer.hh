@@ -17,6 +17,7 @@ SHARED(class, ArtificialRacer);
 SHARED(class, DelaySimulator);
 SHARED(class, NetworkEngine);
 SHARED(class, SurveyEngine);
+SHARED(class, ScreenRecorder);
 
 enum class GameState : char
 {
@@ -46,6 +47,7 @@ public: // static getter
    static RenderingWidget *rendering() { return the()->mRendering; }
    static SharedSurveyEngine survey() { return the()->mSurveyEngine; }
    static SharedDelaySimulator delaySimulator() { return the()->mSynch; }
+   static SharedScreenRecorder screenRecorder() { return the()->mScreenRecorder; }
 
 public slots:
    void startGame();
@@ -72,6 +74,7 @@ private:
    SharedDelaySimulator mSynch;
    SharedNetworkEngine mNetwork;
    SharedSurveyEngine mSurveyEngine;
+   SharedScreenRecorder mScreenRecorder;
    float mTimeLeft = -1;     ///< Game-Timer
    float mStartTimer = -1;   ///< Another timer for pre-game start (e.g., 3 seconds countdown before game start)
    float mFadeOutTimer = -1; ///< Timer for letting the game widget fade out after game over
