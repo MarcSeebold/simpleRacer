@@ -121,6 +121,22 @@ void NetworkEngine::onData()
          Settings::the()->loadCondition(10);
          send("ACK");
          break;
+      case NetworkCommand::LOAD_CONDITION_11:
+         Settings::the()->loadCondition(11);
+         send("ACK");
+         break;
+      case NetworkCommand::LOAD_CONDITION_12:
+         Settings::the()->loadCondition(12);
+         send("ACK");
+         break;
+      case NetworkCommand::LOAD_CONDITION_13:
+         Settings::the()->loadCondition(13);
+         send("ACK");
+         break;
+      case NetworkCommand::LOAD_CONDITION_14:
+         Settings::the()->loadCondition(14);
+         send("ACK");
+         break;
       case NetworkCommand::START_TESTPLAY:
          Settings::the()->setTestPlay(true);
          send("ACK");
