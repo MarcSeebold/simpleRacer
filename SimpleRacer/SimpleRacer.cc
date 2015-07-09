@@ -101,7 +101,8 @@ void SimpleRacer::stopGame()
    logicClient()->reset();
    logicServer()->reset();
    mRunning = false;
-   // show survey, hide game
+   // show waiting screen, hide game
+   mSurveyEngine->showWaitingScreen();
    mSurveyEngine->toogleWebWindow(true);
    setGameState(GameState::WAITING);
 }
@@ -124,6 +125,11 @@ void SimpleRacer::update()
       {
          // fadeout complete: stop the game
          stopGame();
+         // if this was an condition-game: open ingame survey
+         if (mSurveyEngine->getLastLoadedCondition() > 0)
+         {
+            mSurveyEngine->makeSurvey(SurveyType::INGAME);
+         }
          return;
       }
       // reduce opacity of render window with decreasing timer value
