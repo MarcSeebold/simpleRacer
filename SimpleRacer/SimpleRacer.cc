@@ -78,7 +78,8 @@ void SimpleRacer::startGame()
       stopGame();
    // create new screencap file
    mScreenRecorder->stopRecording();
-   sInstance->mScreenRecorder->startRecording("./screendumps/" + QString::number(common::getCurrentTimestamp()) + ".mkv");
+   sInstance->mScreenRecorder->startRecording("./screendumps/" + QString::number(common::getCurrentTimestamp())
+                                              + ".mkv");
    // stats
    StatisticsEngine::the()->tellNewGameRound();
    mMainWindow->mUI->labelBG->hide();

@@ -44,7 +44,7 @@ void DelaySimulator::scSendCoins(std::vector<QVector2D> _coins)
        {
           mGameLogicClient->setCoins(_coins);
        },
-   DelayedActions::DelayedActionType::SERVER_TO_CLIENT);
+       DelayedActions::DelayedActionType::SERVER_TO_CLIENT);
 }
 
 void DelaySimulator::scSendMuds(std::vector<QVector2D> _muds)
@@ -54,7 +54,7 @@ void DelaySimulator::scSendMuds(std::vector<QVector2D> _muds)
        {
           mGameLogicClient->setMuds(_muds);
        },
-   DelayedActions::DelayedActionType::SERVER_TO_CLIENT);
+       DelayedActions::DelayedActionType::SERVER_TO_CLIENT);
 }
 
 void DelaySimulator::scSendScore(PlayerID _player, int _score)
@@ -64,7 +64,7 @@ void DelaySimulator::scSendScore(PlayerID _player, int _score)
        {
           mGameLogicClient->mScore[int(_player)] = _score;
        },
-   DelayedActions::DelayedActionType::SERVER_TO_CLIENT);
+       DelayedActions::DelayedActionType::SERVER_TO_CLIENT);
 }
 
 void DelaySimulator::scSpawnCoin(const QVector2D &_pos)
@@ -74,7 +74,7 @@ void DelaySimulator::scSpawnCoin(const QVector2D &_pos)
        {
           mGameLogicClient->clientSpawnCoin(_pos);
        },
-   DelayedActions::DelayedActionType::SERVER_TO_CLIENT);
+       DelayedActions::DelayedActionType::SERVER_TO_CLIENT);
 }
 
 void DelaySimulator::scSpawnMud(const QVector2D &_pos)
@@ -84,7 +84,7 @@ void DelaySimulator::scSpawnMud(const QVector2D &_pos)
        {
           mGameLogicClient->clientSpawnMud(_pos);
        },
-   DelayedActions::DelayedActionType::SERVER_TO_CLIENT);
+       DelayedActions::DelayedActionType::SERVER_TO_CLIENT);
 }
 
 void DelaySimulator::scSendSwitchCarPositions()
@@ -94,5 +94,5 @@ void DelaySimulator::scSendSwitchCarPositions()
        {
           mGameLogicClient->switchCarPositions();
        },
-   DelayedActions::DelayedActionType::SERVER_TO_CLIENT);
+       DelayedActions::DelayedActionType::SERVER_TO_CLIENT);
 }

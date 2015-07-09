@@ -28,10 +28,10 @@ public:
    static Settings* the();
 
    /// Writes all settings to JSON
-   void write(QJsonObject &_json) const;
+   void write(QJsonObject& _json) const;
 
    /// Read all settings from JSON
-   void read(const QJsonObject &_json);
+   void read(const QJsonObject& _json);
 
    /// Loads a pre-defined condition (1 to 14)
    /// 0 = Testplay

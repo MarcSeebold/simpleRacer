@@ -223,6 +223,6 @@ void MainWindow::refreshDebugUI()
 
 void MainWindow::on_pushButton_4_clicked()
 {
-    // set focus on game
-    focusGameWindow();
+   // set focus on game
+   focusGameWindow();
 }

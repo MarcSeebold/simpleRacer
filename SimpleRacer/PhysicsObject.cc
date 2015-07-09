@@ -2,7 +2,8 @@
 
 #include <qdebug.h>
 
-PhysicsObject::PhysicsObject(const Sharedb2World &_world, float _width, float _height, float _x, float _y, Type _type, float _linearDamping, bool _static, Shape _shape)
+PhysicsObject::PhysicsObject(
+    const Sharedb2World &_world, float _width, float _height, float _x, float _y, Type _type, float _linearDamping, bool _static, Shape _shape)
   : mWorld(_world), mType(_type)
 {
    SR_ASSERT(mWorld && "World is null.");
@@ -20,13 +21,14 @@ PhysicsObject::PhysicsObject(const Sharedb2World &_world, float _width, float _h
    }
    mBody = mWorld->CreateBody(&mDef);
    // create shape
-   switch (_shape) {
+   switch (_shape)
+   {
    case Shape::BOX:
       mPolyShape.SetAsBox(_width / 2.f, _height / 2.f);
       mFixDef.shape = &mPolyShape;
       break;
    case Shape::CIRCLE:
-      mCircleShape.m_p.Set(0,0);
+      mCircleShape.m_p.Set(0, 0);
       mCircleShape.m_radius = _width / 2.f;
       mFixDef.shape = &mCircleShape;
       break;

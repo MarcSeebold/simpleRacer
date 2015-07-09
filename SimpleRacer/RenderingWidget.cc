@@ -72,7 +72,7 @@ void RenderingWidget::paintEvent(QPaintEvent *event)
       x -= carWidth / 2;
       y -= carHeight / 2;
 
-      painter.drawImage(x, y, (p == 0? carScaledP1 : carScaledP2));
+      painter.drawImage(x, y, (p == 0 ? carScaledP1 : carScaledP2));
    }
 
    // draw coins
@@ -116,7 +116,7 @@ void RenderingWidget::paintEvent(QPaintEvent *event)
    // used for fade-out effect
    if (getOpacity() != 1.f)
    {
-      painter.fillRect(event->rect(), QBrush(QColor(0,0,0,int((1-getOpacity()) * 255))));
+      painter.fillRect(event->rect(), QBrush(QColor(0, 0, 0, int((1 - getOpacity()) * 255))));
    }
 
    painter.end();

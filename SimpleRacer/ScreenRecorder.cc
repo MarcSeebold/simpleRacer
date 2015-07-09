@@ -20,10 +20,10 @@ void ScreenRecorder::startRecording(const QString &_filename, bool _waitForStart
    connect(mWorker.get(), &ScreenRecordWorker::finished, this, &ScreenRecorder::workerFinished);
    connect(mWorker.get(), &ScreenRecordWorker::recordingStarted, this, &ScreenRecorder::workerStarted);
    mWorker->start();
-   while(_waitForStarted && !isRecording())
+   while (_waitForStarted && !isRecording())
    {
       qApp->processEvents();
-      QThread::msleep(10);//NOP
+      QThread::msleep(10); // NOP
    }
 }
 
@@ -33,10 +33,10 @@ void ScreenRecorder::stopRecording(bool _waitForStopped)
       return;
    SR_ASSERT(mWorker != nullptr && "Running but worker is null.");
    mWorker->requestInterruption();
-   while(_waitForStopped && isRecording())
+   while (_waitForStopped && isRecording())
    {
       qApp->processEvents();
-      QThread::msleep(10);//NOP
+      QThread::msleep(10); // NOP
    }
 }
 
@@ -68,7 +68,8 @@ void ScreenRecordWorker::run()
    const _ rec = QApplication::desktop()->screenGeometry();
    const QString screenSize = QString::number(rec.width()) + "x" + QString::number(rec.height());
    const QString program = "ffmpeg";
-   const QStringList args = {"-video_size", screenSize, "-framerate",  "60", "-f", "x11grab", "-i", ":0.0", "-c:v", "libx264", "-preset", "superfast", "-y", mFilename};
+   const QStringList args
+       = {"-video_size", screenSize, "-framerate", "60", "-f", "x11grab", "-i", ":0.0", "-c:v", "libx264", "-preset", "superfast", "-y", mFilename};
    QProcess proc;
    proc.start(program, args);
    if (!proc.waitForStarted())
@@ -90,6 +91,6 @@ void ScreenRecordWorker::run()
          }
          return;
       }
-      msleep(100); //NOP
+      msleep(100); // NOP
    }
 }
