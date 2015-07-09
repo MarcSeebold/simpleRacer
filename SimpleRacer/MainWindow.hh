@@ -48,6 +48,8 @@ private slots:
 
    void refreshDebugUI();
 
+   void on_pushButton_4_clicked();
+
 private:
    Ui::MainWindow *mUI = nullptr;
 

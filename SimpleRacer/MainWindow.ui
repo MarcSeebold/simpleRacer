@@ -350,6 +350,13 @@
               </property>
              </widget>
             </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_4">
+              <property name="text">
+               <string>Focus Game</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </item>
          </layout>
@@ -492,14 +499,14 @@
      </widget>
     </item>
     <item>
-     <widget class="QWebView" name="webView">
+     <widget class="QWebView" name="webView" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
-      <property name="url">
+      <property name="url" stdset="0">
        <url>
         <string>about:blank</string>
        </url>
@@ -518,7 +525,7 @@
      <x>0</x>
      <y>0</y>
      <width>1050</width>
-     <height>23</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMenu">

@@ -215,3 +215,9 @@ void MainWindow::refreshDebugUI()
       mUI->checkBox_2->blockSignals(false);
    }
 }
+
+void MainWindow::on_pushButton_4_clicked()
+{
+    // set focus on game
+    mUI->widget->setFocus();
+}
