@@ -92,6 +92,7 @@ void SimpleRacer::startGame()
    mGameTimer.start(SR_GAMESTEPTIME);
    mRunning = true;
    setGameState(GameState::PLAYING);
+   mMainWindow->focusGameWindow();
 }
 
 void SimpleRacer::stopGame()

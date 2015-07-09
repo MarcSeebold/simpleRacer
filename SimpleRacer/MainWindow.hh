@@ -31,6 +31,8 @@ public slots:
 
    void onStartNewTestGame();
 
+   void focusGameWindow();
+
 private slots:
    void on_checkBox_stateChanged(int arg1);
 

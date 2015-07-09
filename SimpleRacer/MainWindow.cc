@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mUI(new Ui::MainW
    connect(Settings::the(), &Settings::testPlayStateChange, this, &MainWindow::onTestPlayStateChanged);
    connect(mUI->webView->page()->mainFrame(), &QWebFrame::javaScriptWindowObjectCleared, this, &MainWindow::populateJSWO);
    // set focus on game
-   mUI->widget->setFocus();
+   focusGameWindow();
 #ifndef QT_DEBUG
    // Hide Debug-Stuff
    mUI->latencySettings_2->hide();
@@ -79,6 +79,11 @@ void MainWindow::onStartNewTestGame()
 {
    SimpleRacer::the()->startGame();
    // set focus on game
+   focusGameWindow();
+}
+
+void MainWindow::focusGameWindow()
+{
    mUI->widget->setFocus();
 }
 
@@ -87,7 +92,7 @@ void MainWindow::on_checkBox_stateChanged(int arg1)
    bool checked = (arg1 == Qt::Checked);
    Settings::the()->setClientSideCompensation(checked);
    // set focus on game
-   mUI->widget->setFocus();
+   focusGameWindow();
 }
 
 void MainWindow::on_checkBox_2_stateChanged(int arg1)
@@ -95,7 +100,7 @@ void MainWindow::on_checkBox_2_stateChanged(int arg1)
    bool checked = (arg1 == Qt::Checked);
    Settings::the()->setServerSideCompensation(checked);
    // set focus on game
-   mUI->widget->setFocus();
+   focusGameWindow();
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -139,14 +144,14 @@ void MainWindow::on_pushButton_clicked()
          mUI->editDuration->setText(QString::number(Settings::the()->getLagDuration()));
    }
    // set focus on game
-   mUI->widget->setFocus();
+   focusGameWindow();
 }
 
 void MainWindow::on_actionStart_Singleplayer_triggered()
 {
    SimpleRacer::the()->startGame();
    // set focus on game
-   mUI->widget->setFocus();
+   focusGameWindow();
 }
 
 void MainWindow::populateJSWO()
@@ -219,5 +224,5 @@ void MainWindow::refreshDebugUI()
 void MainWindow::on_pushButton_4_clicked()
 {
     // set focus on game
-    mUI->widget->setFocus();
+    focusGameWindow();
 }
