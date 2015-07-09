@@ -57,7 +57,7 @@ void NetworkEngine::onData()
       switch ((NetworkCommand)cmd)
       {
       case NetworkCommand::START_GAME:
-         SimpleRacer::the()->startGame();
+         SimpleRacer::the()->showInstructionsAndStartGame();
          send("ACK");
          break;
       case NetworkCommand::OPEN_SURVEY_PREGAME:

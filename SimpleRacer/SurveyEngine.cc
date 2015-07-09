@@ -85,6 +85,26 @@ void SurveyEngine::showWaitingScreen()
    mWebView->load(QUrl("qrc:/htdocs/wait.html"));
 }
 
+bool SurveyEngine::showInstructions(Instruction _instruction)
+{
+   switch (_instruction)
+   {
+   case Instruction::NONE:
+      mWebView->load(QUrl("qrc:/htdocs/instruction0.html"));
+      break;
+   case Instruction::FEW_COLLISION:
+      mWebView->load(QUrl("qrc:/htdocs/instruction1.html"));
+      break;
+   case Instruction::MUCH_COLLISION:
+      mWebView->load(QUrl("qrc:/htdocs/instruction2.html"));
+      break;
+   default:
+      return false;
+      break;
+   }
+   return true;
+}
+
 void SurveyEngine::onDownloadRequested(const QNetworkRequest &_request)
 {
    // magic!

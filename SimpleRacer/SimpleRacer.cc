@@ -71,6 +71,13 @@ SimpleRacer *SimpleRacer::the()
    return sInstance;
 }
 
+void SimpleRacer::showInstructionsAndStartGame()
+{
+   bool ok = mSurveyEngine->showInstructions(Settings::the()->getUserInstruction());
+   if (!ok)
+      startGame(); // no valid instruction: startGame without one
+}
+
 void SimpleRacer::startGame()
 {
    // stop game if already running

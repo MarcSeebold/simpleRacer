@@ -31,6 +31,8 @@ public slots:
 
    void onStartNewTestGame();
 
+   void onStartNewGame();
+
    void focusGameWindow();
 
 private slots:

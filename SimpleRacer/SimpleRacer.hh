@@ -50,6 +50,7 @@ public: // static getter
    static SharedScreenRecorder screenRecorder() { return the()->mScreenRecorder; }
 
 public slots:
+   void showInstructionsAndStartGame();
    void startGame();
    void stopGame();
    void exitGame();

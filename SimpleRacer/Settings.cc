@@ -97,7 +97,11 @@ void Settings::read(const QJsonObject& _json)
       __SR_SETTINGS_SET_IF_EXIST(jLog, ScoreCoin, Int);
       __SR_SETTINGS_SET_IF_EXIST(jLog, ScoreMud, Int);
       __SR_SETTINGS_SET_IF_EXIST(jLog, NetworkPort, Int);
-      __SR_SETTINGS_SET_IF_EXIST(jLog, UserInstruction, Int);
+      if (jLog.contains("UserInstruction"))
+      { // custom case for UserInstruction enum
+         int v = jLog["UserInstruction"].toInt();
+         mUserInstruction = (Instruction)v;
+      }
       __SR_SETTINGS_SET_IF_EXIST(jLog, MinTimeBetweenCarPosJumps, Double);
       __SR_SETTINGS_SET_IF_EXIST_BOOL(jLog, EnableCarPosSwitching);
       __SR_SETTINGS_SET_IF_EXIST_BOOL(jLog, HandleCoinMudCollisionsOnlyClientside);

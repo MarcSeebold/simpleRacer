@@ -1,6 +1,7 @@
 #pragma once
 #include <QObject>
 #include "Common.hh"
+#include "Settings.hh"
 
 class QWebView;
 class RenderingWidget;
@@ -35,6 +36,9 @@ public:
    void toogleWebWindow(bool _showWebviewHideGame);
    /// Show waiting screen
    void showWaitingScreen();
+   /// Show instructions
+   /// @return False if the instruction is invalid
+   bool showInstructions(Instruction _instruction);
 
 private slots:
    void onDownloadRequested(const QNetworkRequest &_request);

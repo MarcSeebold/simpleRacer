@@ -77,9 +77,12 @@ void MainWindow::onTestPlayStateChanged(bool _val)
 
 void MainWindow::onStartNewTestGame()
 {
+   SimpleRacer::the()->showInstructionsAndStartGame();
+}
+
+void MainWindow::onStartNewGame()
+{
    SimpleRacer::the()->startGame();
-   // set focus on game
-   focusGameWindow();
 }
 
 void MainWindow::focusGameWindow()
@@ -149,9 +152,7 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::on_actionStart_Singleplayer_triggered()
 {
-   SimpleRacer::the()->startGame();
-   // set focus on game
-   focusGameWindow();
+   SimpleRacer::the()->showInstructionsAndStartGame();
 }
 
 void MainWindow::populateJSWO()
