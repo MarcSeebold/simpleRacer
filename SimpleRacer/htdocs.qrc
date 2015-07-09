@@ -10,5 +10,7 @@
         <file>htdocs/geq_core_german.html</file>
         <file>htdocs/geq_ingame_german.html</file>
         <file>htdocs/geq_post-game_german.html</file>
+        <file>htdocs/instruction2.html</file>
+        <file>htdocs/instruction1.html</file>
     </qresource>
 </RCC>
