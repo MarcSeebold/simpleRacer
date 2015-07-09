@@ -16,7 +16,7 @@
         "ServerSideLagCompensation": true,
         "ShortCircuiting": true,
         "LagType": 1,
-        "LatencyClientToServer": 0.2,
-        "LatencyServerToClient": 0.2
+        "LatencyClientToServer": 0.1,
+        "LatencyServerToClient": 0.1
     }
 }
