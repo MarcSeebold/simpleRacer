@@ -34,6 +34,7 @@ void Settings::write(QJsonObject& _json) const
       jLog["ScoreCoin"] = getScoreCoin();
       jLog["ScoreMud"] = getScoreMud();
       jLog["NetworkPort"] = getNetworkPort();
+      jLog["UserInstruction"] = (int)getUserInstruction();
       jLog["MinTimeBetweenCarPosJumps"] = getMinTimeBetweenCarPosJumps();
       jLog["EnableCarPosSwitching"] = getEnableCarPosSwitching();
       jLog["HandleCoinMudCollisionsOnlyClientside"] = getHandleCoinMudCollisionsOnlyClientside();
@@ -96,6 +97,7 @@ void Settings::read(const QJsonObject& _json)
       __SR_SETTINGS_SET_IF_EXIST(jLog, ScoreCoin, Int);
       __SR_SETTINGS_SET_IF_EXIST(jLog, ScoreMud, Int);
       __SR_SETTINGS_SET_IF_EXIST(jLog, NetworkPort, Int);
+      __SR_SETTINGS_SET_IF_EXIST(jLog, UserInstruction, Int);
       __SR_SETTINGS_SET_IF_EXIST(jLog, MinTimeBetweenCarPosJumps, Double);
       __SR_SETTINGS_SET_IF_EXIST_BOOL(jLog, EnableCarPosSwitching);
       __SR_SETTINGS_SET_IF_EXIST_BOOL(jLog, HandleCoinMudCollisionsOnlyClientside);

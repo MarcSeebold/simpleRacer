@@ -4,7 +4,8 @@
         "HandleCoinMudCollisionsOnlyClientside": false,
         "MinTimeBetweenCarPosJumps": 5,
         "NetworkUpdateRate": 20,
-        "TestPlay": false
+        "TestPlay": false,
+        "UserInstruction": 1
     },
     "LatencyStuff": {
         "ClientSideInterpolation": false,

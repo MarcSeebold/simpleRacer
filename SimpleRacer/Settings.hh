@@ -17,6 +17,14 @@ enum class LagType : char
    TRIGGERABLE
 };
 
+enum class Instruction : char
+{
+   INVALID = 0,
+   NONE,
+   MUCH_COLLISION,
+   FEW_COLLISION
+};
+
 class QJsonObject;
 
 class Settings : public QObject
@@ -46,6 +54,9 @@ signals:
    void testPlayStateChange(bool);
 
 private: // game logic stuff
+   /// Instruction for the user
+   Instruction mUserInstruction = Instruction::INVALID;
+
    /// Port the game will listen on for commands
    int mNetworkPort = 13337;
 
@@ -145,6 +156,7 @@ public: // Getter, Setter
    float getCurrentLatencyServerToClient() const;
    /// Will return 0 if lag is not enabled!!!
    float getCurrentLatencyClientToServer() const;
+   GETTER(UserInstruction);
    GETTER(LagType);
    GETTER(EnableCarPosSwitching);
    GETTER(MinTimeBetweenCarPosJumps);
