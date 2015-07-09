@@ -60,6 +60,10 @@ void NetworkEngine::onData()
          SimpleRacer::the()->showInstructionsAndStartGame();
          send("ACK");
          break;
+      case NetworkCommand::START_TRAINING:
+         SimpleRacer::the()->startTraining();
+         send("ACK");
+         break;
       case NetworkCommand::OPEN_SURVEY_PREGAME:
          // TODO: language support
          if (SimpleRacer::the()->isRunning())

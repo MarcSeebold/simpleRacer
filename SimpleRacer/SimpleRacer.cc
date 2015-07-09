@@ -78,6 +78,101 @@ void SimpleRacer::showInstructionsAndStartGame()
       startGame(); // no valid instruction: startGame without one
 }
 
+void SimpleRacer::startTraining()
+{
+   Settings::the()->setUserTrainingState(TrainingState::DRIVING_1);
+   startTrainingGame();
+}
+
+void SimpleRacer::startNextTraining()
+{
+   // set next stage
+   const _ currTraining = Settings::the()->getUserTrainingState();
+   if (currTraining == TrainingState::DONE)
+   {
+      SR_ASSERT(0 && "Training is already over. There is no next one.");
+      return;
+   }
+   const _ nextTraining = TrainingState(((int)currTraining) + 1);
+   Settings::the()->setUserTrainingState(nextTraining);
+   // start game
+   startTrainingGame();
+}
+
+void SimpleRacer::startTrainingGame()
+{
+   const _ state = Settings::the()->getUserTrainingState();
+   switch (state)
+   {
+   // Intended fall-through
+   case TrainingState::DRIVING_1:
+   case TrainingState::DRIVING_2:
+   case TrainingState::DRIVING_3:
+      Settings::the()->loadCondition(1);
+      // No special instruction
+      Settings::the()->setUserInstruction(Instruction::NONE);
+      // Do not make a survey after a game has ended
+      Settings::the()->setMakeSurveyAfterGame(false);
+      // Show instructions and start it
+      showInstructionsAndStartGame();
+      break;
+
+   case TrainingState::TASK_1:
+      Settings::the()->loadCondition(1);
+      // Make a survey after a game has ended
+      Settings::the()->setMakeSurveyAfterGame(true);
+      // Show instructions and start it
+      showInstructionsAndStartGame();
+      break;
+   case TrainingState::TASK_2:
+      Settings::the()->loadCondition(2);
+      // Make a survey after a game has ended
+      Settings::the()->setMakeSurveyAfterGame(true);
+      // Show instructions and start it
+      showInstructionsAndStartGame();
+      break;
+
+   case TrainingState::DELAY:
+      Settings::the()->loadCondition(3);
+      // Make a survey after a game has ended
+      Settings::the()->setMakeSurveyAfterGame(true);
+      // No special instruction
+      Settings::the()->setUserInstruction(Instruction::NONE);
+      // Show instructions and start it
+      showInstructionsAndStartGame();
+      break;
+
+   case TrainingState::INCONSISTENCY_1:
+      Settings::the()->loadCondition(10);
+      // Make a survey after a game has ended
+      Settings::the()->setMakeSurveyAfterGame(true);
+      // No special instruction
+      Settings::the()->setUserInstruction(Instruction::NONE);
+      // Show instructions and start it
+      showInstructionsAndStartGame();
+      break;
+   case TrainingState::INCONSISTENCY_2:
+      Settings::the()->loadCondition(14);
+      // Make a survey after a game has ended
+      Settings::the()->setMakeSurveyAfterGame(true);
+      // No special instruction
+      Settings::the()->setUserInstruction(Instruction::NONE);
+      // Show instructions and start it
+      showInstructionsAndStartGame();
+      break;
+
+   case TrainingState::DONE:
+      // load default condition
+      Settings::the()->loadCondition(0);
+      // next games should have surveys after game-end
+      Settings::the()->setMakeSurveyAfterGame(true);
+      break;
+   default:
+      SR_ASSERT(0 && "unhandled case");
+      break;
+   }
+}
+
 void SimpleRacer::startGame()
 {
    // stop game if already running
@@ -134,7 +229,7 @@ void SimpleRacer::update()
          // fadeout complete: stop the game
          stopGame();
          // if this was an condition-game: open ingame survey
-         if (mSurveyEngine->getLastLoadedCondition() > 0)
+         if (mSurveyEngine->getLastLoadedCondition() > 0 && Settings::the()->getMakeSurveyAfterGame())
          {
             mSurveyEngine->makeSurvey(SurveyType::INGAME);
          }

@@ -12,6 +12,7 @@ enum class NetworkCommand : char
    INVALID = 0,
 
    START_GAME,
+   START_TRAINING,
 
    SET_SURVEY_LANG_ENG,
    SET_SURVEY_LANG_GER,

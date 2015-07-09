@@ -51,9 +51,16 @@ public: // static getter
 
 public slots:
    void showInstructionsAndStartGame();
+
+   void startTraining();
+   void startNextTraining();
+   void startTrainingGame();
+
    void startGame();
    void stopGame();
+
    void exitGame();
+
    /// Main game update function
    void update();
 

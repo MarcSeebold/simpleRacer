@@ -25,6 +25,21 @@ enum class Instruction : char
    FEW_COLLISION
 };
 
+enum class TrainingState : char
+{
+   INVALID = 0,
+   DRIVING_1,
+   DRIVING_2,
+   DRIVING_3,
+   TASK_1,
+   TASK_2,
+   DELAY,
+   INCONSISTENCY_1,
+   INCONSISTENCY_2,
+
+   DONE
+};
+
 class QJsonObject;
 
 class Settings : public QObject
@@ -54,6 +69,12 @@ signals:
    void testPlayStateChange(bool);
 
 private: // game logic stuff
+   /// Should we make an ingame survey after a game has ended?
+   bool mMakeSurveyAfterGame = true;
+
+   /// Current state of training
+   TrainingState mUserTrainingState = TrainingState::INVALID;
+
    /// Instruction for the user
    Instruction mUserInstruction = Instruction::INVALID;
 
@@ -156,7 +177,9 @@ public: // Getter, Setter
    float getCurrentLatencyServerToClient() const;
    /// Will return 0 if lag is not enabled!!!
    float getCurrentLatencyClientToServer() const;
-   GETTER(UserInstruction);
+   PROPERTY(MakeSurveyAfterGame);
+   PROPERTY(UserTrainingState);
+   PROPERTY(UserInstruction);
    GETTER(LagType);
    GETTER(EnableCarPosSwitching);
    GETTER(MinTimeBetweenCarPosJumps);
