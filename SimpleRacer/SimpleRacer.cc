@@ -9,6 +9,7 @@
 #include "Testing.hh"
 #include "SurveyEngine.hh"
 #include "ScreenRecorder.hh"
+#include <QDir>
 
 SimpleRacer *SimpleRacer::sInstance = nullptr;
 
@@ -24,11 +25,25 @@ SimpleRacer::SimpleRacer(MainWindow *_mainWindow, RenderingWidget *_rendering)
     mRendering(_rendering),
     mMainWindow(_mainWindow)
 {
+   // At first: show a waiting screen
+   mSurveyEngine->toogleWebWindow(true);
+   setGameState(GameState::WAITING);
+   mSurveyEngine->showWaitingScreen();
+   mNetwork->listen();
+
+   // record screen
+   QDir dir("./screendumps/");
+   if (!dir.exists())
+      dir.mkpath("."); // ensure path exists
+   mScreenRecorder->startRecording(dir.absolutePath() + "/" + QString::number(common::getCurrentTimestamp()) + ".mkv");
+
    connect(&mGameTimer, &QTimer::timeout, this, &SimpleRacer::update);
 }
 
 SimpleRacer::~SimpleRacer()
 {
+   StatisticsEngine::the()->saveToFile();
+   mScreenRecorder->stopRecording();
 }
 
 void SimpleRacer::create(MainWindow *_mainWindow, RenderingWidget *_rendering)
@@ -41,17 +56,11 @@ void SimpleRacer::create(MainWindow *_mainWindow, RenderingWidget *_rendering)
    tests.runTestSettingsSaveLoad();
 #endif
    sInstance = new SimpleRacer(_mainWindow, _rendering);
-   // At first: show a waiting screen
-   sInstance->mSurveyEngine->toogleWebWindow(true);
-   sInstance->setGameState(GameState::WAITING);
-   sInstance->mSurveyEngine->showWaitingScreen();
-   sInstance->mNetwork->listen();
 }
 
 void SimpleRacer::destroy()
 {
    SR_ASSERT(sInstance && "destroy called without create or twice");
-   StatisticsEngine::the()->saveToFile();
    delete sInstance;
    sInstance = nullptr;
 }
@@ -67,12 +76,16 @@ void SimpleRacer::startGame()
    // stop game if already running
    if (isRunning())
       stopGame();
+   // create new screencap file
+   mScreenRecorder->stopRecording();
+   sInstance->mScreenRecorder->startRecording("./screendumps/" + QString::number(common::getCurrentTimestamp()) + ".mkv");
+   // stats
    StatisticsEngine::the()->tellNewGameRound();
    mMainWindow->mUI->labelBG->hide();
    // hide survey, show game
    mSurveyEngine->toogleWebWindow(false);
    // TODO: Move to settings
-   mTimeLeft = 60.f;   // One minute gameplay
+   mTimeLeft = 60.f; // One minute gameplay
    // TODO: Move to settings
    mStartTimer = 3.5f; // 3 Second-countdown before start
    mMainWindow->mUI->widget->setOpacity(1.f);
