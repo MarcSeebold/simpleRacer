@@ -197,12 +197,15 @@ void ArtificialRacer::update()
    {
       if (mudIsNear)
       {
+         bool ourLaneIsMudLane = std::abs(mMudPosition.y() - mPosition.y()) < GameLogic::sCarHeight/2.f * 1.5f;
          // avoid mud
          if (mMudPosition.x() < mPosition.x())
          {
             // mud is left from us
             logic->accelerate(mID);
          }
+         else if (!ourLaneIsMudLane)
+            logic->accelerate(mID); // our lane is clear
          else
             logic->decelerate(mID);
       }
