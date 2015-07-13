@@ -208,6 +208,10 @@ void SimpleRacer::stopGame()
    mSurveyEngine->showWaitingScreen();
    mSurveyEngine->toogleWebWindow(true);
    setGameState(GameState::WAITING);
+   if (Settings::the()->getUserTrainingState() != TrainingState::INVALID && Settings::the()->getUserTrainingState() != TrainingState::DONE)
+   {
+      startNextTraining();
+   }
 }
 
 void SimpleRacer::exitGame()
