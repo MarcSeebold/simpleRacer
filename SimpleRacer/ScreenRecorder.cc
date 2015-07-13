@@ -5,12 +5,11 @@
 
 ScreenRecorder::ScreenRecorder(QObject *parent) : QObject(parent)
 {
-   // TODO: IMPLEMENT
 }
 
 ScreenRecorder::~ScreenRecorder()
 {
-   // TODO: IMPLEMENT
+   stopRecording();
 }
 
 void ScreenRecorder::startRecording(const QString &_filename, bool _waitForStarted)

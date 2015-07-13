@@ -65,21 +65,18 @@ void NetworkEngine::onData()
          send("ACK");
          break;
       case NetworkCommand::OPEN_SURVEY_PREGAME:
-         // TODO: language support
          if (SimpleRacer::the()->isRunning())
             SimpleRacer::the()->stopGame();
          SimpleRacer::survey()->makeSurvey(SurveyType::CORE);
          send("ACK");
          break;
       case NetworkCommand::OPEN_SURVEY_INGAME:
-         // TODO: language support
          if (SimpleRacer::the()->isRunning())
             SimpleRacer::the()->stopGame();
          SimpleRacer::survey()->makeSurvey(SurveyType::INGAME);
          send("ACK");
          break;
       case NetworkCommand::OPEN_SURVEY_POSTGAME:
-         // TODO: language support
          if (SimpleRacer::the()->isRunning())
             SimpleRacer::the()->stopGame();
          SimpleRacer::survey()->makeSurvey(SurveyType::POSTGAME);
