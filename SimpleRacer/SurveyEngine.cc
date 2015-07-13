@@ -132,4 +132,5 @@ void SurveyEngine::onDownloadRequested(const QNetworkRequest &_request)
    mCurrSurvey = CurrentSurvey{SurveyType::INVALID, SurveyLanguage::INVALID};
    // state
    SimpleRacer::the()->setGameState(GameState::WAITING);
+   emit surveyFinished();
 }

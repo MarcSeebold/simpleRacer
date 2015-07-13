@@ -38,6 +38,7 @@ SimpleRacer::SimpleRacer(MainWindow *_mainWindow, RenderingWidget *_rendering)
    mScreenRecorder->startRecording(dir.absolutePath() + "/" + QString::number(common::getCurrentTimestamp()) + ".mkv");
 
    connect(&mGameTimer, &QTimer::timeout, this, &SimpleRacer::update);
+   connect(mSurveyEngine.get(), &SurveyEngine::surveyFinished, this, &SimpleRacer::onSurveyFinished);
 }
 
 SimpleRacer::~SimpleRacer()
@@ -344,5 +345,14 @@ void SimpleRacer::update()
    {
       mMainWindow->mUI->labelP1Points->setText(QString::number(mLogicClient->getScore(PlayerID::P1)));
       mMainWindow->mUI->labelP2Points->setText(QString::number(mLogicClient->getScore(PlayerID::P2)));
+   }
+}
+
+void SimpleRacer::onSurveyFinished()
+{
+   // Training? Perform next training!
+   if (Settings::the()->getUserTrainingState() != TrainingState::INVALID && Settings::the()->getUserTrainingState() != TrainingState::DONE)
+   {
+      startNextTraining();
    }
 }

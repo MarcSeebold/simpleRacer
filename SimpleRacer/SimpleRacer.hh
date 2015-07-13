@@ -64,6 +64,8 @@ public slots:
    /// Main game update function
    void update();
 
+   void onSurveyFinished();
+
 public: // getter
    bool isRunning() const { return mRunning; }
 

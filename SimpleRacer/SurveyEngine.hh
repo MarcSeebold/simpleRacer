@@ -43,6 +43,9 @@ public:
 private slots:
    void onDownloadRequested(const QNetworkRequest &_request);
 
+signals:
+   void surveyFinished();
+
 private:
    struct CurrentSurvey
    {
