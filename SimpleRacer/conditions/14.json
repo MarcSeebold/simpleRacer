@@ -5,7 +5,7 @@
         "MinTimeBetweenCarPosJumps": 5,
         "NetworkUpdateRate": 20,
         "TestPlay": false,
-        "UserInstruction": 2
+        "UserInstruction": 3
     },
     "LatencyStuff": {
         "ClientSideInterpolation": false,
