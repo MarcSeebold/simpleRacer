@@ -95,7 +95,7 @@ private: // game logic stuff
    /// How fast do coins and mud puddles move from right to left?
    float mCoinMudLinearVelocity = -7.85f;
    /// Amount of time coins need to spawn (in seconds)
-   float mCoinSpawnTime = 1.f;
+   float mCoinSpawnTime = 2.f;
    /// Amount of time mud puddles need to spawn (in seconds)
    float mMudSpawnTime = 0.5f;
    /// Car acceleration for x and y axes
