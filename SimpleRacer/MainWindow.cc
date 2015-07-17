@@ -26,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), mUI(new Ui::MainW
    mUI->menuBar->hide();
 #endif
    mUI->webView->settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
+   mUI->labelP1->setStyleSheet("QLabel { color: red; }");
+   mUI->labelP2->setStyleSheet("QLabel { color: blue; }");
 
    refreshDebugUI();
 }

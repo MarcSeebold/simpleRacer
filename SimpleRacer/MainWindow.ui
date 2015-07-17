@@ -67,6 +67,9 @@
            <property name="font">
             <font>
              <pointsize>35</pointsize>
+             <weight>50</weight>
+             <bold>false</bold>
+             <kerning>true</kerning>
             </font>
            </property>
            <property name="text">
@@ -499,14 +502,14 @@
      </widget>
     </item>
     <item>
-     <widget class="QWebView" name="webView" native="true">
+     <widget class="QWebView" name="webView">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
-      <property name="url" stdset="0">
+      <property name="url">
        <url>
         <string>about:blank</string>
        </url>
@@ -525,7 +528,7 @@
      <x>0</x>
      <y>0</y>
      <width>1050</width>
-     <height>27</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMenu">
