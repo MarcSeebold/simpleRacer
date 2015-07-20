@@ -13,5 +13,7 @@
         <file>htdocs/instruction2.html</file>
         <file>htdocs/instruction1.html</file>
         <file>htdocs/instruction0.html</file>
+        <file>htdocs/countdown.js</file>
+        <file>htdocs/f710_homebtn.jpg</file>
     </qresource>
 </RCC>
