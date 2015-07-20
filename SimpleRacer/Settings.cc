@@ -179,7 +179,6 @@ void Settings::loadCondition(unsigned int _num)
    }
    read(jRoot);
    SimpleRacer::survey()->setLastLoadedCondition(_num);
-   qDebug() << "loaded condition " << _num;
 }
 
 void Settings::setTestPlay(bool _val)
