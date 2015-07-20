@@ -5,6 +5,7 @@
 #include "StatisticsEngine.hh"
 #include <QNetworkRequest>
 #include "SimpleRacer.hh"
+#include <QWebFrame>
 
 SurveyEngine::SurveyEngine(QWebView *_webView, RenderingWidget *_renderWidget)
   : mWebView(_webView), mRendering(_renderWidget)
@@ -102,6 +103,24 @@ bool SurveyEngine::showInstructions(Instruction _instruction)
       return false;
       break;
    }
+   return true;
+}
+
+bool SurveyEngine::showInstructionsAndTrainingsPhase(Instruction _instruction)
+{
+   bool ok = showInstructions(_instruction);
+   if (!ok)
+      return false;
+   connect(
+       mWebView, &QWebView::loadFinished, [this](bool ok)
+       {
+          if (!ok)
+             return;
+          const _ phase = int(Settings::the()->getUserTrainingState());
+          mWebView->page()->mainFrame()->evaluateJavaScript(
+              "document.getElementById('addHeading').innerHTML=\"Trainings-Phase: " + QString::number(phase) + "/8\"");
+       });
+
    return true;
 }
 

@@ -39,6 +39,9 @@ public:
    /// Show instructions
    /// @return False if the instruction is invalid
    bool showInstructions(Instruction _instruction);
+   /// Show instructions and the current training phase
+   /// @return False if the instruction is invalid
+   bool showInstructionsAndTrainingsPhase(Instruction _instruction);
 
 private slots:
    void onDownloadRequested(const QNetworkRequest &_request);

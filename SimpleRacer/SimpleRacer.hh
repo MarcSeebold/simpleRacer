@@ -36,7 +36,7 @@ public:
    static void create(MainWindow *_mainWindow, RenderingWidget *_rendering);
    /// Singleton destroy
    static void destroy();
-   /// Singleton getter. Make sure to call create() before the() and destory() to free up resources.
+   /// Singleton getter. Make sure to call create() before the() and destroy() to free up resources.
    static SimpleRacer *the();
 
 public: // static getter
@@ -52,18 +52,19 @@ public: // static getter
 public slots:
    void showInstructionsAndStartGame();
 
+   /// Starts the training phase
    void startTraining();
-   void startNextTraining();
-   void startTrainingGame();
 
+   /// Start a game
    void startGame();
+   /// Stop the current game
    void stopGame();
-
+   /// Exit everything
    void exitGame();
 
    /// Main game update function
    void update();
-
+   /// Called when the user has finished a survey
    void onSurveyFinished();
 
 public: // getter
@@ -73,6 +74,13 @@ private:
    // c'tor
    SimpleRacer(MainWindow *_mainWindow, RenderingWidget *_rendering);
    ~SimpleRacer();
+
+   /// Starts the next training phase
+   /// Make sure that the training phase is not over yet
+   /// Calls startTrainingGame()
+   void startNextTraining();
+   /// Start a game with the config of the current training-phase
+   void startTrainingGame();
 
 private:
    static SimpleRacer *sInstance;
