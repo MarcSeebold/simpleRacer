@@ -9,9 +9,9 @@
         <script type="text/javascript">
             // config
             var showProgress = true;
-            var numberOfQuestions = 14;
+            var numberOfQuestions = 18;
             // small code snippet for GEQ questions
-            var currQuestion = 1;
+            var currQuestion = 2;
             function geqQuestion(text)
             {
                 if (showProgress)
@@ -23,6 +23,18 @@
                     //An object that saves the time spent on the screen that it belongs to
                     new QuestionnaireItemScreenDuration());
             }
+            function customQuestion(text)
+            {
+                if (showProgress)
+                    text += " ("+currQuestion+"/"+numberOfQuestions+")";
+                currQuestion++;
+                return new ScreenUIElements(
+                    // The question
+                    // answers by https://de.wikipedia.org/wiki/Verbale_Rating-Skala#Quantifizierung_von_Adjektiven_und_Rating-Skalen
+                    new QuestionnaireItemDefinedOne(undefined, text, [ "Nie", "Selten", "Gelegentlich", "Oft", "Immer"], true),
+                    //An object that saves the time spent on the screen that it belongs to
+                    new QuestionnaireItemScreenDuration());
+            }
         </script>
 
         <script>
@@ -30,6 +42,18 @@
             var screenController = new ScreenController(
                     new ScreenUIElements(
                             new UIElementHTML(undefined, "Bitte geben Sie an, wie Sie sich gefühlt haben, während Sie das Spiel spielten, indem Sie die folgenden Fragen beantworten. Wenn Sie bereit sind, drücken Sie bitte auf 'Next'.")),
+                    // Custom questions
+                    // overall quality
+                    new ScreenUIElements(
+                        new QuestionnaireItemQuality7pt(undefined, "Wie beurteilen Sie die <b>Gesamtqualität</b> des gepielten Szenarios?(1/18)", true),
+                        new QuestionnaireItemScreenDuration()
+                    ),
+                    // User's car
+                    customQuestion("Hat sich Ihr Auto unerwartet bewegt?"),
+                    // AI's car
+                    customQuestion("Hat sich das gegnerische Auto unerwartet bewegt?"),
+                    // Coins/Mud
+                    customQuestion("Haben sich Münzen oder Matsch-Pfützen unerwartet bewegt?"),
 
                     // GEQ In-game questions
                     // 1 (GEQ Core – 3)
