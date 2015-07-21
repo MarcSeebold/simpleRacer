@@ -7,14 +7,6 @@ class QWebView;
 class RenderingWidget;
 class QNetworkRequest;
 
-enum class SurveyType : char
-{
-   INVALID = 0,
-   CORE,
-   INGAME,
-   POSTGAME
-};
-
 enum class SurveyLanguage : char
 {
    INVALID = 0,
@@ -47,7 +39,7 @@ private slots:
    void onDownloadRequested(const QNetworkRequest &_request);
 
 signals:
-   void surveyFinished();
+   void surveyFinished(SurveyType);
 
 private:
    struct CurrentSurvey

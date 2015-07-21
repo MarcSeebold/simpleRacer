@@ -133,7 +133,8 @@ void SurveyEngine::onDownloadRequested(const QNetworkRequest &_request)
    // Abuse QByteArray since it can convert base64
    _ data = QString(QByteArray::fromBase64(_request.url().toEncoded().split(',').at(1)));
    // store results in statistics engine
-   switch (mCurrSurvey.type)
+   _ type = mCurrSurvey.type;
+   switch (type)
    {
    case SurveyType::CORE:
       StatisticsEngine::the()->tellCoreSurvey(std::move(data));
@@ -154,5 +155,5 @@ void SurveyEngine::onDownloadRequested(const QNetworkRequest &_request)
    mCurrSurvey = CurrentSurvey{SurveyType::INVALID, SurveyLanguage::INVALID};
    // state
    SimpleRacer::the()->setGameState(GameState::WAITING);
-   emit surveyFinished();
+   emit surveyFinished(type);
 }

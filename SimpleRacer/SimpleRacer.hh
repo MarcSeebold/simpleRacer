@@ -65,7 +65,7 @@ public slots:
    /// Main game update function
    void update();
    /// Called when the user has finished a survey
-   void onSurveyFinished();
+   void onSurveyFinished(SurveyType _type);
 
 public: // getter
    bool isRunning() const { return mRunning; }

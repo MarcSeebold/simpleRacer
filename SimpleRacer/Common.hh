@@ -70,6 +70,14 @@ enum class PlayerID : int
    P2 = 1
 };
 
+enum class SurveyType : char
+{
+   INVALID = 0,
+   CORE,
+   INGAME,
+   POSTGAME
+};
+
 #define DO_STRING_JOIN2(arg1, arg2) arg1##arg2
 #define STRING_JOIN2(arg1, arg2) DO_STRING_JOIN2(arg1, arg2)
 

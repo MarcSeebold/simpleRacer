@@ -9,6 +9,7 @@
 #include "Testing.hh"
 #include "SurveyEngine.hh"
 #include "ScreenRecorder.hh"
+#include <QWebFrame>
 #include <QDir>
 
 SimpleRacer *SimpleRacer::sInstance = nullptr;
@@ -235,7 +236,8 @@ void SimpleRacer::update()
             mSurveyEngine->makeSurvey(SurveyType::INGAME);
          }
          // Training?
-         else if (Settings::the()->getUserTrainingState() != TrainingState::INVALID && Settings::the()->getUserTrainingState() != TrainingState::DONE)
+         else if (Settings::the()->getUserTrainingState() != TrainingState::INVALID
+                  && Settings::the()->getUserTrainingState() != TrainingState::DONE)
          {
             startNextTraining();
          }
@@ -349,11 +351,26 @@ void SimpleRacer::update()
    }
 }
 
-void SimpleRacer::onSurveyFinished()
+void SimpleRacer::onSurveyFinished(SurveyType _type)
 {
    // Training? Perform next training!
-   if (Settings::the()->getUserTrainingState() != TrainingState::INVALID && Settings::the()->getUserTrainingState() != TrainingState::DONE)
+   if (Settings::the()->getUserTrainingState() != TrainingState::INVALID
+       && Settings::the()->getUserTrainingState() != TrainingState::DONE)
    {
       startNextTraining();
+   }
+   else if (_type == SurveyType::INGAME)
+   {
+      // "real" ingame survey over
+      // give user instruction to make some notes
+      _ ww = mMainWindow->mUI->webView;
+      ww->load(QUrl("qrc:/htdocs/notes.html"));
+      connect(ww, &QWebView::loadFinished, [this, ww](bool ok)
+              {
+                 if (!ok)
+                    return;
+                 _ condNr = QString::number(survey()->getLastLoadedCondition());
+                 ww->page()->mainFrame()->evaluateJavaScript("document.getElementById('kondnr').innerHTML=\"" + condNr + "\";");
+              });
    }
 }
