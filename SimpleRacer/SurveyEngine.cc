@@ -13,6 +13,9 @@ SurveyEngine::SurveyEngine(QWebView *_webView, RenderingWidget *_renderWidget)
    SR_ASSERT(nullptr != _webView && "Nullptr exception.");
    connect(_webView->page(), &QWebPage::downloadRequested, this, &SurveyEngine::onDownloadRequested);
    mCurrSurvey = CurrentSurvey{SurveyType::INVALID, SurveyLanguage::INVALID};
+#ifdef QT_DEBUG
+   QWebSettings::globalSettings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+#endif
 }
 
 SurveyEngine::~SurveyEngine()

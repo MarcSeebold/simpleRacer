@@ -14,6 +14,10 @@ ScreenRecorder::~ScreenRecorder()
 
 void ScreenRecorder::startRecording(const QString &_filename, bool _waitForStarted)
 {
+#ifdef QT_DEBUG
+   // no screencaps in debug mode
+   return;
+#endif
    stopRecording();
    mWorker.reset(new ScreenRecordWorker(_filename));
    connect(mWorker.get(), &ScreenRecordWorker::finished, this, &ScreenRecorder::workerFinished);
@@ -28,6 +32,10 @@ void ScreenRecorder::startRecording(const QString &_filename, bool _waitForStart
 
 void ScreenRecorder::stopRecording(bool _waitForStopped)
 {
+#ifdef QT_DEBUG
+   // no screencaps in debug mode
+   return;
+#endif
    if (!isRecording())
       return;
    SR_ASSERT(mWorker != nullptr && "Running but worker is null.");
