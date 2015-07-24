@@ -89,7 +89,7 @@ void SurveyEngine::showWaitingScreen()
    mWebView->load(QUrl("qrc:/htdocs/wait.html"));
 }
 
-bool SurveyEngine::showInstructions(Instruction _instruction)
+bool SurveyEngine::showInstructions(Instruction _instruction, bool _hideTrainingsphaseIndicatior)
 {
    switch (_instruction)
    {
@@ -106,12 +106,23 @@ bool SurveyEngine::showInstructions(Instruction _instruction)
       return false;
       break;
    }
+   if (_hideTrainingsphaseIndicatior)
+   {
+      // hide indicator for trainingsphase
+      connect(mWebView, &QWebView::loadFinished, [this](bool ok)
+              {
+                 if (!ok)
+                    return;
+                 mWebView->page()->mainFrame()->evaluateJavaScript(
+                     "document.getElementById('addHeading').style.display = none;");
+              });
+   }
    return true;
 }
 
 bool SurveyEngine::showInstructionsAndTrainingsPhase(Instruction _instruction)
 {
-   bool ok = showInstructions(_instruction);
+   bool ok = showInstructions(_instruction, false);
    if (!ok)
       return false;
    connect(

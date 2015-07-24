@@ -30,7 +30,7 @@ public:
    void showWaitingScreen();
    /// Show instructions
    /// @return False if the instruction is invalid
-   bool showInstructions(Instruction _instruction);
+   bool showInstructions(Instruction _instruction, bool _hideTrainingsphaseIndicatior = true);
    /// Show instructions and the current training phase
    /// @return False if the instruction is invalid
    bool showInstructionsAndTrainingsPhase(Instruction _instruction);
