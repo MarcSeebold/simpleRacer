@@ -85,7 +85,7 @@ void ArtificialRacer::update()
    if (coinPos == QVector2D(-1, -1))
    {
       // No goal: hold distance to right border
-      coinPos = QVector2D((GameLogic::sGameWidth / 2.f), (GameLogic::sGameHeight / 2.f));
+      coinPos = QVector2D((GameLogic::sGameWidth * (5.f/8.f)), (GameLogic::sGameHeight / 2.f));
    }
 
 // Seperate logic for x and y axes
