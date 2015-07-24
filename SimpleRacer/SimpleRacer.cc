@@ -75,7 +75,11 @@ SimpleRacer *SimpleRacer::the()
 
 void SimpleRacer::showInstructionsAndStartGame()
 {
-   bool ok = mSurveyEngine->showInstructionsAndTrainingsPhase(Settings::the()->getUserInstruction());
+   bool ok = false;
+   if (Settings::the()->getUserTrainingState() < TrainingState::DONE)
+      ok = mSurveyEngine->showInstructionsAndTrainingsPhase(Settings::the()->getUserInstruction());
+   else
+       mSurveyEngine->showInstructions(Settings::the()->getUserInstruction());
    if (!ok)
       startGame(); // no valid instruction: startGame without one
 }
