@@ -125,15 +125,18 @@ bool SurveyEngine::showInstructionsAndTrainingsPhase(Instruction _instruction)
    bool ok = showInstructions(_instruction, false);
    if (!ok)
       return false;
-   connect(
-       mWebView, &QWebView::loadFinished, [this](bool ok)
-       {
-          if (!ok)
-             return;
-          const _ phase = int(Settings::the()->getUserTrainingState());
-          mWebView->page()->mainFrame()->evaluateJavaScript(
-              "document.getElementById('addHeading').innerHTML=\"Trainings-Phase: " + QString::number(phase) + "/8\"");
-       });
+   connect(mWebView, &QWebView::loadFinished, [this](bool ok)
+           {
+              if (!ok)
+                 return;
+              const _ phase = int(Settings::the()->getUserTrainingState());
+              if (phase > 8) // max phase is 8
+                 mWebView->page()->mainFrame()->evaluateJavaScript(
+                     "document.getElementById('addHeading').style.display = none;");
+              else
+                 mWebView->page()->mainFrame()->evaluateJavaScript(
+                     "document.getElementById('addHeading').innerHTML=\"Trainings-Phase: " + QString::number(phase) + "/8\"");
+           });
 
    return true;
 }
