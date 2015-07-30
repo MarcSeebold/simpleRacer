@@ -77,7 +77,7 @@ void SimpleRacer::showInstructionsAndStartGame()
 {
    bool ok = false;
    const _ phase = Settings::the()->getUserTrainingState();
-   if (phase != TrainingState::DONE && phase != TrainingState::INVALID)
+   if ((int)phase < (int)TrainingState::DONE && (int)phase > (int)TrainingState::INVALID)
       ok = mSurveyEngine->showInstructionsAndTrainingsPhase(Settings::the()->getUserInstruction());
    else
        ok = mSurveyEngine->showInstructions(Settings::the()->getUserInstruction());
